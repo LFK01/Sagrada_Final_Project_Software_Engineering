@@ -18,12 +18,20 @@ public class Dice {
         inTrack = false;
         inDraftPool = false;
         schema = null;
-        pos = 0;
+        int pos = 0;
     }
 
     public Color getDiceColor() {
         return diceColor;
     }
 
+    public void setValue(int value) {           //metodo per eventuali modifiche di valore del dado con carte utensili
+        this.value = value;
+    }
+    
+    public void setInSchema(SchemaCard schema, int pos) {
+        this.schema = schema;
+        this.pos = pos;
+    }
 
 }

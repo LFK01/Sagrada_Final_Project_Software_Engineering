@@ -1,4 +1,5 @@
 package it.polimi.se2018.model;
+//Giorgia
 
 public class Cell {
 
@@ -15,7 +16,7 @@ public class Cell {
 
         this.cellColor = color;
 
-        if (color == null)
+        if (color == null)                  //controllo per gestione delle celle senza restrizioni di colore
             this.noColor = true;
         else
             this.noColor = false;

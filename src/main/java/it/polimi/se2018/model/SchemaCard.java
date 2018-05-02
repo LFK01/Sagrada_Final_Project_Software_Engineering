@@ -8,7 +8,7 @@ public class SchemaCard {
     private Cell cells[];
     private int difficultyLevel;
 
-    public SchemaCard(int n) {
+    public SchemaCard(int n) {          //costruttore con switch per creare le carte schema pescate dal giocatore
 
         switch (n) {
 

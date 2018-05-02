@@ -12,6 +12,7 @@ public class Dice {
     private int pos;
 
     public Dice(Color color, int value){
+
         this.diceColor = color;
         this.value = value;
         inSchema = false;
@@ -19,17 +20,22 @@ public class Dice {
         inDraftPool = false;
         schema = null;
         int pos = 0;
+
     }
 
     public Color getDiceColor() {
         return diceColor;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     public void setValue(int value) {           //metodo per eventuali modifiche di valore del dado con carte utensili
         this.value = value;
     }
     
-    public void setInSchema(SchemaCard schema, int pos) {
+    public void setInSchema(SchemaCard schema, int pos) {       //data una carta schema e un indice associa il dado alla cella corrispondente
         this.schema = schema;
         this.pos = pos;
     }

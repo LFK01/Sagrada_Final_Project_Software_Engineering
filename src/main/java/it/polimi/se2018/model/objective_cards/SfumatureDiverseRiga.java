@@ -18,11 +18,11 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
                 }
 
             }
-            if(n==1){
+            if(n==1){                                                           //non aggiorna il punteggio
                 n=0;
             }
             else if(n==0){
-                player.setPoints(player.getPoints() + this.getPoints());
+                player.setPoints(player.getPoints() + this.getPoints());        //aggiorna il punteggio
             }
 
 

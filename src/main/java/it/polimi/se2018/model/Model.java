@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+//Giovanni
+
 public class Model {
     private GameBoard gameBoard;
     private int partecipants;
@@ -21,6 +23,19 @@ public class Model {
 
     }
     public void permormMove(int pos){
+
+    }
+
+    public Player chooseFirstPlayer(Player player){
+
+    }
+
+    public boolean isPlayerTurn(Player player){
+
+
+    }
+
+    public void updateTurn(){
 
     }
 

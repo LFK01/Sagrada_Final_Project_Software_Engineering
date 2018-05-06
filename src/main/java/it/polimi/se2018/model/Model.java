@@ -2,14 +2,17 @@ package it.polimi.se2018.model;
 
 //Giovanni
 
-public class Model {
+import java.util.ArrayList;
+import java.util.Observable;
+
+public class Model extends Observable {
     private GameBoard gameBoard;
-    private int partecipants;
+    private ArrayList<Player> participants;
     private int turn = 0;
 
-    public Model(GameBoard gameBoard, int partecipants){
+    public Model(GameBoard gameBoard,ArrayList<Player> partecipants) {
         this.gameBoard = gameBoard;
-        this.partecipants = partecipants;
+        this.participants = partecipants;
     }
 
     public int getTurn() {
@@ -17,20 +20,18 @@ public class Model {
     }
 
     public int getPartecipants() {
-        return partecipants;
+        return participants.size();
     }
-    public void performMove(int i){
 
-    }
-    public void permormMove(int pos){
+    public void performDiceMove(int pos){
 
     }
 
-    public Player chooseFirstPlayer(Player player){
+    public void permormToolCardMove(int i){
 
     }
 
-    public boolean isPlayerTurn(Player player){
+    public boolean isPlayerTurn(Player player) {
 
 
     }

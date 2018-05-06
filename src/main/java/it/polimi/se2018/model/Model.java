@@ -19,20 +19,19 @@ public class Model {
     public int getPartecipants() {
         return partecipants;
     }
+
     public void performMove(int i){
 
     }
+
     public void permormMove(int pos){
 
     }
 
     public Player chooseFirstPlayer(Player player){
-
     }
 
     public boolean isPlayerTurn(Player player){
-
-
     }
 
     public void updateTurn(){

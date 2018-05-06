@@ -24,5 +24,4 @@ public class RoundTrack {
     public Dice getDice(int index) {
         return round[this.turn].getDice(index);
     }
-
 }

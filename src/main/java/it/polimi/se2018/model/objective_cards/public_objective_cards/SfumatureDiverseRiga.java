@@ -13,7 +13,7 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
         for(int i=0; i< 4  ; i++){
             for(int j= i*5;j< i*5+5 && n==0;j++){
                 for(int k = j+1; k <i*5+5 && n==0;k++){
-                    if (player.getWindowFrame().getCell(j) == player.getWindowFrame().getCell(k)){
+                    if (player.getWindowFrame().getCell(j).getValue() == player.getWindowFrame().getCell(k).getValue()){
                         n=1;
                     }
                 }

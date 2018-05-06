@@ -6,13 +6,16 @@ import java.util.*;
 
 public class RoundDice {
 
-    private ArrayList<Dice> diceList = new ArrayList<Dice>();
+    private ArrayList<Dice> diceList = new ArrayList<>();
+    private int participantsNumber;
     private int turn;
 
-    //vengono passati al costruttore il numero del turno e un ArrayList degli eventuali dadi non utilizzati al termine del turno
-    public RoundDice(DiceBag diceBag, int currentTurn) {
+    //si passano al costruttore il numero dei partecipanti e il numero del turno per calcolare i dadi da pescare, più il sacchetto
+    public RoundDice(int participants, DiceBag diceBag, int currentTurn) {
 
-        for(int i = (currentTurn-1)*(4*2+1) ; i < (currentTurn*(4*2+1)); i++)
+        this.participantsNumber = participants;
+
+        for(int i = (currentTurn-1)*(participantsNumber*2+1) ; i < (currentTurn*(participantsNumber*2+1)); i++)
                 diceList.add(diceBag.getDice(i));
 
         this.turn = currentTurn;
@@ -20,21 +23,19 @@ public class RoundDice {
     }
 
     public ArrayList<Dice> getDiceList() {
-
         return diceList;
-
     }
 
     public int getTurn() {
-
         return turn;
-
     }
 
     public Dice getDice(int index) {
-
         return diceList.get(index);
+    }
 
+    public int getParticipantsNumber() {
+        return participantsNumber;
     }
 
 }

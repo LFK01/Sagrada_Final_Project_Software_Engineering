@@ -31,7 +31,7 @@ public class Model extends Observable {
 
     }
 
-    public boolean isPlayerTurn(Player player) {
+    public boolean isPlayerTurn(Player player){
 
 
     }

@@ -1,24 +1,24 @@
 package it.polimi.se2018.model;
+import it.polimi.se2018.model.objective_cards.InterfaceObjectiveCard;
+
 //Giovanni
 public class Player {
     private String name;
     private int favorTokens;
-    private ObjectiveCard privateObjective;
+    private InterfaceObjectiveCard privateObjective;
     private SchemaCard windowFrame;
     private int points;
 
     //costruttore
-    public Player(String n){
-        this.name = n;
+    public Player(String name){
+        this.name = name;
         this.favorTokens=0;
         this.privateObjective = null;
         this.windowFrame = null;
         this.points=0;
     }
     //metodi getter
-    public String getName(){
-        return name;
-    }
+    public String getName(){ return name; }
     public int getFavorTokens() {
         return favorTokens;
     }
@@ -26,7 +26,7 @@ public class Player {
         return points;
     }
 
-    public ObjectiveCard getPrivateObjective() {
+    public InterfaceObjectiveCard getPrivateObjective() {
         return privateObjective;
     }
 

@@ -5,4 +5,6 @@ import it.polimi.se2018.model.Player;
 public interface InterfaceObjectiveCard {
 
     void countPoints(Player player);
+    AbstractObjectiveCard getInstance();
+
 }

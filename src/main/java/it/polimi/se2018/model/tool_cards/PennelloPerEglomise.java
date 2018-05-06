@@ -18,6 +18,11 @@ public class PennelloPerEglomise extends AbstractToolCard implements InterfaceTo
     }
 
     @Override
+    public AbstractToolCard getInstance() {
+        return thisIstance;
+    }
+
+    @Override
     public void activateCard(Player player) {
 
     }

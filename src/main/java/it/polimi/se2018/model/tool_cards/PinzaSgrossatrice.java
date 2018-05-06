@@ -4,17 +4,22 @@ import it.polimi.se2018.model.Player;
 
 public class PinzaSgrossatrice extends AbstractToolCard implements InterfaceToolCard {
 
-    private static PinzaSgrossatrice thisIstance;
+    private static PinzaSgrossatrice thisInstance;
 
     private PinzaSgrossatrice() {
         super("Pinza Sgrossatrice", "", true);
     }
 
-    public static synchronized PinzaSgrossatrice getThisIstance() {
-        if(thisIstance==null){
-            thisIstance = new PinzaSgrossatrice();
+    public static synchronized PinzaSgrossatrice getThisInstance() {
+        if(thisInstance==null){
+            thisInstance = new PinzaSgrossatrice();
         }
-        return thisIstance;
+        return thisInstance;
+    }
+
+    @Override
+    public AbstractToolCard getInstance() {
+        return thisInstance;
     }
 
     @Override

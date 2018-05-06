@@ -38,10 +38,12 @@ public class Player {
     public void setPrivateObjectiveCard(){
 
     }
-    public int setFavorTokens(){
+
+    public void setFavorTokens(){
 
     }
-    public SchemaCard setSchemaCard(){
+    
+    public void setSchemaCard(){
 
     }
 

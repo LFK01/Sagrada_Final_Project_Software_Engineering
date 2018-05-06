@@ -1,5 +1,5 @@
-package it.polimi.se2018.model;
-
+package it.polimi.se2018.model.tool_cards;
+//Luciano
 abstract public class AbstractToolCard {
 
     protected String name;

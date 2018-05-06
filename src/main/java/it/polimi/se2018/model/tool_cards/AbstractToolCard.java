@@ -1,10 +1,10 @@
-package it.polimi.se2018.model;
-
+package it.polimi.se2018.model.tool_cards;
+//Luciano
 abstract public class AbstractToolCard {
 
-    private String name;
-    private String description;
-    private boolean firstUsage;
+    protected String name;
+    protected String description;
+    protected boolean firstUsage;
 
     public AbstractToolCard(String name, String description, boolean firstUsage) {
         this.name = name;

@@ -1,7 +1,8 @@
-package it.polimi.se2018.model.objective_cards;
+package it.polimi.se2018.model.objective_cards.public_objective_cards;
 //Giovanni
 
 import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
 public class SfumatureDiverseRiga extends AbstractObjectiveCard {
     private int n=0;   //serve per saltare alla riga successiva della matrice ( qui rappresentata come array)
@@ -16,7 +17,6 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
                         n=1;
                     }
                 }
-
             }
             if(n==1){
                 n=0;

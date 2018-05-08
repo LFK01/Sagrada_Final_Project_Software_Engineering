@@ -1,5 +1,8 @@
 package it.polimi.se2018.model;
-//Giovanni
+
+/**
+ * @author Giovanni
+ */
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -16,6 +19,10 @@ public class Model extends Observable {
 
     public int getTurn() {
         return turn;
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
     }
 
     public int getPartecipants() {
@@ -36,6 +43,35 @@ public class Model extends Observable {
 
     public void updateTurn(){
 
+    }
+
+    /**
+     * metodo per aggiungere un giocatore
+     * @param name
+     */
+    public void addPlayer(String name)/*throws PlayerNumberExceededException*/{
+        if(participants.size()<4){
+            participants.add(new Player(name));
+        }
+        else{
+            //throw PlayerNumberExceededException
+        }
+        setChanged();
+    }
+
+    /**
+     *
+     * @param player
+     * metodo per rimuovere giocatore dalla lista dei giocatori
+     */
+    public void removePlayer(Player player)/*throws SinglePlayerException*/{
+        if(participants.size()>1){
+            participants.remove(participants.indexOf(player));
+        }
+        else{
+            //throw SinglePlayerMatchException
+        }
+        setChanged();
     }
 
 

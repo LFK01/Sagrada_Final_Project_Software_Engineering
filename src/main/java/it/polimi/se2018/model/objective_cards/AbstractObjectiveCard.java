@@ -1,18 +1,24 @@
 package it.polimi.se2018.model.objective_cards;
-//Giovanni
+
+import it.polimi.se2018.model.SchemaCard;
+
+/**
+ * @author Luciano
+ */
 
 public abstract class AbstractObjectiveCard {
     protected String name;
     protected String description;
-    protected int points;
+    protected String points;
+    protected boolean isPrivate;
 
-    public AbstractObjectiveCard(String name, String description,int points){
+    public AbstractObjectiveCard(String name, String description,String points, boolean isPrivate){
         this.name = name;
         this.description = description;
         this.points = points;
     }
 
-    public int getPoints() {
+    public String getPoints() {
         return points;
     }
 
@@ -24,5 +30,9 @@ public abstract class AbstractObjectiveCard {
         return name;
     }
 
+    public boolean isPrivate(){
+        return isPrivate;
+    }
 
+    abstract public int countPoints(SchemaCard schemaCard);
 }

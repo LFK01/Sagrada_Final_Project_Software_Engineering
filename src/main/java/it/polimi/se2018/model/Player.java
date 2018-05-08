@@ -1,8 +1,5 @@
 package it.polimi.se2018.model;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.objective_cards.InterfaceObjectiveCard;
-
-import javax.xml.validation.Schema;
 
 //Giovanni
 
@@ -10,7 +7,7 @@ public class Player {
 
     private String name;
     private int favorTokens;
-    private InterfaceObjectiveCard privateObjective;
+    private AbstractObjectiveCard privateObjective;
     private SchemaCard schemaCard;
     private int points;
 
@@ -34,7 +31,7 @@ public class Player {
     }
 
     public AbstractObjectiveCard getPrivateObjective() {
-        return privateObjective.getInstance();
+        return privateObjective;
     }
 
     public SchemaCard getSchemaCard() {
@@ -42,7 +39,7 @@ public class Player {
     }
 
     //metodi setter
-    public void setPrivateObjectiveCard(InterfaceObjectiveCard privateObjective){
+    public void setPrivateObjectiveCard(AbstractObjectiveCard privateObjective){
 
     }
     

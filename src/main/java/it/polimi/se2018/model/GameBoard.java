@@ -1,27 +1,24 @@
 package it.polimi.se2018.model;
 //Luciano
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.objective_cards.InterfaceObjectiveCard;
 import it.polimi.se2018.model.tool_cards.AbstractToolCard;
 import it.polimi.se2018.model.tool_cards.InterfaceToolCard;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 public class GameBoard {
 
     private String matchId;
     private DiceBag diceBag;
-    private InterfaceObjectiveCard publicObjectiveCards[] = new InterfaceObjectiveCard[3];
-    private ArrayList<InterfaceObjectiveCard> privateObjectiveCards = new ArrayList<InterfaceObjectiveCard>();
-    private InterfaceToolCard toolCards[] = new InterfaceToolCard[3];
+    private AbstractObjectiveCard publicObjectiveCards[] = new AbstractObjectiveCard[3];
+    private ArrayList<AbstractObjectiveCard> privateObjectiveCards = new ArrayList<AbstractObjectiveCard>();
+    private AbstractToolCard toolCards[] = new AbstractToolCard[3];
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
-    public GameBoard(InterfaceObjectiveCard[] publicObjectiveCards, ArrayList<InterfaceObjectiveCard> privateObjectiveCards, InterfaceToolCard[] toolCards) {
+    public GameBoard(AbstractObjectiveCard[] publicObjectiveCards, ArrayList<AbstractObjectiveCard> privateObjectiveCards) {
         this.publicObjectiveCards = publicObjectiveCards;
         this.privateObjectiveCards = privateObjectiveCards;
-        this.toolCards = toolCards;
         this.diceBag = new DiceBag();
     }
 
@@ -30,31 +27,31 @@ public class GameBoard {
     }
 
     public String getPublicObjectiveCardName(int index) {
-        return publicObjectiveCards[index].getInstance().getName();
+        return publicObjectiveCards[index].getName();
     }
 
     public String getPublicObjectiveCardDescription(int index) {
-        return publicObjectiveCards[index].getInstance().getDescription();
+        return publicObjectiveCards[index].getDescription();
     }
 
     public String getPrivateObjectiveCardName(int index) {
-        return privateObjectiveCards.get(index).getInstance().getName();
+        return privateObjectiveCards.get(index).getName();
     }
 
     public String getPrivateObjectiveCardDescription(int index) {
-        return privateObjectiveCards.get(index).getInstance().getDescription();
+        return privateObjectiveCards.get(index).getDescription();
     }
 
     public String getToolCardName(int index) {
-        return toolCards[index].getInstance().getName();
+        return toolCards[index].getName();
     }
 
     public String getToolCardDescription(int index) {
-        return toolCards[index].getInstance().getDescription();
+        return toolCards[index].getDescription();
     }
 
-    public int getPublicObjectiveCardPoints(int index) {
-        return publicObjectiveCards[index].getInstance().getPoints();
+    public String getPublicObjectiveCardPoints(int index) {
+        return publicObjectiveCards[index].getPoints();
     }
 
     public String getMatchId() {
@@ -69,4 +66,7 @@ public class GameBoard {
         return pointTrack;
     }
 
+    public void setToolCards(AbstractToolCard[] toolCards) {
+        this.toolCards = toolCards;
+    }
 }

@@ -5,6 +5,7 @@ import it.polimi.se2018.model.objective_cards.InterfaceObjectiveCard;
 import javax.xml.validation.Schema;
 
 //Giovanni
+
 public class Player {
 
     private String name;

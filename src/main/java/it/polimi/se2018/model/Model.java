@@ -1,5 +1,4 @@
 package it.polimi.se2018.model;
-
 //Giovanni
 
 import java.util.ArrayList;

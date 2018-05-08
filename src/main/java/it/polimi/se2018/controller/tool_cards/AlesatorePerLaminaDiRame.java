@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.tool_cards;
+package it.polimi.se2018.controller.tool_cards;
 
 import it.polimi.se2018.model.Player;
 //Luciano

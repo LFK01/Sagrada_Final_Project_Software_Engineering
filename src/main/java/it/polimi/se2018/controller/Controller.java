@@ -5,6 +5,7 @@ import it.polimi.se2018.model.events.ChooseDiceMove;
 import it.polimi.se2018.model.events.PlayerMove;
 import it.polimi.se2018.model.events.UseToolCardMove;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
+import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.view.*;
 
 import java.util.*;
@@ -105,23 +106,23 @@ public class Controller {
             switch(cardIndex.get(i)) {
 
                 case 1:
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureRosse().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureRosse.getThisInstance());
                     break;
 
                 case 2:
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureGialle().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureGialle.getThisInstance());
                     break;
 
                 case 3:
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureVerdi().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureVerdi.getThisInstance());
                     break;
 
                 case 4:
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureBlu().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureBlu.getThisInstance());
                     break;
 
                 case 5:
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureViola().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureViola.getThisInstance());
                     break;
 
             }

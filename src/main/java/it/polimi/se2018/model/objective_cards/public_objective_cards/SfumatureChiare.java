@@ -8,17 +8,17 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
  */
 public class SfumatureChiare extends AbstractObjectiveCard {
 
-    private static SfumatureChiare thisIstance;
+    private static SfumatureChiare thisInstance;
 
     private SfumatureChiare() {
         super("Sfumature Chiare", "Set di 1 & 2 ovunque", "2", false);
     }
 
-    public synchronized static SfumatureChiare getThisIstance() {
-        if(thisIstance==null){
-            thisIstance = new SfumatureChiare();
+    public synchronized static SfumatureChiare getThisInstance() {
+        if(thisInstance==null){
+            thisInstance = new SfumatureChiare();
         }
-        return thisIstance;
+        return thisInstance;
     }
 
     @Override

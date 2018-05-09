@@ -10,11 +10,11 @@ public class SfumatureGialle extends AbstractObjectiveCard {
 
     private static SfumatureGialle thisInstance;
 
-    public SfumatureGialle() {
+    private SfumatureGialle() {
         super("Sfumature Gialle", "Somma dei valori su tutti i dadi gialli", "#", true);
     }
 
-    public static SfumatureGialle getThisInstance(){
+    public static synchronized SfumatureGialle getThisInstance(){
         if(thisInstance==null){
             thisInstance = new SfumatureGialle();
         }

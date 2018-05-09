@@ -2,6 +2,7 @@ package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.tool_cards.*;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.ChooseDiceMove;
+import it.polimi.se2018.model.events.MoveMessage;
 import it.polimi.se2018.model.events.PlayerMove;
 import it.polimi.se2018.model.events.UseToolCardMove;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
@@ -12,7 +13,7 @@ import java.util.*;
 
 //Giorgia
 
-public class Controller {
+public class Controller implements Observer {
 
     private Model model;
     private View view;
@@ -89,7 +90,7 @@ public class Controller {
         }
 
         model.getGameBoard().setToolCards(toolCards);
-        //messaggi
+
     }
 
     public void dealPrivateObjectiveCards() {
@@ -128,7 +129,6 @@ public class Controller {
             }
 
         }
-        //messaggi
 
     }
 
@@ -188,17 +188,15 @@ public class Controller {
             }
 
         }
-        //messaggi
+
     }
 
     public void rollSingleDice(Dice dice) {
         dice.setValue((int)Math.ceil(Math.random()*6));
-        //messaggi
     }
 
     public void rollRoundDice(DiceBag diceBag, int turn, int participants) {
         RoundDice roundDice = new RoundDice(participants, diceBag, turn);
-        //messaggi
     }
 
     public void performMove(PlayerMove move) {
@@ -206,16 +204,38 @@ public class Controller {
         if (move.isDiceMove()) {
             //scelta e piazzamento dado
             move = (ChooseDiceMove) move;
+
             move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getPos()).setAssignedDice(((ChooseDiceMove) move).getDice());
-            //messaggi
         }
 
         else {
             //attivazione tool card
             move = (UseToolCardMove) move;
-            ((UseToolCardMove) move).getToolCard().activateCard( move.getPlayer());
-            //messaggi
+
+            ((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
         }
+
+    }
+
+    @Override
+    public void update(Observable model, Object move) {
+
+        move = (PlayerMove) move;
+
+        if(((PlayerMove) move).isDiceMove()) {
+            move = (ChooseDiceMove) move;
+            performMove((ChooseDiceMove) move);
+        }
+
+        else if (!((PlayerMove) move).isDiceMove()) {
+            move = (UseToolCardMove) move;
+            performMove((UseToolCardMove) move);
+        }
+
+
+
+
+
 
     }
 

@@ -11,7 +11,7 @@ public class SfumatureRosse extends AbstractObjectiveCard {
         super("Sfumature Rosse", "Somma dei valori su tutti i dadi rossi", "#", true);
     }
 
-    public static SfumatureRosse getThisInstance(){
+    public static synchronized SfumatureRosse getThisInstance(){
         if(thisInstance==null){
             thisInstance = new SfumatureRosse();
         }

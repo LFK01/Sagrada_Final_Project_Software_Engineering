@@ -6,6 +6,7 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 /**
  * @author Luciano
  */
+
 public class SfumatureGialle extends AbstractObjectiveCard {
 
     private static SfumatureGialle thisInstance;
@@ -14,7 +15,7 @@ public class SfumatureGialle extends AbstractObjectiveCard {
         super("Sfumature Gialle", "Somma dei valori su tutti i dadi gialli", "#", true);
     }
 
-    public static synchronized SfumatureGialle getThisInstance(){
+    public synchronized static SfumatureGialle getThisInstance(){
         if(thisInstance==null){
             thisInstance = new SfumatureGialle();
         }

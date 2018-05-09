@@ -8,17 +8,17 @@ import it.polimi.se2018.model.Player;
 
 public class PennelloPerEglomise extends AbstractToolCard {
 
-    private static PennelloPerEglomise thisInstance;
+    private static PennelloPerEglomise thisIstance;
 
     private PennelloPerEglomise() {
         super("Pennello per Eglomise", "Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di colore. Devi rispettare tutte le altre restrizioni di piazzamento", true);
     }
 
     public static synchronized PennelloPerEglomise getThisInstance() {
-        if(thisInstance==null){
-            thisInstance= new PennelloPerEglomise();
+        if(thisIstance==null){
+            thisIstance= new PennelloPerEglomise();
         }
-        return thisInstance;
+        return thisIstance;
     }
 
     @Override

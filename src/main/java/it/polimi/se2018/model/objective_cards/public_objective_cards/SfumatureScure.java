@@ -7,7 +7,7 @@ public class SfumatureScure extends AbstractObjectiveCard {
     private static SfumatureScure thisInstance;
 
     private SfumatureScure(){
-        super("SfumatureScure","Set di 5 & 6 ovunque","2",false)
+        super("SfumatureScure","Set di 5 & 6 ovunque","2",false);
     }
 
     public static SfumatureScure getThisInstance() {

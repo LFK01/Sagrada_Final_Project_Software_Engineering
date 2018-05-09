@@ -4,8 +4,8 @@ import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.ChooseDiceMove;
 import it.polimi.se2018.model.events.PlayerMove;
 import it.polimi.se2018.model.events.UseToolCardMove;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.objective_cards.public_objective_cards.SfumatureDiverseRiga;
+import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
+import it.polimi.se2018.view.*;
 
 import java.util.*;
 
@@ -16,7 +16,6 @@ public class Controller {
     private Model model;
     private View view;
     private AbstractToolCard[] toolCards;
-    private AbstractObjectiveCard[] publicObjectiveCards;
 
     public Controller(Model model, View view) {
         this.model = model;
@@ -37,11 +36,11 @@ public class Controller {
             switch (cardIndex.get(i)) {
 
                 case 1:
-                    toolCards[i] = PinzaSgrossatrice.getThisIstance();
+                    toolCards[i] = PinzaSgrossatrice.getThisInstance();
                     break;
 
                 case 2:
-                    toolCards[i] = PennelloPerEglomise.getThisIstance();
+                    toolCards[i] = PennelloPerEglomise.getThisInstance();
                     break;
 
                 case 3:
@@ -106,23 +105,23 @@ public class Controller {
             switch(cardIndex.get(i)) {
 
                 case 1:
-                    model.getPlayer(i).setPrivateObjectiveCard(new SfumatureRosse().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureRosse().getThisInstance());
                     break;
 
                 case 2:
-                    model.getPlayer(i).setPrivateObjectiveCard(new SfumatureGialle().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureGialle().getThisInstance());
                     break;
 
                 case 3:
-                    model.getPlayer(i).setPrivateObjectiveCard(new SfumatureVerdi().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureVerdi().getThisInstance());
                     break;
 
                 case 4:
-                    model.getPlayer(i).setPrivateObjectiveCard(new SfumatureBlu().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureBlu().getThisInstance());
                     break;
 
                 case 5:
-                    model.getPlayer(i).setPrivateObjectiveCard(new SfumatureViola().getThisInstance());
+                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureViola().getThisInstance());
                     break;
 
             }
@@ -146,48 +145,49 @@ public class Controller {
             switch (cardIndex.get(i)) {
 
                 case 1:
-                    publicObjectiveCards[i] = new ColoriDiversiRiga().getInstance();
+                    model.getGameBoard().setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
                     break;
 
                 case 2:
-                    publicObjectiveCards[i] = new ColoriDiversiColonna().getInstance();
+                    model.getGameBoard().setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
                     break;
 
                 case 3:
-                    publicObjectiveCards[i] = new SfumatureDiverseRiga().getInstance();
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
 
                 case 4:
-                    publicObjectiveCards[i] = new SfumatureDiverseColonna().getInstance();
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
 
                 case 5:
-                    publicObjectiveCards[i] = new SfumatureChiare().getInstance();
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
                     break;
 
                 case 6:
-                    publicObjectiveCards[i] = new
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
                     break;
 
                 case 7:
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
                     break;
 
                 case 8:
+                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
                     break;
 
                 case 9:
+                    model.getGameBoard().setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
                     break;
 
                 case 10:
+                    model.getGameBoard().setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
                     break;
-
 
             }
 
         }
-
-
-
+        //messaggi
     }
 
     public void rollSingleDice(Dice dice) {

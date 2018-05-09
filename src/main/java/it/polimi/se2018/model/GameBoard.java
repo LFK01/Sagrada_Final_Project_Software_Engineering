@@ -1,8 +1,7 @@
 package it.polimi.se2018.model;
 //Luciano
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.tool_cards.AbstractToolCard;
-import it.polimi.se2018.model.tool_cards.InterfaceToolCard;
+import it.polimi.se2018.controller.tool_cards.*;
 
 import java.util.ArrayList;
 
@@ -64,6 +63,10 @@ public class GameBoard {
 
     public PointTrack getPointTrack() {
         return pointTrack;
+    }
+
+    public void setPublicObjectiveCards (AbstractObjectiveCard publicObjectiveCards, int index) {
+        this.publicObjectiveCards[index] = publicObjectiveCards;
     }
 
     public void setToolCards(AbstractToolCard[] toolCards) {

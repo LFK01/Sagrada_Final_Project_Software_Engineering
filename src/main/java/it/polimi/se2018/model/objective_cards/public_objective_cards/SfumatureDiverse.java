@@ -7,7 +7,7 @@ public class SfumatureDiverse extends AbstractObjectiveCard{
     private static SfumatureDiverse thisInstance;
 
     private SfumatureDiverse(){
-        super("SfumatureDiverse","Set di dadi di ogni  valore ovunque","5",false)
+        super("SfumatureDiverse","Set di dadi di ogni  valore ovunque","5",false);
     }
 
     public static SfumatureDiverse getThisInstance() {
@@ -17,7 +17,8 @@ public class SfumatureDiverse extends AbstractObjectiveCard{
         return thisInstance;
     }
 
-    public int countPoint(SchemaCard schemaCard){
+    @Override
+    public int countPoints(SchemaCard schemaCard){
         return 0;
 
     }

@@ -8,17 +8,17 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
  */
 public class SfumatureDiverseColonna extends AbstractObjectiveCard{
 
-    private static SfumatureDiverseColonna thisIstance;
+    private static SfumatureDiverseColonna thisInstance;
 
     private SfumatureDiverseColonna() {
         super("Sfumature diverse - Colonna", "Colonne senza sfumature ripetute", "4", false);
     }
 
-    public static SfumatureDiverseColonna getThisIstance() {
-        if(thisIstance==null){
-            thisIstance = new SfumatureDiverseColonna();
+    public static SfumatureDiverseColonna getThisInstance() {
+        if(thisInstance ==null){
+            thisInstance = new SfumatureDiverseColonna();
         }
-        return thisIstance;
+        return thisInstance;
     }
 
     @Override

@@ -1,13 +1,12 @@
 package it.polimi.se2018.model.events;
 
-import it.polimi.se2018.model.tool_cards.*;
+import it.polimi.se2018.controller.tool_cards.*;
 import it.polimi.se2018.model.Player;
 
 //Giorgia
 public class UseToolCardMove extends PlayerMove {
 
-    //i riferimenti alla View sono momentaneamente commentati in attesa dell'implementazione della classe corrispondente
-
+    //i riferimenti alla View sono momentaneamente commentati in attesa dell'implementazione della classe corrispondent
     private InterfaceToolCard toolCard;
 
     public UseToolCardMove(InterfaceToolCard toolCard, Player p/*, View v*/) {

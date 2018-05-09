@@ -5,17 +5,17 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
 public class ColoriDiversiColonna extends AbstractObjectiveCard {
 
-    public static ColoriDiversiColonna thisIstance;
+    public static ColoriDiversiColonna thisInstance;
 
     private ColoriDiversiColonna() {
         super("Colori diversi - Colonna", "Colonne senza colori ripetuti", "5", false);
     }
 
-    public static ColoriDiversiColonna getThisIstance(){
-        if(thisIstance==null){
-            thisIstance = new ColoriDiversiColonna();
+    public static ColoriDiversiColonna getThisInstance(){
+        if(thisInstance==null){
+            thisInstance = new ColoriDiversiColonna();
         }
-        return thisIstance;
+        return thisInstance;
     }
 
     @Override

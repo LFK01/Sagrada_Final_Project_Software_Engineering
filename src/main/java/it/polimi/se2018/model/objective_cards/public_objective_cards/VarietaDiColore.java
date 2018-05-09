@@ -2,8 +2,7 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.SchemaCard;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.objective_cards.InterfaceObjectiveCard;
-import it.polimi.se2018.model.tool_cards.InterfaceToolCard;
+import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
 //Giovanni
 
@@ -24,7 +23,7 @@ public class VarietaDiColore extends AbstractObjectiveCard{
 
     @Override
     public int countPoints(SchemaCard schemaCard){
-        return 0:
+        return 0;
     }
 }
 

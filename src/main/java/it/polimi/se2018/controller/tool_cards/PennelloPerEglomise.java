@@ -10,7 +10,7 @@ public class PennelloPerEglomise extends AbstractToolCard implements InterfaceTo
         super("Pennello per Eglomise", "", true);
     }
 
-    public static synchronized PennelloPerEglomise getThisIstance() {
+    public static synchronized PennelloPerEglomise getThisInstance() {
         if(thisIstance==null){
             thisIstance= new PennelloPerEglomise();
         }

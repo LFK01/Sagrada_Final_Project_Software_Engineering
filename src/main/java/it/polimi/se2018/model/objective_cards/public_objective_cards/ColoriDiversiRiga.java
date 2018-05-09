@@ -9,17 +9,17 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
  */
 public class ColoriDiversiRiga extends AbstractObjectiveCard {
 
-    private static ColoriDiversiRiga thisIstance;
+    private static ColoriDiversiRiga thisInstance;
 
     private ColoriDiversiRiga() {
         super("Colori diversi - Riga", "Righe senza colori ripetuti", "6", false);
     }
 
-    public static synchronized ColoriDiversiRiga getThisIstance(){
-        if(thisIstance==null){
-            thisIstance=new ColoriDiversiRiga();
+    public static synchronized ColoriDiversiRiga getThisInstance(){
+        if(thisInstance==null){
+            thisInstance=new ColoriDiversiRiga();
         }
-        return thisIstance;
+        return thisInstance;
     }
 
     @Override

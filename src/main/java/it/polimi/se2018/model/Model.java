@@ -25,8 +25,12 @@ public class Model extends Observable {
         return gameBoard;
     }
 
-    public int getPartecipants() {
+    public int getParticipants() {
         return participants.size();
+    }
+
+    public Player getPlayer(int index) {
+        return participants.get(index);
     }
 
     public void performDiceMove(int pos){

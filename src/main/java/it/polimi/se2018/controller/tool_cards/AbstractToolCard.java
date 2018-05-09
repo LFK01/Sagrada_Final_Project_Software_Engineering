@@ -1,5 +1,10 @@
 package it.polimi.se2018.controller.tool_cards;
-//Luciano
+
+import it.polimi.se2018.model.Player;
+
+/**
+ * @author Luciano
+ */
 abstract public class AbstractToolCard {
 
     protected String name;
@@ -23,4 +28,6 @@ abstract public class AbstractToolCard {
     public boolean isFirstUsage() {
         return firstUsage;
     }
+
+    public abstract void activateCard(Player player);
 }

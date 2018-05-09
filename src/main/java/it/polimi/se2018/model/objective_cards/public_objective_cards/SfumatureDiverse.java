@@ -2,7 +2,11 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.SchemaCard;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-//Giovanni
+
+/**
+ * @author Giovanni
+ */
+
 public class SfumatureDiverse extends AbstractObjectiveCard{
     private static SfumatureDiverse thisInstance;
 
@@ -10,7 +14,7 @@ public class SfumatureDiverse extends AbstractObjectiveCard{
         super("SfumatureDiverse","Set di dadi di ogni  valore ovunque","5",false);
     }
 
-    public static SfumatureDiverse getThisInstance() {
+    public synchronized static SfumatureDiverse getThisInstance() {
         if(thisInstance==null){
             thisInstance = new SfumatureDiverse();
         }
@@ -18,8 +22,7 @@ public class SfumatureDiverse extends AbstractObjectiveCard{
     }
 
     @Override
-    public int countPoints(SchemaCard schemaCard){
+    public int countPoints(SchemaCard schemaCard) {
         return 0;
-
     }
 }

@@ -14,8 +14,8 @@ public class SfumatureDiverseColonna extends AbstractObjectiveCard{
         super("Sfumature diverse - Colonna", "Colonne senza sfumature ripetute", "4", false);
     }
 
-    public static SfumatureDiverseColonna getThisInstance() {
-        if(thisInstance ==null){
+    public synchronized static SfumatureDiverseColonna getThisInstance() {
+        if(thisInstance==null){
             thisInstance = new SfumatureDiverseColonna();
         }
         return thisInstance;

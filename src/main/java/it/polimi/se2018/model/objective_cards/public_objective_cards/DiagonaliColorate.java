@@ -10,7 +10,7 @@ public class DiagonaliColorate extends AbstractObjectiveCard{
         super("DiagonaliColorate","Numero di dadi dello stesso colore diagonalmente adiacenti","0",false);
     }
 
-    public static DiagonaliColorate getThisInstance() {
+    public static synchronized DiagonaliColorate getThisInstance() {
         if(thisInstance == null){
             thisInstance= new DiagonaliColorate();
 

@@ -3,6 +3,10 @@ package it.polimi.se2018.model.objective_cards.private_objective_cards;
 import it.polimi.se2018.model.SchemaCard;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
+/**
+ * @author Luciano
+ */
+
 public class SfumatureRosse extends AbstractObjectiveCard {
 
     private static SfumatureRosse thisIstance;
@@ -11,7 +15,7 @@ public class SfumatureRosse extends AbstractObjectiveCard {
         super("Sfumature Rosse", "Somma dei valori su tutti i dadi rossi", "#", true);
     }
 
-    public static SfumatureRosse getThisIstance(){
+    public synchronized static SfumatureRosse getThisIstance(){
         if(thisIstance==null){
             thisIstance = new SfumatureRosse();
         }

@@ -1,11 +1,18 @@
 package it.polimi.se2018.view;
+import it.polimi.se2018.model.Dice;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.events.ChooseDiceMove;
 import it.polimi.se2018.model.events.MoveMessage;
-import it.polimi.se2018.model.events.PlayerMove;
-//Giovanni
 
-public abstract class View {
+import java.util.Observable;
+import java.util.Observer;
+
+/**
+ * @author giovanni
+ */
+
+public abstract class View extends Observable implements Observer{
     private Player player;
     private Model model;
 
@@ -16,9 +23,11 @@ public abstract class View {
     public Player getPlayer() {
         return player;
     }
-    public void handleDiceMove(int pos){
-        notify(new PlayerMove(player));
+
+    public void handleDiceMove(int diceIndex, int pos){
+        notifyObservers(new ChooseDiceMove(pos,diceIndex,player));
     }
+
     public void handleToolCardMove(int index){
 
 
@@ -35,6 +44,13 @@ public abstract class View {
 
 
     }
+    @Override
+    public void update(Observable model, Object message){
+        message = (MoveMessage) message;
+    }
+
+
+
 }
 
 

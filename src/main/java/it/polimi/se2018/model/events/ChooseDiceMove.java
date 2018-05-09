@@ -3,26 +3,32 @@ package it.polimi.se2018.model.events;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.Dice;
 
-//Giorgia
+/**
+ * @author Giorgia
+ */
 public class ChooseDiceMove extends PlayerMove {
 
-    //i riferimenti alla View sono momentaneamente commentati in attesa dell'implementazione della classe corrispondente
+    private int schemaPos;            //indice di posizione in cui posizionare il dado
+    private int row;                //dado da posizionare scelto nel controller
+    private int col;
 
-    private int pos;            //indice di posizione in cui posizionare il dado
-    private Dice dice;          //dado da posizionare scelto nel controller
-
-    public ChooseDiceMove(int pos, Dice dice, Player p/*, View v*/) {
-        super(p/*, v*/);
-        this.dice = dice;
-        this.pos = pos;
+    public ChooseDiceMove(int schemaPos, int row, int col, Player player) {
+        super(player);
+        this.row=row;
+        this.col=col;
+        this.schemaPos = schemaPos;
     }
 
     public int getPos() {
-      return pos;
+      return schemaPos;
     }
 
-    public Dice getDice() {
-        return dice;
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
     }
 
     @Override

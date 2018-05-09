@@ -6,6 +6,7 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 public class Player {
 
     private String name;
+    private boolean state;
     private int favorTokens;
     private AbstractObjectiveCard privateObjective;
     private SchemaCard schemaCard;
@@ -14,13 +15,19 @@ public class Player {
     //costruttore
     public Player(String name){
         this.name = name;
+        this.state = true;
         this.favorTokens=0;
         this.privateObjective = null;
         this.schemaCard = null;
         this.points=0;
+
     }
     //metodi getter
     public String getName(){ return name; }
+
+    public boolean getState(){
+        return this.state;
+    }
 
     public int getFavorTokens() {
         return favorTokens;

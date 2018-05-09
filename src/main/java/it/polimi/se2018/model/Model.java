@@ -4,6 +4,8 @@ package it.polimi.se2018.model;
  * @author Giovanni
  */
 
+import it.polimi.se2018.model.events.ChooseDiceMove;
+
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -12,7 +14,7 @@ public class Model extends Observable {
     private ArrayList<Player> participants;
     private int turn = 0;
 
-    public Model(GameBoard gameBoard,ArrayList<Player> partecipants) {
+    public Model(GameBoard gameBoard, ArrayList<Player> partecipants) {
         this.gameBoard = gameBoard;
         this.participants = partecipants;
     }
@@ -33,11 +35,13 @@ public class Model extends Observable {
         return participants.get(index);
     }
 
-    public void performDiceMove(int pos){
+    public void performDiceMove(ChooseDiceMove move) {
+
+
 
     }
 
-    public void permormToolCardMove(int i){
+    public void permormToolCardMove(int i) {
 
     }
 
@@ -45,38 +49,34 @@ public class Model extends Observable {
         return true; //implementazione provvisoria da modificare - Luciano
     }
 
-    public void updateTurn(){
+    public void updateTurn() {
 
     }
 
     /**
      * metodo per aggiungere un giocatore
+     *
      * @param name
      */
-    public void addPlayer(String name)/*throws PlayerNumberExceededException*/{
-        if(participants.size()<4){
+    public void addPlayer(String name)/*throws PlayerNumberExceededException*/ {
+        if (participants.size() < 4) {
             participants.add(new Player(name));
-        }
-        else{
+        } else {
             //throw PlayerNumberExceededException
         }
         setChanged();
     }
 
     /**
-     *
-     * @param player
-     * metodo per rimuovere giocatore dalla lista dei giocatori
+     * @param player metodo per rimuovere giocatore dalla lista dei giocatori
      */
-    public void removePlayer(Player player)/*throws SinglePlayerException*/{
-        if(participants.size()>1){
+    public void removePlayer(Player player)/*throws SinglePlayerException*/ {
+        if (participants.size() > 1) {
             participants.remove(participants.indexOf(player));
-        }
-        else{
+        } else {
             //throw SinglePlayerMatchException
         }
         setChanged();
     }
-
-
 }
+

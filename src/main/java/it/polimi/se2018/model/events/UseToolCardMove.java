@@ -7,19 +7,19 @@ import it.polimi.se2018.view.View;
 //Giorgia
 public class UseToolCardMove extends PlayerMove {
 
-    //i riferimenti alla View sono momentaneamente commentati in attesa dell'implementazione della classe corrispondente
-
     private AbstractToolCard toolCard;
-    private View view;
 
-    public UseToolCardMove(AbstractToolCard toolCard, Player p/*, View v*/) {
-        super(p/*, v)*/);
+
+    public UseToolCardMove(AbstractToolCard toolCard, Player p) {
+        super(p);
         this.toolCard = toolCard;
     }
 
     public AbstractToolCard getToolCard() {
         return toolCard;
     }
+
+
 
     @Override
     public boolean isDiceMove() {

@@ -6,6 +6,7 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.events.ChooseDiceMove;
 import it.polimi.se2018.model.events.ErrorMessage;
+import it.polimi.se2018.model.events.NoActionMove;
 import it.polimi.se2018.model.events.UseToolCardMove;
 
 import java.util.ArrayList;

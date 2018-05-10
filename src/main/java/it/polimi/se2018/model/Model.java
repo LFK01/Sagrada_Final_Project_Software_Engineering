@@ -8,6 +8,7 @@ import it.polimi.se2018.model.events.ChooseDiceMove;
 import it.polimi.se2018.model.events.ErrorMessage;
 import it.polimi.se2018.model.events.NoActionMove;
 import it.polimi.se2018.model.events.UseToolCardMove;
+import it.polimi.se2018.model.events.NoActionMove;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -44,7 +45,7 @@ public class Model extends Observable {
             notifyObservers(new ErrorMessage(move.getPlayer(), "Non &eacute; il tuo turno!"));
             return;
         }
-        if( move.getPlayer().getSchemaCard().getCell( move.getPos() ).isFull() ){
+        if( move.getPlayer().getSchemaCard().getCell( move.getRow(), move.getCol()).isFull() ){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La cella &eacute; gi&aacute; occupata"));
             return;
         }

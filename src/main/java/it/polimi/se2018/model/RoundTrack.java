@@ -11,9 +11,9 @@ public class RoundTrack {
         round = null;
     }
 
-    //currentRound rappresenta la lista di dadi "avanzati" al termine del turno
-    public void setRound(RoundDice currentRound, int currentTurn) {
-        this.round[turn].equals(currentRound);
+    //currentRoundDice rappresenta la lista di dadi "avanzati" al termine del turno
+    public void setRound(RoundDice currentRoundDice, int currentTurn) {
+        this.round[turn]=currentRoundDice;
         this.turn = currentTurn;
     }
 

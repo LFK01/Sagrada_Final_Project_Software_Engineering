@@ -4,9 +4,10 @@ package it.polimi.se2018.model;
  * @author Giovanni
  */
 
-import it.polimi.se2018.model.events.ChooseDiceMove;
-import it.polimi.se2018.model.events.ErrorMessage;
-import it.polimi.se2018.model.events.UseToolCardMove;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.messages.ErrorMessage;
+import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -16,13 +17,14 @@ public class Model extends Observable {
     private GameBoard gameBoard;
     private ArrayList<Player> participants;
     private int turn = 0;
+    private boolean firstRunInTurn; /*boolean variable to memorize if every player has already chosen at least a die*/
 
-    public Model(GameBoard gameBoard, ArrayList<Player> partecipants) {
+    public Model(GameBoard gameBoard, ArrayList<Player> participants) {
         this.gameBoard = gameBoard;
-        this.participants = partecipants;
+        this.participants = participants;
     }
 
-    public int getTurn() {
+    public int getTurnOfTheRound() {
         return turn;
     }
 
@@ -61,15 +63,10 @@ public class Model extends Observable {
     }
 
     public boolean isPlayerTurn(Player player) {
-        if(participants.indexOf(player)==turn){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return participants.indexOf(player) == turn;
     }
 
-    public boolean isValidPosition(ChooseDiceMove move){
+    private boolean isValidPosition(ChooseDiceMove move){
         /*
         |posY    posX->
         v    1  2  3  4  5
@@ -78,20 +75,54 @@ public class Model extends Observable {
         3     11 12 13 14 15
         4     16 17 18 19 20
          */
-        //move.getPlayer().getSchemaCard()
-        return false;
-    }
-    public void updateTurn(){
-        if (turn==4){
-            turn=1;
+        if(move.getPlayer().getSchemaCard().isEmpty()){
+            if(move.getRow()==0||move.getRow()==3){
+                return true;
+            }
+            if(move.getCol()==0||move.getCol()==4) {
+                return true;
+            }
         }
         else{
-            turn++;
+            return hasADiceNear();
+        }
+        return false;//da rimuovere
+    }
+
+    /**
+     * method to update the current player turn in a round
+     * once the first run is completed, the method proceeds to count backwards
+     */
+    public void updateTurnOfTheRound(){
+        if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()*2+1)){
+            /*one or more player has left the game*/
+
+        }
+        else{
+            /*every player is still in the game*/
+            if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()+1)){
+                /*first run of turns to choose a die*/
+                if(turn==participants.size()){
+                    turn=1;
+                }
+                else {
+                    turn++;
+                }
+            }
+            else{
+                /*second run of turns to choose a die*/
+                if(turn==1){
+                    turn=participants.size();
+                }
+                else{
+                    turn--;
+                }
+            }
         }
     }
 
     /**
-     * metodo per aggiungere un giocatore
+     * method to add a new player
      * @param name
      */
     public void addPlayer(String name)/*throws PlayerNumberExceededException*/{
@@ -118,6 +149,4 @@ public class Model extends Observable {
         }
         setChanged();
     }
-
-
 }

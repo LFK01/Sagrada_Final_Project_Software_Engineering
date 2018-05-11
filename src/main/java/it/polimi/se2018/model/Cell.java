@@ -16,10 +16,8 @@ public class Cell {
 
         this.cellColor = color;
 
-        if (color == null)                  //controllo per gestione delle celle senza restrizioni di colore
-            this.noColor = true;
-        else
-            this.noColor = false;
+        //controllo per gestione delle celle senza restrizioni di colore
+        this.noColor = ( color == null );
 
         this.value = value;
         this.placedDice = false;

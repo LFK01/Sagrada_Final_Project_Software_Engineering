@@ -1,10 +1,9 @@
 package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.tool_cards.*;
 import it.polimi.se2018.model.*;
-import it.polimi.se2018.model.events.ChooseDiceMove;
-import it.polimi.se2018.model.events.MoveMessage;
-import it.polimi.se2018.model.events.PlayerMove;
-import it.polimi.se2018.model.events.UseToolCardMove;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.PlayerMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.view.*;

@@ -202,15 +202,12 @@ public class Controller implements Observer {
 
         if (move.isDiceMove()) {
             //scelta e piazzamento dado
-            move = (ChooseDiceMove) move;
-
-            move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getPos()).setAssignedDice(((ChooseDiceMove) move).getDice());
+            move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurn()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
+            //sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile
         }
 
         else {
             //attivazione tool card
-            move = (UseToolCardMove) move;
-
             ((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
         }
 
@@ -219,15 +216,11 @@ public class Controller implements Observer {
     @Override
     public void update(Observable model, Object move) {
 
-        move = (PlayerMove) move;
-
         if(((PlayerMove) move).isDiceMove()) {
-            move = (ChooseDiceMove) move;
             performMove((ChooseDiceMove) move);
         }
 
         else if (!((PlayerMove) move).isDiceMove()) {
-            move = (UseToolCardMove) move;
             performMove((UseToolCardMove) move);
         }
 

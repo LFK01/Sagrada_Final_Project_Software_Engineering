@@ -5,12 +5,12 @@ public class SchemaCard {
 
     private String name1;
     private String name2;
-    private Cell cells[];
+    private Cell cells[][];
     private int difficultyLevel;
 
     public SchemaCard(int n) {          //costruttore con switch per creare le carte schema pescate dal giocatore
 
-        switch (n) {
+        /*switch (n) {
 
             case 1:         //Virtus
                 this.name1 = "Virtus";
@@ -144,7 +144,7 @@ public class SchemaCard {
 
                 //[...] resto delle carte
 
-        }
+        }*/
 
     }
 
@@ -156,8 +156,8 @@ public class SchemaCard {
         return name2;
     }
 
-    public Cell getCell(int index) {
-        return cells[index];
+    public Cell getCell(int row, int col) {
+        return cells[row][col];
     }
 
     public int getDifficultyLevel() {

@@ -7,19 +7,19 @@ import it.polimi.se2018.model.Player;
  */
 public class ChooseDiceMove extends PlayerMove {
 
-    private int schemaPos;            //indice di posizione in cui posizionare il dado
+    private int draftPoolPos;
     private int row;                //dado da posizionare scelto nel controller
     private int col;
 
-    public ChooseDiceMove(int schemaPos, int row, int col, Player player) {
+    public ChooseDiceMove(int draftPoolPos , int row, int col, Player player) {
         super(player);
+        this.draftPoolPos = draftPoolPos;
         this.row=row;
         this.col=col;
-        this.schemaPos = schemaPos;
     }
 
-    public int getPos() {
-      return schemaPos;
+    public int getDraftPoolPos() {
+        return draftPoolPos;
     }
 
     public int getRow() {

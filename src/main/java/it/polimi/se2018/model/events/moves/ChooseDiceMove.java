@@ -35,4 +35,9 @@ public class ChooseDiceMove extends PlayerMove {
         return true;
     }
 
+    @Override
+    public boolean isNoActionMove() {
+        return false;
+    }
+
 }

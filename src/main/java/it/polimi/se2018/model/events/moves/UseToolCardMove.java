@@ -25,4 +25,9 @@ public class UseToolCardMove extends PlayerMove {
         return false;
     }
 
+    @Override
+    public boolean isNoActionMove() {
+        return false;
+    }
+
 }

@@ -23,6 +23,10 @@ public class GameBoard {
         return roundTrack.getRound();
     }
 
+    public RoundTrack getRoundTrack() {
+        return roundTrack;
+    }
+
     public String getPublicObjectiveCardName(int index) {
         return publicObjectiveCards[index].getName();
     }

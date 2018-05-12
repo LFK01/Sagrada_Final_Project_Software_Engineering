@@ -21,5 +21,6 @@ public abstract class PlayerMove {
 
     //metodo astratto per distinguere la mossa eseguita
     public abstract boolean isDiceMove();
+    public abstract boolean isNoActionMove();
 
 }

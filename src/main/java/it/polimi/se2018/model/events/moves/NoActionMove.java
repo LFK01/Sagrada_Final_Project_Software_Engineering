@@ -12,4 +12,10 @@ public class NoActionMove extends PlayerMove {
     public boolean isDiceMove() {
         return false;
     }
+
+    @Override
+    public boolean isNoActionMove() {
+        return true;
+    }
+
 }

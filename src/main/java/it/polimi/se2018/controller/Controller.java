@@ -101,7 +101,7 @@ public class Controller implements Observer {
 
         Collections.shuffle(cardIndex);
 
-        for(int i = 0; i < model.getParticipants(); i++) {
+        for(int i = 0; i < model.getParticipantsNumber(); i++) {
 
             switch(cardIndex.get(i)) {
 

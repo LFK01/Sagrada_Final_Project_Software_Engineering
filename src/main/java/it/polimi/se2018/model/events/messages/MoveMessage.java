@@ -8,7 +8,7 @@ import it.polimi.se2018.model.Player;
  */
 public abstract class MoveMessage {
 
-    private Player player;
+    private final Player player;
 
     public MoveMessage(Player player) {
         this.player = player;

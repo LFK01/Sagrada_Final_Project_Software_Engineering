@@ -164,4 +164,12 @@ public class SchemaCard {
         return difficultyLevel;
     }
 
+    public boolean isEmpty() {
+        for(int i=0; i<cells.length; i++){
+            for(int j=0; j<cells[i].length; j++){
+                if (cells[i][j].isFull()) return false;
+            }
+        }
+        return true;
+    }
 }

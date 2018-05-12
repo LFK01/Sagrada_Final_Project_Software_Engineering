@@ -15,9 +15,7 @@ public class GameBoard {
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
-    public GameBoard(AbstractObjectiveCard[] publicObjectiveCards, ArrayList<AbstractObjectiveCard> privateObjectiveCards) {
-        this.publicObjectiveCards = publicObjectiveCards;
-        this.privateObjectiveCards = privateObjectiveCards;
+    public GameBoard() {
         this.diceBag = new DiceBag();
     }
 

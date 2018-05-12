@@ -1,8 +1,9 @@
 package it.polimi.se2018.view;
+import it.polimi.se2018.model.PointTrack;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.Player;
-import it.polimi.se2018.model.events.messages.MoveMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.messages.MoveMessage;
 
 import java.util.Observable;
 import java.util.Observer;

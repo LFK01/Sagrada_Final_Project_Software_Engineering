@@ -14,4 +14,7 @@ public class PointTrack {
         return minimumPointsSinglePlayer;
     }
 
+    public int[] getPlayerPoints() {
+        return playerPoints;
+    }
 }

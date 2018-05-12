@@ -1,7 +1,9 @@
 package it.polimi.se2018.model;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
-//Giovanni
+/**
+ * @author Giovanni
+ */
 
 public class Player {
 
@@ -57,4 +59,10 @@ public class Player {
     public void setPoints(int points) {
         this.points = points;
     }
+
+    public void decreaseFavorTokens(){
+        this.favorTokens = this.favorTokens - 1;
+    }
+
+
 }

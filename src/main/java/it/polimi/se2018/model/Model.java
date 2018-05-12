@@ -307,4 +307,27 @@ public class Model extends Observable {
         setChanged();
         notifyObservers();
     }
+
+    public void updateFavorTokens(int index,int playerPosition){
+        if(gameBoard.getToolCardState(index))
+        try{
+            participants.get(playerPosition).decreaseFavorTokens();
+        }
+        catch(NullPointerException e){ //eccezione temporanea, ne va messa una che avvisa de player.favortokens va a 0
+            e.fillInStackTrace();
+            //va generato un messaggio di errore
+        }
+        else {
+            try {
+                participants.get(playerPosition).decreaseFavorTokens();
+                participants.get(playerPosition).decreaseFavorTokens();
+            }
+            catch(NullPointerException e){      //eccezione temporanea come la precedente
+                e.fillInStackTrace();
+                //va generato un messaggio di errore
+            }
+        }
+
+    }
+
 }

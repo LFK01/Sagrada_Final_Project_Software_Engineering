@@ -51,6 +51,10 @@ public class GameBoard {
         return toolCards[index].getDescription();
     }
 
+    public boolean getToolCardState(int index){     //creato da giovanni per model
+        return toolCards[index].isFirstUsage();
+    }
+
     public String getPublicObjectiveCardPoints(int index) {
         return publicObjectiveCards[index].getPoints();
     }

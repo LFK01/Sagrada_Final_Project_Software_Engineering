@@ -1,5 +1,4 @@
 package it.polimi.se2018.model;
-//Giorgia
 
 public class SchemaCard {
 

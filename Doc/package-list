@@ -1,5 +1,6 @@
 it.polimi.se2018
 it.polimi.se2018.controller
+it.polimi.se2018.controller.exceptions
 it.polimi.se2018.controller.tool_cards
 it.polimi.se2018.model
 it.polimi.se2018.model.events.messages

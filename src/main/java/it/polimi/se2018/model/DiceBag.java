@@ -1,14 +1,22 @@
 package it.polimi.se2018.model;
-import java.util.*;
-//Giorgia
+import it.polimi.se2018.model.exceptions.InvalidColorException;
 
-//FUNZIONANTE
+import java.util.*;
+
+/**
+ * Dice bag class
+ * @author Giorgia
+ */
 
 public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colore a cui viene associato un valore randomico da 1 a 6
 
     private ArrayList<Dice> diceBag = new ArrayList<Dice>(90);
 
-    public DiceBag() {
+    /**
+     * Class constructor. It generates 18 dice per color assigning a random value to every single instance.
+     * It then shuffles the ArrayList in order to obtain 90 dice with random color and value.
+     */
+    public DiceBag() throws InvalidColorException {
 
         for(int i = 0; i < 18; i++)
             diceBag.add(new Dice(Color.RED, (int)Math.ceil(Math.random()*6)));
@@ -29,9 +37,24 @@ public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colo
 
     }
 
+    /**
+     * Getter that returns a specific dice
+     * @param index index of the chosen dice
+     * @return the chosen dice
+     */
     public Dice getDice(int index) {
 
         return diceBag.get(index);
+
+    }
+
+    /**
+     * DiceBag getter
+     * @return the diceBag instance
+     */
+    public ArrayList<Dice> getDiceBag() {
+
+        return diceBag;
 
     }
 

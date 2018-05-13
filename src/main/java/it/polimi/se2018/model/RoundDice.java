@@ -1,39 +1,67 @@
 package it.polimi.se2018.model;
 import java.util.*;
-//Giorgia
 
-//FUNZIONANTE
+/**
+ * Class to track the extracted dice on the table since the beginning of the round
+ * @author Giorgia
+ */
 
 public class RoundDice {
 
     private ArrayList<Dice> diceList = new ArrayList<>();
     private int participantsNumber;
-    private int turn;
+    private int round;
 
+    /**
+     * Class constructor. Given the dice bag, the participants number and the round number, it creates an ArrayList
+     * containing the extracted dice in that specific round.
+     * @param participants participants number, to calculate the exact number of dice to extract (participants*2+1)
+     * @param diceBag the match dice bag
+     * @param currentRound round number, to track the new set of dice to extract from the dice bag. The new set will
+     *                     go from (currentRound-1)*(participantsNumber*2+1) to
+     *                     currentRound*(participantsNumber*2+1).
+     */
     //si passano al costruttore il numero dei partecipanti e il numero del turno per calcolare i dadi da pescare, più il sacchetto
-    public RoundDice(int participants, DiceBag diceBag, int currentTurn) {
+    public RoundDice(int participants, DiceBag diceBag, int currentRound) {
 
         this.participantsNumber = participants;
 
-        for(int i = (currentTurn-1)*(participantsNumber*2+1) ; i < (currentTurn*(participantsNumber*2+1)); i++)
+        for(int i = (currentRound-1)*(participantsNumber*2+1) ; i < (currentRound*(participantsNumber*2+1)); i++)
                 diceList.add(diceBag.getDice(i));
 
-        this.turn = currentTurn;
+        this.round = currentRound;
 
     }
 
+    /**
+     * Round Dice getter
+     * @return the ArrayList of dice of the current round
+     */
     public ArrayList<Dice> getDiceList() {
         return diceList;
     }
 
-    public int getTurn() {
-        return turn;
+    /**
+     * Round getter
+     * @return the current round
+     */
+    public int getRound() {
+        return round;
     }
 
+    /**
+     * Dice getter
+     * @param index index of the chosen dice
+     * @return the chosen dice
+     */
     public Dice getDice(int index) {
         return diceList.get(index);
     }
 
+    /**
+     * Participants number getter
+     * @return the participants number
+     */
     public int getParticipantsNumber() {
         return participantsNumber;
     }

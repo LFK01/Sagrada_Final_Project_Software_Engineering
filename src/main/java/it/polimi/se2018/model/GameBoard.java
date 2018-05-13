@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 //Luciano
+import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.controller.tool_cards.*;
 
@@ -15,7 +16,7 @@ public class GameBoard {
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
-    public GameBoard() {
+    public GameBoard() throws InvalidColorException {
         this.diceBag = new DiceBag();
     }
 

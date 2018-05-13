@@ -20,7 +20,7 @@ public class GameBoard {
     }
 
     public RoundDice[] getRoundDice() {
-        return roundTrack.getRound();
+        return roundTrack.getRoundDice();
     }
 
     public RoundTrack getRoundTrack() {

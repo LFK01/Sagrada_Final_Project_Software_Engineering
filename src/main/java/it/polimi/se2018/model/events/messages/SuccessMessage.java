@@ -9,8 +9,11 @@ import it.polimi.se2018.model.events.messages.MoveMessage;
 
 public class SuccessMessage extends MoveMessage {
 
-    public SuccessMessage(Player player) {
+    private final String message;
+
+    public SuccessMessage(Player player, String message) {
         super(player);
+        this.message=message;
     }
 
     @Override

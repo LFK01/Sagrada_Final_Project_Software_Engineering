@@ -1,5 +1,14 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.events.messages.SuccessMessage;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.messages.ErrorMessage;
+import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
+
+import java.util.ArrayList;
+import java.util.Observable;
+
 /**
  * @author Giovanni
  * modified: - Luciano 12/05/2018;
@@ -10,15 +19,6 @@ package it.polimi.se2018.model;
  * Model verifies that the parameters are correct and notifies its observer with
  * a Message
  */
-
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.messages.ErrorMessage;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
-
-import java.util.ArrayList;
-import java.util.Observable;
-
 public class Model extends Observable {
 
     private GameBoard gameBoard;
@@ -31,30 +31,52 @@ public class Model extends Observable {
      * to participants.size()*/
 
     /**
-     *
+     * constructor method initializing turn and the participant list
      */
     public Model() {
         turn = 1;
-        participants = new ArrayList<Player>();
+        participants = new ArrayList<>();
     }
 
+    /**
+     *
+     * @return integer value turn of the Round
+     */
     public int getTurnOfTheRound() {
         return turn;
     }
 
+    /**
+     *
+     * @return gameBoard reference
+     */
     public GameBoard getGameBoard() {
         return gameBoard;
     }
 
+    /**
+     *
+     * @return integer value of the participants number
+     */
     public int getParticipantsNumber() {
         return participants.size();
     }
 
+    /**
+     *
+     * @param index
+     * @return reference of the player specified in the index parameter
+     */
     public Player getPlayer(int index) {
         return participants.get(index);
     }
 
+    /**
+     * method to check if a player can place a die in a position on his/her schema card
+     * @param move data structure containing all the information about the player move
+     */
     public void checkDiceMove(ChooseDiceMove move) {
+        Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(move.getDraftPoolPos());
         if (!isPlayerTurn(move.getPlayer())) {
             notifyObservers(new ErrorMessage(move.getPlayer(), "Non &eacute; il tuo turno!"));
             return;
@@ -63,19 +85,33 @@ public class Model extends Observable {
             notifyObservers(new ErrorMessage(move.getPlayer(), "La cella &eacute; gi&aacute; occupata"));
             return;
         }
-        if (!isValidPosition(move.getPlayer().getSchemaCard(), move.getRow(), move.getCol())) {
-
+        if (!isValidPosition(move.getPlayer().getSchemaCard(), move.getRow(), move.getCol(), chosenDie.getValue(), chosenDie.getDiceColor())) {
+            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
         }
+        //placeDie(int drafPoolPos, int col, int row, int);
     }
 
+    /**
+     * method to check if a player can activate a card specified on the parameter move
+     * @param move data structure containing all the information about the player move
+     */
     public void checkToolCardMove(UseToolCardMove move) {
 
     }
 
+    /**
+     * method to check if a player can skip a move
+     * @param move
+     */
     public void checkNoActionMove(NoActionMove move) {
 
     }
 
+    /**
+     * method to check if the turn of the player specified in the parameter field
+     * @param player
+     * @return true if is the turn of the current player
+     */
     public boolean isPlayerTurn(Player player) {
         return participants.indexOf(player) == turn;
     }
@@ -88,7 +124,7 @@ public class Model extends Observable {
      * @return boolean value true if the die position is correct
      * and the die can be placed on the SchemaCard
      */
-    private boolean isValidPosition(SchemaCard schemaCard, int row, int col) {
+    private boolean isValidPosition(SchemaCard schemaCard, int row, int col, int value, Color color) {
         /*
    posY, row|             posX, col->
             v             0  1  2  3  4
@@ -100,15 +136,40 @@ public class Model extends Observable {
          */
         if (schemaCard.isEmpty()) {
             if (row == 0 || row == 3) {
-                return true;
+                return (respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
             }
             if (col == 0 || col == 4) {
-                return true;
+                return (respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
             }
-        } else {
-            return hasADieNear(schemaCard, col, row);
         }
-        return false;
+        return (hasADieNear(schemaCard, col, row) && respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
+    }
+
+    /**
+     * method to check if a die respects value restrictions
+     * @param schemaCard to access schema's cells
+     * @param value integer value to see if a die respects value restriction
+     * @param row integer value to access the schema cell
+     * @param col integer value to access the schema cell
+     * @return returns true if the chosen value respects the cell's value restriction
+     */
+    private boolean respectsValueRestrictions(SchemaCard schemaCard, int value, int row , int col) {
+        if (schemaCard.getCell(row, col).getValue()==0){
+            return true;
+        }
+        return (schemaCard.getCell(row, col).getValue()==value);
+    }
+
+    /**
+     * method to check if a die respects color restrctions
+     * @param schemaCard
+     * @param color
+     * @param row
+     * @param col
+     * @return
+     */
+    private boolean respectsColorRestrictions(SchemaCard schemaCard, Color color, int row, int col) {
+        return (schemaCard.getCell(row, col).getCellColor()==color);
     }
 
     /**
@@ -250,10 +311,11 @@ public class Model extends Observable {
     public void updateTurnOfTheRound(){
         if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()*2+1)){
             /*one or more player has left the game*/
-
+            /*one or more player has refused to pick a die*/
         }
         else{
             /*every player is still in the game*/
+            /*every player has chosen a die*/
             if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()+1)){
                 /*first run of turns to choose a die*/
                 if(turn==participants.size()){
@@ -308,6 +370,11 @@ public class Model extends Observable {
         notifyObservers();
     }
 
+    /**
+     * mthod to modify the token numeber of a specific player
+     * @param index number of tokens to deduct
+     * @param playerPosition integer number to get the player reference
+     */
     public void updateFavorTokens(int index,int playerPosition){
         if(gameBoard.getToolCardState(index))
         try{

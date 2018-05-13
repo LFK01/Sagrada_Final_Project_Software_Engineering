@@ -35,7 +35,7 @@ public class ColoriDiversiRiga extends AbstractObjectiveCard {
     for(int i=0; i<3; i++){
         for(int j=0; j<4 && n==0; j++){
             for(int k=0; k<4 && n==0; k++){
-                if(schemaCard.getCell(i,j).getValue()==schemaCard.getCell(i,j).getValue()) n=1;
+                if(schemaCard.getCell(i,j).getAssignedDice().getDiceColor()==schemaCard.getCell(i,j).getAssignedDice().getDiceColor()) n=1;
             }
         }
         if(n==0){

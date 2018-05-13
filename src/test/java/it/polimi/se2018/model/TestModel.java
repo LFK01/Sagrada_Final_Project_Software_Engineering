@@ -1,6 +1,14 @@
 package it.polimi.se2018.model;
+/**
+ * @author Giovanni
+ * edited Luciano
+ */
 
+import it.polimi.se2018.controller.exceptions.NotEnoughFavorTokensException;
 import org.junit.Test;
+
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class TestModel {
@@ -50,4 +58,34 @@ public class TestModel {
     public void removePlayer() {
     }
 
+
+    @Test
+    public void testHasADieNear(){
+        GameBoard gameboard = null;
+        ArrayList<Player> partecipants = new ArrayList();
+        partecipants.add(new Player("luca"));
+        partecipants.add(new Player("marco"));
+
+        Model model = new Model();
+
+        try{
+            model.getGameBoard();
+        }
+        catch(NullPointerException e) {
+            fail();
+        }
+    }
+    @Test
+    public void testUpdateFavorTokens(){
+        Model model = null;
+        int a=0,b=0;
+        model.addPlayer("luca");
+        model.addPlayer("lucio");
+        try{
+            model.updateFavorTokens(a,b);
+        }
+        catch(NotEnoughFavorTokensException e){
+            System.err.println(e);
+        }
+    }
 }

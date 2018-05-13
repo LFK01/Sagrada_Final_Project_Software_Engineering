@@ -7,6 +7,8 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
+import static java.lang.Integer.parseInt;
+
 public class SfumatureDiverseRiga extends AbstractObjectiveCard {
 
     private static SfumatureDiverseRiga thisInstance;
@@ -22,8 +24,25 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
         return thisInstance;
     }
 
+    /**
+     * @param schemaCard
+     * @return update count points
+     */
     @Override
     public int countPoints(SchemaCard schemaCard){
-        return 0;
+        int n=0;        //variabile che serve per il controllo
+        int points=0;
+        for(int i=0; i<3; i++){
+            for(int j=0; j<4 && n==0; j++){
+                for(int k=0; k<4 && n==0; k++){
+                    if(schemaCard.getCell(i,j).getAssignedDice().getValue()==schemaCard.getCell(i,j).getAssignedDice().getValue()) n=1;
+                }
+            }
+            if(n==0){
+                points = points + parseInt(ColoriDiversiRiga.getThisInstance().getPoints());
+            }
+            n=0;
+        }
+        return points;
     }
 }

@@ -3,7 +3,10 @@ package it.polimi.se2018.model.events.moves;
 import it.polimi.se2018.controller.tool_cards.AbstractToolCard;
 import it.polimi.se2018.model.Player;
 
-//Giorgia
+/**
+ * @author giorgia
+ */
+
 public class UseToolCardMove extends PlayerMove {
 
     private AbstractToolCard toolCard;

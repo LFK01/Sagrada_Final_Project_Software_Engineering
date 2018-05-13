@@ -1,6 +1,8 @@
 package it.polimi.se2018.model;
 
-//Giovanni
+/**
+ * @author giovanni
+ */
 public class PointTrack {
     private int[] playerPoints;
     private int minimumPointsSinglePlayer;

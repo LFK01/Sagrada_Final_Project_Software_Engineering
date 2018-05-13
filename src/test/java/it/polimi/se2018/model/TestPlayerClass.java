@@ -1,9 +1,11 @@
-package it.polimi.se2018;
+package it.polimi.se2018.model;
 import static org.junit.Assert.*;
 import it.polimi.se2018.model.Player;
 import org.junit.Test;
 
-
+/**
+ * @author giovanni
+ */
 
 
 public class TestPlayerClass {

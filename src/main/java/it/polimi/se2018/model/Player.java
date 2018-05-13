@@ -60,6 +60,9 @@ public class Player {
         this.points = points;
     }
 
+    /**
+     *method to decrease player's favor Tokens, also check if a player can use that card
+     */
     public void decreaseFavorTokens(){
         this.favorTokens = this.favorTokens - 1;
     }

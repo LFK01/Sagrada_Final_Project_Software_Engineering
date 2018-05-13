@@ -1,11 +1,13 @@
-package it.polimi.se2018;
+package it.polimi.se2018.model;
 import static org.junit.Assert.*;
 
 import com.sun.javafx.scene.paint.GradientUtils;
 import it.polimi.se2018.model.PointTrack;
 import org.junit.Test;
 
-
+/**
+ * @author giovanni
+ */
 
 public class TestPointTrack {
     @Test

@@ -16,14 +16,30 @@ public abstract class View extends Observable implements Observer{
     private Player player;
     private Model model;
 
+    /**
+     * Initializes view connected with player and model
+     * @param player
+     * @param model
+     */
     public View(Player player, Model model){
         this.player= player;
         this.model = model;
     }
+
+    /**
+     *
+     * @return a referece to player
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     *method that throws a message to controller with the description of the move
+     * @param draftPoolPos  a class that contains dice in the game
+     * @param row   it serves for the position of the die
+     * @param col   it serves for the position of the die
+     */
     public void handleDiceMove(int draftPoolPos ,int row,int col){
         notifyObservers(new ChooseDiceMove(draftPoolPos,row,col,player));
     }

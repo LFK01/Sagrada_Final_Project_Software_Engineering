@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.exceptions.NotEnoughFavorTokensException;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
@@ -11,7 +12,7 @@ import java.util.Observable;
 
 /**
  * @author Giovanni
- * modified: - Luciano 12/05/2018;
+ * edited  Luciano 12/05/2018;
  *
  * this class is supposed to contain all the data about a game and all the
  * controls to check if any move is correct. The data is accessible through
@@ -305,6 +306,7 @@ public class Model extends Observable {
     }
 
     /**
+     *
      * method to update the current player turn in a round
      * once the first run is completed, the method proceeds to count backwards
      */
@@ -371,30 +373,27 @@ public class Model extends Observable {
     }
 
     /**
-     * mthod to modify the token numeber of a specific player
+     * method to modify the token numeber of a specific player
      * @param index number of tokens to deduct
      * @param playerPosition integer number to get the player reference
      */
-    public void updateFavorTokens(int index,int playerPosition){
-        if(gameBoard.getToolCardState(index))
-        try{
-            participants.get(playerPosition).decreaseFavorTokens();
-        }
-        catch(NullPointerException e){ //eccezione temporanea, ne va messa una che avvisa de player.favortokens va a 0
-            e.fillInStackTrace();
-            //va generato un messaggio di errore
+    public  void  updateFavorTokens(int index,int playerPosition) throws NotEnoughFavorTokensException {
+        if (participants.get(playerPosition).getFavorTokens()==0)
+            throw new NotEnoughFavorTokensException();
+
+        if(gameBoard.getToolCardState(index)) {
+                participants.get(playerPosition).decreaseFavorTokens();
         }
         else {
-            try {
+            if(participants.get(playerPosition).getFavorTokens()==1) throw new NotEnoughFavorTokensException();
+            else {
                 participants.get(playerPosition).decreaseFavorTokens();
                 participants.get(playerPosition).decreaseFavorTokens();
-            }
-            catch(NullPointerException e){      //eccezione temporanea come la precedente
-                e.fillInStackTrace();
-                //va generato un messaggio di errore
             }
         }
 
     }
+
+
 
 }

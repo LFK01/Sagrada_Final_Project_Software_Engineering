@@ -16,6 +16,7 @@ public abstract class AbstractObjectiveCard {
         this.name = name;
         this.description = description;
         this.points = points;
+        this.isPrivate=isPrivate;
     }
 
     public String getPoints() {
@@ -34,5 +35,5 @@ public abstract class AbstractObjectiveCard {
         return isPrivate;
     }
 
-    abstract public int countPoints(SchemaCard schemaCard);
+    public abstract int countPoints(SchemaCard schemaCard);
 }

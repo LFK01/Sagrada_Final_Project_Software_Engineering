@@ -1,4 +1,5 @@
 package it.polimi.se2018.model;
+import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.ColoriDiversiRiga;
 import org.junit.Test;
 import static it.polimi.se2018.model.Color.RED;
@@ -23,7 +24,16 @@ public class TestColoriDiversiRiga {
 
         for(int i=0;i<3;i++){
             for(int j=0;j<4;j++){
-                Dice dice1 = new Dice(color,val);
+                Dice dice1 = null;
+                boolean erroreAssegnamento = true;
+                while(erroreAssegnamento){
+                    try{
+                        dice1 = new Dice(color,val);
+                    }
+                    catch(InvalidColorException e){
+                        erroreAssegnamento = true;
+                    }
+                }
                 schemaCard.getCell(i,j).setAssignedDice(dice1);
             }
         }

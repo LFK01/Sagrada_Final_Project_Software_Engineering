@@ -5,7 +5,7 @@ import it.polimi.se2018.model.Player;
 /**
  * @author Luciano
  */
-abstract public class AbstractToolCard {
+public abstract class AbstractToolCard {
 
     protected String name;
     protected String description;

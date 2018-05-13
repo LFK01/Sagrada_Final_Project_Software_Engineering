@@ -6,6 +6,7 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.exceptions.NoColorException;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -170,7 +171,12 @@ public class Model extends Observable {
      * @return
      */
     private boolean respectsColorRestrictions(SchemaCard schemaCard, Color color, int row, int col) {
-        return (schemaCard.getCell(row, col).getCellColor()==color);
+        try{
+            return (schemaCard.getCell(row, col).getCellColor()==color);
+        }
+        catch(NoColorException e){
+            return true;
+        }
     }
 
     /**

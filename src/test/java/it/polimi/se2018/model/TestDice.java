@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  * @author Giorgia
  */
 
-public class DiceTest {
+public class TestDice {
 
     /**
      * Constructor test. It checks that:

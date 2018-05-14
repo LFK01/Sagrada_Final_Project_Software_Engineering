@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  * @author Giorgia
  */
 
-public class DiceBagTest {
+public class TestDiceBag {
 
     /**
      * Tests the DiceBag constructor. It checks that the object is actually created and that there are 90 dice

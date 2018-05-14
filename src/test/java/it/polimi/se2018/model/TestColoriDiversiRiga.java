@@ -1,4 +1,6 @@
 package it.polimi.se2018.model;
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
+import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.ColoriDiversiRiga;
 import org.junit.Test;
@@ -34,7 +36,15 @@ public class TestColoriDiversiRiga {
                         erroreAssegnamento = true;
                     }
                 }
-                schemaCard.getCell(i,j).setAssignedDice(dice1);
+                try{
+                    schemaCard.getCell(i,j).setAssignedDice(dice1);
+                }
+                catch(InvalidCellPositionException e){
+
+                }
+                catch(FullCellException e){
+                    
+                }
             }
         }
         assertEquals(3,schemaCard.getCell(a,b).getValue());

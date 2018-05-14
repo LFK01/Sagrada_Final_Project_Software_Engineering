@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
+import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
 
 /**
@@ -77,11 +79,36 @@ public class Cell {
     }
 
     /**
-     * Places a die on the cell
-     * @param dice
+     * Places a die on the cell, throws an Excpetion if the die doesn't respect
+     * any of the placing restrictions
+     * @param dice Die to be placed
+     * @throws InvalidCellPositionException
      */
-    public void setAssignedDice(Dice dice) {
-        this.assignedDice = dice;
+    public void setAssignedDice(Dice dice) throws InvalidCellPositionException, FullCellException{
+        if(isFull()){
+            throw (new FullCellException("Cella piena!"));
+        }
+        if(noColor){
+            if(this.value==0){
+                this.assignedDice = dice;
+            }
+            else{
+                if(dice.getValue()!=this.value){
+                    throw new InvalidCellPositionException();
+                }
+                else{
+                    this.assignedDice = dice;
+                }
+            }
+        }
+        else{
+            if(dice.getDiceColor()!=this.cellColor){
+                throw new InvalidCellPositionException();
+            }
+            else{
+                this.assignedDice = dice;
+            }
+        }
     }
 
     /**

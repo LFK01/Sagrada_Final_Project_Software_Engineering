@@ -1,5 +1,8 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
+import it.polimi.se2018.model.exceptions.FullCellException;
+
 /**
  * Schema Cards class
  * @author Giorgia
@@ -180,7 +183,7 @@ public class SchemaCard {
      * @param col nomber of col
      * @return cells return reference to cell
      */
-        public Cell getCell ( int row, int col){
+    public Cell getCell ( int row, int col){
             return cells[row][col];
         }
 
@@ -211,6 +214,251 @@ public class SchemaCard {
                 }
             }
             return true;
+    }
+    
+    public void placeDie(Dice die, int row, int col) throws InvalidCellPositionException, FullCellException{
+        if (!hasADieNear(col, row)) throw (new InvalidCellPositionException());
+        this.getCell(row, col).setAssignedDice(die);
+    }
+
+    /**
+     * method to check if there's a full cell that has at least one corner
+     * in common with the cell of the considered die
+     *
+     * @return true if there's die in any die in the cells near the one
+     * of the considered die
+     */
+    private boolean hasADieNear(int row, int col) {
+        if (col == 0) {
+            if (row == 0) {
+                /*checks upper left corner*/
+                return checkUpperLeftCorner(col, row);
+            }
+            if (row == 3) {
+                /*checks down left corner*/
+                return checkDownLeftCorner(col, row);
+            }
+            /*check left column*/
+            return checkLeftColumn(col, row);
+        }
+        if (col == 4) {
+            if (row == 0) {
+                /*check upper right corner*/
+                return checkUpperRightCorner(col, row);
+            }
+            if (row == 3) {
+                /*check down right corner*/
+                return checkDownRightCorner(col, row);
+            }
+            /*checks right column*/
+            return checkRightColumn(col, row);
+        }
+        if (row == 0) {
+            /*check upper row*/
+            return checkUpperRow(col, row);
+        }
+        if (row == 3) {
+            /*checks down row*/
+            return checkDownRow(col, row);
+        }
+        /*checks middle cells*/
+        return checkMiddelCells(col, row);
+    }
+
+    /**
+     * Method to check if a die on the left column has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkUpperLeftCorner(int row, int col){
+        if (this.getCell(row, col - 1).isFull()) {
+            return true;
+        }
+        if (this.getCell(row + 1, col - 1).isFull()) {
+            return true;
+        }
+
+        if (this.getCell(row + 1, col).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the left column has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkDownLeftCorner(int row, int col){
+        if (this.getCell(row - 1, col).isFull()) {
+            return true;
+        }
+        if (this.getCell(row - 1, col + 1).isFull()) {
+            return true;
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the left column has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkLeftColumn(int row, int col){
+        for (int i = 0; i < 3; i++) {
+            if (this.getCell(row - 1 + i, col + 1).isFull()) {
+                return true;
+            }
+        }
+        if (this.getCell(row - 1, col).isFull()) {
+            return true;
+        }
+        if (this.getCell(row + 1, col).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the upper right corner has any cell filled with a die
+     * with at least a corner in common with itself
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkUpperRightCorner(int row, int col){
+        if (this.getCell(row, col - 1).isFull()) {
+            return true;
+        }
+        if (this.getCell(row + 1, col - 1).isFull()) {
+            return true;
+        }
+
+        if (this.getCell(row + 1, col).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the down right corner has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkDownRightCorner(int row, int col){
+        if (this.getCell(row - 1, col).isFull()) {
+            return true;
+        }
+        if (this.getCell(row - 1, col - 1).isFull()) {
+            return true;
+        }
+
+        if (this.getCell(row, col - 1).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the right column has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkRightColumn(int row, int col){
+        for (int i = 0; i < 3; i++) {
+            if (this.getCell(row - 1 + i, col - 1).isFull()) {
+                return true;
+            }
+        }
+        if (this.getCell(row - 1, col).isFull()) {
+            return true;
+        }
+        if (this.getCell(row + 1, col).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the upper row has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkUpperRow(int row, int col){
+        for (int i = 0; i < 3; i++) {
+            if (this.getCell(row + 1, col - 1 + i).isFull()) {
+                return true;
+            }
+        }
+        if (this.getCell(row, col - 1).isFull()) {
+            return true;
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the down row has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkDownRow(int row, int col){
+        for (int i = 0; i < 3; i++) {
+            if (this.getCell(row - 1, col - 1 + i).isFull()) {
+                return true;
+            }
+        }
+        if (this.getCell(row, col - 1).isFull()) {
+            return true;
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Method to check if a die on the middel cells has any cell filled with a die
+     * with at least a corner in common
+     * @param col
+     * @param row
+     * @return
+     */
+    private boolean checkMiddelCells(int row, int col){
+        for(int i=0; i<3; i++){
+            if (this.getCell(row-1, col-1+i).isFull()) {
+                return true;
+            }
+            if (this.getCell(row+1, col-1+i).isFull()) {
+                return true;
+            }
+        }
+        if (this.getCell(row-1, col).isFull()) {
+            return true;
+        }
+        if (this.getCell(row+1, col).isFull()) {
+            return true;
+        }
+        return false;
     }
 }
 

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
  * @author Giorgia
  */
 
-public class RoundDiceTest {
+public class TestRoundDice {
 
 
     /**

@@ -1,26 +1,31 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.NotEnoughFavorTokensException;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
 
 import java.util.ArrayList;
 import java.util.Observable;
 
 /**
- * @author Giovanni
- * edited  Luciano 12/05/2018;
- *
- * this class is supposed to contain all the data about a game and all the
+ * This class is supposed to contain all the data about a game and all the
  * controls to check if any move is correct. The data is accessible through
  * getter methods. Whenever a modifier method is activated by an external class
  * Model verifies that the parameters are correct and notifies its observer with
  * a Message
+ *
+ * @author Giovanni
+ * edited  Luciano 12/05/2018;
+ *
  */
+
+//edited Luciano 14/05/2018;
 public class Model extends Observable {
 
     private GameBoard gameBoard;
@@ -33,7 +38,7 @@ public class Model extends Observable {
      * to participants.size()*/
 
     /**
-     * constructor method initializing turn and the participant list
+     * Constructor method initializing turn and the participant list
      */
     public Model() {
         turn = 1;
@@ -41,7 +46,7 @@ public class Model extends Observable {
     }
 
     /**
-     *
+     * Getter for integer value of turn of the Round
      * @return integer value turn of the Round
      */
     public int getTurnOfTheRound() {
@@ -78,19 +83,30 @@ public class Model extends Observable {
      * @param move data structure containing all the information about the player move
      */
     public void checkDiceMove(ChooseDiceMove move) {
-        Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(move.getDraftPoolPos());
+        int currentRound = gameBoard.getRoundTrack().getCurrentRound();
+        Dice chosenDie = gameBoard.getRoundDice()[currentRound].getDice(move.getDraftPoolPos());
         if (!isPlayerTurn(move.getPlayer())) {
             notifyObservers(new ErrorMessage(move.getPlayer(), "Non &eacute; il tuo turno!"));
             return;
         }
-        if (move.getPlayer().getSchemaCard().getCell(move.getRow(), move.getCol()).isFull()) {
-            notifyObservers(new ErrorMessage(move.getPlayer(), "La cella &eacute; gi&aacute; occupata"));
+        try{
+            placeDie(move.getPlayer().getSchemaCard(), move.getCol(), move.getRow(), move.getDraftPoolPos());
+            removeDieFromDrafPoll(move.getDraftPoolPos());
             return;
         }
-        if (!isValidPosition(move.getPlayer().getSchemaCard(), move.getRow(), move.getCol(), chosenDie.getValue(), chosenDie.getDiceColor())) {
-            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
+        catch(FullCellException e){
+            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione &eacute; gi&aacute; occupata"));
+            return;
         }
-        //placeDie(int drafPoolPos, int col, int row, int);
+        catch(InvalidCellPositionException e){
+            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
+            return;
+        }
+    }
+
+    private void removeDieFromDrafPoll(int draftPoolPos) {
+        int currentRound = gameBoard.getRoundTrack().getCurrentRound();
+        gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
     }
 
     /**
@@ -118,197 +134,9 @@ public class Model extends Observable {
         return participants.indexOf(player) == turn;
     }
 
-    /**
-     * method to check if player has chosen a valid position
-     * @param schemaCard to see if its empty
-     * @param col to know die position
-     * @param row to know die position
-     * @return boolean value true if the die position is correct
-     * and the die can be placed on the SchemaCard
-     */
-    private boolean isValidPosition(SchemaCard schemaCard, int row, int col, int value, Color color) {
-        /*
-   posY, row|             posX, col->
-            v             0  1  2  3  4
-
-            0             1  2  3  4  5
-            1             6  7  8  9  10
-            2             11 12 13 14 15
-            3             16 17 18 19 20
-         */
-        if (schemaCard.isEmpty()) {
-            if (row == 0 || row == 3) {
-                return (respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
-            }
-            if (col == 0 || col == 4) {
-                return (respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
-            }
-        }
-        return (hasADieNear(schemaCard, col, row) && respectsColorRestrictions(schemaCard, color, row, col) && respectsValueRestrictions(schemaCard, value, row, col));
-    }
-
-    /**
-     * method to check if a die respects value restrictions
-     * @param schemaCard to access schema's cells
-     * @param value integer value to see if a die respects value restriction
-     * @param row integer value to access the schema cell
-     * @param col integer value to access the schema cell
-     * @return returns true if the chosen value respects the cell's value restriction
-     */
-    private boolean respectsValueRestrictions(SchemaCard schemaCard, int value, int row , int col) {
-        if (schemaCard.getCell(row, col).getValue()==0){
-            return true;
-        }
-        return (schemaCard.getCell(row, col).getValue()==value);
-    }
-
-    /**
-     * method to check if a die respects color restrctions
-     * @param schemaCard
-     * @param color
-     * @param row
-     * @param col
-     * @return
-     */
-    private boolean respectsColorRestrictions(SchemaCard schemaCard, Color color, int row, int col) {
-        try{
-            return (schemaCard.getCell(row, col).getCellColor()==color);
-        }
-        catch(NoColorException e){
-            return true;
-        }
-    }
-
-    /**
-     * method to check if there's a full cell that has at least one corner
-     * in common with the cell of the considered die
-     *
-     * @return true if there's die in any die in the cells near the one
-     * of the considered die
-     */
-    private boolean hasADieNear(SchemaCard schemaCard, int row, int col) {
-        if (col == 0) {
-            if (row == 0) {
-                if (schemaCard.getCell(row, col + 1).isFull()) {
-                    return true;
-                }
-                if (schemaCard.getCell(row + 1, col + 1).isFull()) {
-                    return true;
-                }
-
-                if (schemaCard.getCell(row + 1, col).isFull()) {
-                    return true;
-                }
-                return false;
-            }
-            if (row == 3) {
-                if (schemaCard.getCell(row - 1, col).isFull()) {
-                    return true;
-                }
-                if (schemaCard.getCell(row - 1, col + 1).isFull()) {
-                    return true;
-                }
-                if (schemaCard.getCell(row, col + 1).isFull()) {
-                    return true;
-                }
-                return false;
-            }
-            for (int i = 0; i < 3; i++) {
-                if (schemaCard.getCell(row - 1 + i, col + 1).isFull()) {
-                    return true;
-                }
-            }
-            if (schemaCard.getCell(row - 1, col).isFull()) {
-                return true;
-            }
-            if (schemaCard.getCell(row + 1, col).isFull()) {
-                return true;
-            }
-            return false;
-        }
-        if (col == 4) {
-            if (row == 0) {
-                if (schemaCard.getCell(row, col - 1).isFull()) {
-                    return true;
-                }
-                if (schemaCard.getCell(row + 1, col - 1).isFull()) {
-                    return true;
-                }
-
-                if (schemaCard.getCell(row + 1, col).isFull()) {
-                    return true;
-                }
-                return false;
-            }
-            if (row == 3) {
-                if (schemaCard.getCell(row - 1, col).isFull()) {
-                    return true;
-                }
-                if (schemaCard.getCell(row - 1, col - 1).isFull()) {
-                    return true;
-                }
-
-                if (schemaCard.getCell(row, col - 1).isFull()) {
-                    return true;
-                }
-                return false;
-            }
-            for (int i = 0; i < 3; i++) {
-                if (schemaCard.getCell(row - 1 + i, col - 1).isFull()) {
-                    return true;
-                }
-            }
-            if (schemaCard.getCell(row - 1, col).isFull()) {
-                return true;
-            }
-            if (schemaCard.getCell(row + 1, col).isFull()) {
-                return true;
-            }
-            return false;
-        }
-        if (row == 0) {
-            for (int i = 0; i < 3; i++) {
-                if (schemaCard.getCell(row + 1, col - 1 + i).isFull()) {
-                    return true;
-                }
-            }
-            if (schemaCard.getCell(row, col - 1).isFull()) {
-                return true;
-            }
-            if (schemaCard.getCell(row, col + 1).isFull()) {
-                return true;
-            }
-            return false;
-        }
-        if (row == 3) {
-            for (int i = 0; i < 3; i++) {
-                if (schemaCard.getCell(row - 1, col - 1 + i).isFull()) {
-                    return true;
-                }
-            }
-            if (schemaCard.getCell(row, col - 1).isFull()) {
-                return true;
-            }
-            if (schemaCard.getCell(row, col + 1).isFull()) {
-                return true;
-            }
-            return false;
-        }
-        for(int i=0; i<3; i++){
-            if (schemaCard.getCell(row-1, col-1+i).isFull()) {
-                return true;
-            }
-            if (schemaCard.getCell(row+1, col-1+i).isFull()) {
-                return true;
-            }
-        }
-        if (schemaCard.getCell(row-1, col).isFull()) {
-            return true;
-        }
-        if (schemaCard.getCell(row+1, col).isFull()) {
-            return true;
-        }
-        return false;
+    private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws InvalidCellPositionException, FullCellException, IndexOutOfBoundsException{
+        Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
+        schemaCard.placeDie(chosenDie, row, col);
     }
 
     /**

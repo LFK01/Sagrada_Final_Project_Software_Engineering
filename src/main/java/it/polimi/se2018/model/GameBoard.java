@@ -1,10 +1,15 @@
 package it.polimi.se2018.model;
-//Luciano
+
 import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.controller.tool_cards.*;
-
 import java.util.ArrayList;
+
+/**
+ * Class containing all the gaming strumentation and the logic to handle
+ * the modification
+ * @author Luciano
+ */
 
 public class GameBoard {
 

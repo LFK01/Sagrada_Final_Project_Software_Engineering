@@ -4,6 +4,8 @@ import java.util.*;
 /**
  * Class to track the extracted dice on the table since the beginning of the round
  * @author Giorgia
+ *
+ * edited Luciano 14/05/2018
  */
 
 public class RoundDice {
@@ -66,4 +68,12 @@ public class RoundDice {
         return participantsNumber;
     }
 
+    /**
+     * Removes a die from the draft pool after it is placed on a Schema Card
+     * @param index indicates the die number that has to be extracted
+     */
+    public void removeDiceFromDraftPool(int index){
+        Dice dieToRemove = diceList.get(index);
+        diceList.remove(dieToRemove);
+    }
 }

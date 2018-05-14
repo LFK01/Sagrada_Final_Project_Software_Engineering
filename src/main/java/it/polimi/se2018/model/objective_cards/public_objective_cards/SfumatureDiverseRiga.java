@@ -32,10 +32,10 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
     public int countPoints(SchemaCard schemaCard){
         int n=0;        //variabile che serve per il controllo
         int points=0;
-        for(int i=0; i<3; i++){
-            for(int j=0; j<4 && n==0; j++){
+        for(int i=0; i<4; i++){
+            for(int j=0; j<5 && n==0; j++){
                 for(int k=0; k<4 && n==0; k++){
-                    if(schemaCard.getCell(i,j).getAssignedDice().getValue()==schemaCard.getCell(i,j).getAssignedDice().getValue()) n=1;
+                    if(schemaCard.getCell(i,j).getAssignedDice().getValue()==schemaCard.getCell(i,k).getAssignedDice().getValue()) n=1;
                 }
             }
             if(n==0){

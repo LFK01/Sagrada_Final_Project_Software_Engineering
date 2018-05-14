@@ -31,8 +31,8 @@ public class SfumatureGialle extends AbstractObjectiveCard {
     public int countPoints(SchemaCard schemaCard) {
 
         int sum=0;
-        for(int i=0; i<3; i++){
-            for(int j=0; j<4 ; j++){
+        for(int i=0; i<4; i++){
+            for(int j=0; j<5 ; j++){
                 if(schemaCard.getCell(i,j).getAssignedDice().getDiceColor().equals(Color.YELLOW))
                     sum = sum + schemaCard.getCell(i,j).getAssignedDice().getValue();
             }

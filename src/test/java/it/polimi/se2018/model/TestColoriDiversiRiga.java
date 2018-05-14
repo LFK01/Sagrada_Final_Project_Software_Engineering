@@ -16,7 +16,7 @@ public class TestColoriDiversiRiga {
      *test to check the pointcount indicated in the class name
      */
 
-    /*public void testCountsPoints(){
+   /* public void testCountsPoints(){       //per poterlo testare bisogna riempire tutto uno schemaCard
         int n=1;
         int val=4;
         int a=0,b=0;

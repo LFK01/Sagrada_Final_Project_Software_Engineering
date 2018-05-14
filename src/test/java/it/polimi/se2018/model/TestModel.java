@@ -52,10 +52,30 @@ public class TestModel {
 
     @Test
     public void addPlayer() {
+        Model model = new Model();
+        try{
+            model.addPlayer("luca");
+            model.addPlayer("lucio");
+        }
+        catch(NullPointerException e){
+            fail();
+        }
+        assertEquals(0,model.getPlayer(1).getFavorTokens());
     }
 
     @Test
     public void removePlayer() {
+        Model model = new Model();
+        model.addPlayer("luca");
+        model.addPlayer("lucio");
+        try{
+            model.removePlayer(model.getPlayer(0));
+        }
+        catch (NullPointerException e){
+            fail();
+        }
+        assertNotEquals(null,model.getPlayer(0).getName());
+
     }
 
 
@@ -77,7 +97,7 @@ public class TestModel {
     }
     @Test
     public void testUpdateFavorTokens(){
-        Model model = null;
+        Model model = new Model();
         int a=0,b=0;
         model.addPlayer("luca");
         model.addPlayer("lucio");
@@ -87,5 +107,6 @@ public class TestModel {
         catch(NotEnoughFavorTokensException e){
             System.err.println(e);
         }
+        assertEquals(0,model.getPlayer(0).getFavorTokens());
     }
 }

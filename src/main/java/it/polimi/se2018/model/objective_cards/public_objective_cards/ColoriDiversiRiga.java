@@ -32,9 +32,9 @@ public class ColoriDiversiRiga extends AbstractObjectiveCard {
     public int countPoints(SchemaCard schemaCard) {
         int n=0;        //variabile che serve per il controllo
         int points=0;
-    for(int i=0; i<3; i++){
-        for(int j=0; j<4 && n==0; j++){
-            for(int k=0; k<4 && n==0; k++){
+    for(int i=0; i<4; i++){
+        for(int j=0; j<5 && n==0; j++){
+            for(int k=0; k<5 && n==0; k++){
                 if(schemaCard.getCell(i,j).getAssignedDice().getDiceColor()==schemaCard.getCell(i,j).getAssignedDice().getDiceColor()) n=1;
             }
         }

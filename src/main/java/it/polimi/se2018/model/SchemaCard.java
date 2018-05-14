@@ -13,7 +13,7 @@ public class SchemaCard {
 
     private String name1;
     private String name2;
-    private Cell[][] cells;
+    private Cell[][] cells = new Cell[4][5];
     private int difficultyLevel;
 
     /**

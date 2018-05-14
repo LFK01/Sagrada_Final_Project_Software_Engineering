@@ -215,7 +215,7 @@ public class Model extends Observable {
         if (participants.get(playerPosition).getFavorTokens()==0)
             throw new NotEnoughFavorTokensException();
 
-        if(gameBoard.getToolCardState(index)) {
+        if(gameBoard.getToolCard(index).isFirstUsage()) {
                 participants.get(playerPosition).decreaseFavorTokens();
         }
         else {

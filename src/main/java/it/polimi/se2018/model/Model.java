@@ -47,6 +47,7 @@ public class Model extends Observable {
      * Constructor method initializing turnOfTheRound and the participant list
      */
     public Model() {
+        this.gameBoard = new GameBoard();
         turnOfTheRound = 0;
         firstDraftOfDice = true;
         doubleDraftDone = false;

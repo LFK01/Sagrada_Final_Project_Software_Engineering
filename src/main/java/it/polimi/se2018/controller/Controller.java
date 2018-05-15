@@ -22,20 +22,16 @@ import java.util.*;
 
 public class Controller implements Observer {
 
-
-
     private Model model;
     private View view;
-    private InterfaceToolCard[] toolCards;
-
     /**
      * Class constructor
-     * @param model model reference
      * @param view view reference
      */
 
-    public Controller(Model model, View view) {
-        this.model = model;
+    public Controller(View view) {
+
+        this.model = new Model();
         this.view = view;
     }
 
@@ -43,7 +39,7 @@ public class Controller implements Observer {
      * Method that randomly extracts 3 tool cards
      */
 
-    private void extractCards() {
+    private void cardsExtraction() {
 
         model.extractToolCards();
         model.extractPublicObjectiveCards();
@@ -161,6 +157,7 @@ public class Controller implements Observer {
 
         }
 
+        model.doDiceMove(move);
 
         //gestione di altre eccezioni relative al caso
 

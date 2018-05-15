@@ -3,6 +3,7 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 
 /**
  * Class meant to contain a Die and all the information about the placing restrictions
@@ -82,9 +83,9 @@ public class Cell {
      * Places a die on the cell, throws an Excpetion if the die doesn't respect
      * any of the placing restrictions
      * @param dice Die to be placed
-     * @throws InvalidCellPositionException
+     * @throws RestrictionsNotRespectedException, FullCellException
      */
-    public void setAssignedDice(Dice dice) throws InvalidCellPositionException, FullCellException{
+    public void setAssignedDice(Dice dice) throws RestrictionsNotRespectedException, FullCellException{
         if(isFull()){
             throw (new FullCellException("Cella piena!"));
         }
@@ -94,7 +95,7 @@ public class Cell {
             }
             else{
                 if(dice.getValue()!=this.value){
-                    throw new InvalidCellPositionException();
+                    throw new RestrictionsNotRespectedException("Valore dado non corretto!");
                 }
                 else{
                     this.assignedDice = dice;
@@ -103,7 +104,7 @@ public class Cell {
         }
         else{
             if(dice.getDiceColor()!=this.cellColor){
-                throw new InvalidCellPositionException();
+                throw new RestrictionsNotRespectedException("Colore dado non corretto!");
             }
             else{
                 this.assignedDice = dice;
@@ -111,6 +112,11 @@ public class Cell {
         }
     }
 
+    public Dice removeDieFromCell(){
+        Dice removedDie = this.assignedDice;
+        this.assignedDice=null;
+        return removedDie;
+    }
     /**
      * Returns a reference to the Dice placed on the schemaCard
      * @return assignedDice

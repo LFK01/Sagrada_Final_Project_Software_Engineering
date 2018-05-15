@@ -9,6 +9,7 @@ import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -16,8 +17,8 @@ import java.util.Observable;
 /**
  * This class is supposed to contain all the data about a game and all the
  * controls to check if any move is correct. The data is accessible through
- * getter methods. Whenever a modifier method is activated by an external class
- * Model verifies that the parameters are correct and notifies its observer with
+ * getter methods.<s Whenever a modifier method is activated by an external class
+ * Model verifies that the move can be made and notifies its observer with
  * a Message
  *
  * @author Giovanni
@@ -82,7 +83,7 @@ public class Model extends Observable {
      * method to check if a player can place a die in a position on his/her schema card
      * @param move data structure containing all the information about the player move
      */
-    public void checkDiceMove(ChooseDiceMove move) {
+    public void doDiceMove(ChooseDiceMove move) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         Dice chosenDie = gameBoard.getRoundDice()[currentRound].getDice(move.getDraftPoolPos());
         if (!isPlayerTurn(move.getPlayer())) {
@@ -91,20 +92,20 @@ public class Model extends Observable {
         }
         try{
             placeDie(move.getPlayer().getSchemaCard(), move.getCol(), move.getRow(), move.getDraftPoolPos());
-            removeDieFromDrafPoll(move.getDraftPoolPos());
+            removeDieFromDrafPool(move.getDraftPoolPos());
             return;
         }
         catch(FullCellException e){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione &eacute; gi&aacute; occupata"));
             return;
         }
-        catch(InvalidCellPositionException e){
+        catch(RestrictionsNotRespectedException e){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
             return;
         }
     }
 
-    private void removeDieFromDrafPoll(int draftPoolPos) {
+    private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
     }
@@ -113,7 +114,7 @@ public class Model extends Observable {
      * method to check if a player can activate a card specified on the parameter move
      * @param move data structure containing all the information about the player move
      */
-    public void checkToolCardMove(UseToolCardMove move) {
+    public void doToolCardMove(UseToolCardMove move) {
 
     }
 
@@ -134,7 +135,7 @@ public class Model extends Observable {
         return participants.indexOf(player) == turn;
     }
 
-    private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws InvalidCellPositionException, FullCellException, IndexOutOfBoundsException{
+    private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col);
     }
@@ -211,7 +212,7 @@ public class Model extends Observable {
      * @param index number of tokens to deduct
      * @param playerPosition integer number to get the player reference
      */
-    public  void  updateFavorTokens(int index,int playerPosition) throws NotEnoughFavorTokensException {
+    public  void  updateFavorTokens(int index, int playerPosition) throws NotEnoughFavorTokensException {
         if (participants.get(playerPosition).getFavorTokens()==0)
             throw new NotEnoughFavorTokensException();
 

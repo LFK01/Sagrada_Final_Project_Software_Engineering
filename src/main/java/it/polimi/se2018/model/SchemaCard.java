@@ -1,7 +1,7 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 
 /**
  * Schema Cards class
@@ -216,8 +216,8 @@ public class SchemaCard {
             return true;
     }
     
-    public void placeDie(Dice die, int row, int col) throws InvalidCellPositionException, FullCellException{
-        if (!hasADieNear(col, row)) throw (new InvalidCellPositionException());
+    public void placeDie(Dice die, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
+        if (!hasADieNearOrEmptySchema(col, row)) throw (new RestrictionsNotRespectedException("Il dado deve essere piazzato lungo il bordo o deve avere un altro dado vicino"));
         this.getCell(row, col).setAssignedDice(die);
     }
 
@@ -228,7 +228,10 @@ public class SchemaCard {
      * @return true if there's die in any die in the cells near the one
      * of the considered die
      */
-    private boolean hasADieNear(int row, int col) {
+    private boolean hasADieNearOrEmptySchema(int row, int col) {
+        if(this.isEmpty() && ((row==0||row==3) || (col==0||col==4))){
+            return true;
+        }
         if (col == 0) {
             if (row == 0) {
                 /*checks upper left corner*/

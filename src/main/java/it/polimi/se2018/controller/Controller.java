@@ -285,7 +285,7 @@ public class Controller implements Observer {
         //scelta e piazzamento dado
         /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
         per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.*/
-        //model.checkDiceMove((ChooseDiceMove) move);
+        //model.doDiceMove((ChooseDiceMove) move);
 
         //move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
         //sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile

@@ -1,14 +1,11 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
-import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.NoColorException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
@@ -26,10 +23,9 @@ import java.util.Observable;
  *
  * @author Giovanni
  * edited  Luciano 12/05/2018;
- *
+ * edited Luciano 14/05/2018;
  */
 
-//edited Luciano 14/05/2018;
 public class Model extends Observable {
 
     private GameBoard gameBoard;
@@ -37,24 +33,32 @@ public class Model extends Observable {
      * methods of the game instrumentation*/
     private ArrayList<Player> participants;
     /*local ArrayList to memorize actual playing players*/
-    private int turn;
-    /*local variable to memorize the current turn in a round, it goes from 1
-     * to participants.size()*/
+    private int turnOfTheRound;
+    /*local variable to memorize the current turn in a round, it goes from 0
+     * to participants.size()-1*/
+    private boolean firstDraftOfDice;
+    /*local variable to memorize if every player has been given the option to choose
+    his/her first die*/
+    private boolean doubleDraftDone;
+    /*local variable to memorize if the last player in the first dice draft has already
+    * drafted the second die*/
 
     /**
-     * Constructor method initializing turn and the participant list
+     * Constructor method initializing turnOfTheRound and the participant list
      */
     public Model() {
-        turn = 1;
+        turnOfTheRound = 0;
+        firstDraftOfDice = true;
+        doubleDraftDone = false;
         participants = new ArrayList<>();
     }
 
     /**
-     * Getter for integer value of turn of the Round
-     * @return integer value turn of the Round
+     * Getter for integer value of turnOfTheRound of the Round
+     * @return integer value turnOfTheRound of the Round
      */
     public int getTurnOfTheRound() {
-        return turn;
+        return turnOfTheRound;
     }
 
     /**
@@ -82,13 +86,14 @@ public class Model extends Observable {
         return participants.get(index);
     }
 
+    public boolean isFirstDraftOfDice() {
+        return firstDraftOfDice;
+    }
     /**
      * method to check if a player can place a die in a position on his/her schema card
      * @param move data structure containing all the information about the player move
      */
     public void doDiceMove(ChooseDiceMove move) {
-        int currentRound = gameBoard.getRoundTrack().getCurrentRound();
-        Dice chosenDie = gameBoard.getRoundDice()[currentRound].getDice(move.getDraftPoolPos());
         if (!isPlayerTurn(move.getPlayer())) {
             notifyObservers(new ErrorMessage(move.getPlayer(), "Non &eacute; il tuo turno!"));
             return;
@@ -96,15 +101,12 @@ public class Model extends Observable {
         try{
             placeDie(move.getPlayer().getSchemaCard(), move.getCol(), move.getRow(), move.getDraftPoolPos());
             removeDieFromDrafPool(move.getDraftPoolPos());
-            return;
         }
         catch(FullCellException e){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione &eacute; gi&aacute; occupata"));
-            return;
         }
         catch(RestrictionsNotRespectedException e){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
-            return;
         }
     }
 
@@ -130,12 +132,12 @@ public class Model extends Observable {
     }
 
     /**
-     * method to check if the turn of the player specified in the parameter field
+     * method to check if the turnOfTheRound of the player specified in the parameter field
      * @param player
-     * @return true if is the turn of the current player
+     * @return true if is the turnOfTheRound of the current player
      */
     public boolean isPlayerTurn(Player player) {
-        return participants.indexOf(player) == turn;
+        return participants.indexOf(player) == turnOfTheRound;
     }
 
     private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
@@ -145,37 +147,34 @@ public class Model extends Observable {
 
     /**
      *
-     * method to update the current player turn in a round
+     * method to update the current player turnOfTheRound in a round
      * once the first run is completed, the method proceeds to count backwards
      */
     public void updateTurnOfTheRound(){
-        if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()*2+1)){
-            /*one or more player has left the game*/
-            /*one or more player has refused to pick a die*/
+        if(isFirstDraftOfDice()){
+            /*first run of turns to choose a die*/
+            if(turnOfTheRound == participants.size()-1){
+                turnOfTheRound = participants.size()-1;
+                doubleDraftDone = false;
+                firstDraftOfDice = false;
+            }
+            else {
+                turnOfTheRound++;
+            }
         }
         else{
-            /*every player is still in the game*/
-            /*every player has chosen a die*/
-            if(gameBoard.getRoundDice()[turn].getDiceList().size()>(participants.size()+1)){
-                /*first run of turns to choose a die*/
-                if(turn==participants.size()){
-                    turn=1;
-                }
-                else {
-                    turn++;
+            /*second run of turns to choose a die*/
+            if(turnOfTheRound == participants.size()-1) {
+                if (!doubleDraftDone) {
+                    turnOfTheRound = participants.size() - 1;
+                } else {
+                    turnOfTheRound--;
                 }
             }
             else{
-                /*second run of turns to choose a die*/
-                if(turn==1){
-                    turn=participants.size();
-                }
-                else{
-                    turn--;
-                }
+                turnOfTheRound--;
             }
         }
-        setChanged();
         notifyObservers();
     }
 
@@ -190,7 +189,6 @@ public class Model extends Observable {
         else{
             //throw PlayerNumberExceededException
         }
-        setChanged();
         notifyObservers();
     }
 
@@ -206,7 +204,6 @@ public class Model extends Observable {
         else{
             //throw SinglePlayerMatchException
         }
-        setChanged();
         notifyObservers();
     }
 

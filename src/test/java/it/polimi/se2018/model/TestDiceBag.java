@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test for the dice bag
+ * Test for the dice bag 100% coverage
  * @author Giorgia
  */
 

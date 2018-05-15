@@ -38,16 +38,8 @@ public class TestCell {
         //boolean value to check if all the exceptions in the test get caught
         Dice dadoProva1=null;
         Dice dadoProva2=null;
-        while(erroreAssegnamento){
-            try{
-                dadoProva1 = new Dice(Color.BLUE, 1);
-                dadoProva2 = new Dice(Color.GREEN, 2);
-                erroreAssegnamento=false;
-            }
-            catch(InvalidColorException e){
-                erroreAssegnamento=true;
-            }
-        }
+        dadoProva1 = new Dice(Color.BLUE, 1);
+        dadoProva2 = new Dice(Color.GREEN, 2);
         Cell cellaProva1= new Cell(Color.BLUE, 1);
         //compatible w/ dado1, not compatible w/ dado2
         Cell cellaProva2 = new Cell(null, 1);
@@ -109,8 +101,9 @@ public class TestCell {
             excpetionCalledCorrect=true;
         }
         assertTrue(excpetionCalledCorrect);
+        excpetionCalledCorrect=false;
         Dice thrownAwayDie = cellaProva4.removeDieFromCell();
-        assertEquals(thrownAwayDie, dadoProva2);
+        assertEquals(thrownAwayDie, dadoProva1);
         try{
             cellaProva4.setAssignedDice(dadoProva2);
         }
@@ -158,5 +151,55 @@ public class TestCell {
         assertEquals(dadoProva2.getDiceColor(), cellaProva4.getAssignedDice().getDiceColor());
         assertEquals(dadoProva1.getValue(), cellaProva1.getAssignedDice().getValue());
         assertEquals(dadoProva2.getValue(), cellaProva4.getAssignedDice().getValue());
+        thrownAwayDie = cellaProva1.removeDieFromCell();
+        thrownAwayDie = cellaProva2.removeDieFromCell();
+        thrownAwayDie = null;
+        try{
+            cellaProva1.setAssignedDice(dadoProva2);
+        }
+        catch (RestrictionsNotRespectedException e){
+            excpetionCalledCorrect = true;
+        }
+        catch(FullCellException e){
+            fail();
+        }
+        assertTrue(excpetionCalledCorrect);
+        thrownAwayDie = cellaProva1.removeDieFromCell();
+        excpetionCalledCorrect = false;
+        try{
+            cellaProva2.setAssignedDice(dadoProva2);
+        }
+        catch (RestrictionsNotRespectedException e){
+            excpetionCalledCorrect = true;
+        }
+        catch(FullCellException e){
+            fail();
+        }
+        assertTrue(excpetionCalledCorrect);
+    }
+
+    @Test
+    public void getCellColor(){
+        boolean excpetionCalledCorrect = false;
+        Color color1 = null;
+        Cell cellaProva1 = new Cell(null, 0);
+        try{
+            color1 = cellaProva1.getCellColor();
+        }
+        catch(NoColorException e){
+            excpetionCalledCorrect = true;
+        }
+        assertTrue(excpetionCalledCorrect);
+        assertNull(color1);
+        Cell cellaProva2 = new Cell(Color.RED, 0);
+        Color color2 = null;
+        try{
+            color2 = cellaProva2.getCellColor();
+        }
+        catch (NoColorException e){
+            fail();
+        }
+        assertNotNull(color2);
+        assertEquals(Color.RED, color2);
     }
 }

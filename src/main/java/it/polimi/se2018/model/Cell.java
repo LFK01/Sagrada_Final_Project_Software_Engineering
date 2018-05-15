@@ -1,6 +1,5 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
@@ -92,6 +91,7 @@ public class Cell {
         if(noColor){
             if(this.value==0){
                 this.assignedDice = dice;
+                containsDie = true;
             }
             else{
                 if(dice.getValue()!=this.value){
@@ -99,6 +99,7 @@ public class Cell {
                 }
                 else{
                     this.assignedDice = dice;
+                    containsDie = true;
                 }
             }
         }
@@ -108,13 +109,19 @@ public class Cell {
             }
             else{
                 this.assignedDice = dice;
+                containsDie = true;
             }
         }
     }
 
+    /**
+     * Removes the die from the cell and sets containsDie to false
+     * @return the removed die
+     */
     public Dice removeDieFromCell(){
         Dice removedDie = this.assignedDice;
-        this.assignedDice=null;
+        this.assignedDice = null;
+        this.containsDie = false;
         return removedDie;
     }
     /**

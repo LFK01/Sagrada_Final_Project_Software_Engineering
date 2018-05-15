@@ -4,6 +4,7 @@ package it.polimi.se2018.model;
  * edited Luciano
  */
 
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
 import org.junit.Test;
 
@@ -30,24 +31,40 @@ public class TestModel {
         assertNull(testModel.getGameBoard());
     }
 
-    @Test
-    public void checkDiceMove() {
-    }
 
     @Test
-    public void checkToolCardMove() {
-    }
+    public void doDiceMove(){
 
-    @Test
-    public void checkNoActionMove() {
     }
 
     @Test
     public void isPlayerTurn() {
+        Model model1 = new Model();
+        model1.addPlayer("Prova1");
+        assertTrue(model1.isPlayerTurn(model1.getPlayer(0)));
+        model1.updateTurnOfTheRound();
+        assertFalse(model1.isPlayerTurn(model1.getPlayer(0)));
     }
 
     @Test
     public void updateTurnOfTheRound() {
+        Model model1 = new Model();
+        assertEquals(0, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(1, model1.getTurnOfTheRound());
+        assertNotEquals(0, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(2, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(3, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(3, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(2, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(1, model1.getTurnOfTheRound());
+        model1.updateTurnOfTheRound();
+        assertEquals(0, model1.getTurnOfTheRound());
     }
 
     @Test

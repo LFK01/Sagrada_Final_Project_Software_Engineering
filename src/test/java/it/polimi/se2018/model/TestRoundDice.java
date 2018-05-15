@@ -1,6 +1,5 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.InvalidColorException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -16,10 +15,9 @@ public class TestRoundDice {
     /**
      * Tests the class constructor, throwing exceptions in case diceBag generates errors. It checks that the number of the dice extracted from the dice bag is correct
      * (must be number_of_players*2+1)
-     * @throws InvalidColorException in case the dice bag creates dice with invalid color
      */
     @Test
-    public void roundDiceTest() throws InvalidColorException {
+    public void roundDiceTest() {
 
        RoundDice roundDice = null;
 
@@ -37,10 +35,9 @@ public class TestRoundDice {
 
     /**
      * Test to check that the dice extracted from the dice bag are the correct dice associated to the actual round
-     * @throws InvalidColorException in case the dice bag creates dice with invalid color
      */
     @Test
-    public void validExtractionTest() throws InvalidColorException {
+    public void validExtractionTest() {
 
         DiceBag diceBag = new DiceBag();
         RoundDice roundDice = new RoundDice(3, diceBag, 7);

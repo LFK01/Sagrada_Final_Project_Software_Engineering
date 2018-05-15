@@ -1,7 +1,7 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
-import it.polimi.se2018.controller.exceptions.NotEnoughFavorTokensException;
+import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
@@ -10,8 +10,11 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
+import it.polimi.se2018.model.tool_cards.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 
 /**
@@ -226,6 +229,138 @@ public class Model extends Observable {
                 participants.get(playerPosition).decreaseFavorTokens();
             }
         }
+
+    }
+
+    public void extractToolCards() {
+
+        ArrayList<Integer> cardIndex = new ArrayList<>(12);
+
+        for(int i = 1; i <= 12; i++)
+            cardIndex.add(i);
+
+        Collections.shuffle(cardIndex);
+
+        for(int i = 0; i < 3; i++) {
+
+            switch (cardIndex.get(i)) {
+
+                case 1:
+
+                    gameBoard.setToolCards(PinzaSgrossatrice.getThisInstance(), i);
+                    break;
+
+                case 2:
+                    gameBoard.setToolCards(PennelloPerEglomise.getThisInstance(), i);
+                    break;
+
+                case 3:
+                    gameBoard.setToolCards(AlesatorePerLaminaDiRame.getThisInstance(), i);
+                    break;
+
+                case 4:
+                    gameBoard.setToolCards(Lathekin.getThisInstance(), i);
+                    break;
+
+                case 5:
+                    gameBoard.setToolCards(TaglierinaCircolare.getThisInstance(), i);
+                    break;
+
+                case 6:
+                    gameBoard.setToolCards(PennelloPerPastaSalda.getThisInstance(), i);
+                    break;
+
+                case 7:
+                    gameBoard.setToolCards(Martelletto.getThisInstance(), i);
+                    break;
+
+                case 8:
+                    gameBoard.setToolCards(TenagliaARotelle.getThisInstance(), i);
+                    break;
+
+                case 9:
+                    gameBoard.setToolCards(RigaInSughero.getThisInstance(), i);
+                    break;
+
+                case 10:
+                    gameBoard.setToolCards(TamponeDiamantato.getThisInstance(), i);
+                    break;
+
+                case 11:
+                    gameBoard.setToolCards(DiluentePerPastaSalda.getThisInstance(), i);
+                    break;
+
+                case 12:
+                    gameBoard.setToolCards(TaglierinaManuale.getThisInstance(), i);
+                    break;
+
+            }
+
+        }
+
+        notifyObservers();
+        setChanged();
+    }
+
+    public void extractPublicObjectiveCards() {
+
+        ArrayList<Integer> cardIndex = new ArrayList<>(12);
+
+        for(int i = 1; i <= 10; i++)
+            cardIndex.add(i);
+
+        Collections.shuffle(cardIndex);
+
+        for(int i = 0; i < 3; i++) {
+
+            switch (cardIndex.get(i)) {
+
+                case 1:
+                    gameBoard.setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
+                    break;
+
+                case 2:
+                    gameBoard.setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
+                    break;
+
+                case 3:
+                    gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
+                    break;
+
+                case 4:
+                    gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
+                    break;
+
+                case 5:
+                    gameBoard.setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
+                    break;
+
+                case 6:
+                    gameBoard.setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
+                    break;
+
+                case 7:
+                    gameBoard.setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
+                    break;
+
+                case 8:
+                    gameBoard.setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
+                    break;
+
+                case 9:
+                    gameBoard.setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
+                    break;
+
+                case 10:
+                    gameBoard.setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
+                    break;
+
+            }
+
+        }
+
+        notifyObservers();
+        setChanged();
 
     }
 

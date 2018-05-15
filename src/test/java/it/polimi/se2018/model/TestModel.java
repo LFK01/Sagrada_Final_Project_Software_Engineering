@@ -4,7 +4,7 @@ package it.polimi.se2018.model;
  * edited Luciano
  */
 
-import it.polimi.se2018.controller.exceptions.NotEnoughFavorTokensException;
+import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
 import org.junit.Test;
 
 import java.util.ArrayList;

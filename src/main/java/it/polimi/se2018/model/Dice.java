@@ -1,7 +1,5 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.InvalidColorException;
-
 /**
  * Dice class
  * @author Giorgia
@@ -19,12 +17,9 @@ public class Dice {
      * @param color the dice color
      * @param value the dice value
      */
-    public Dice(Color color, int value) throws InvalidColorException {
+    public Dice(Color color, int value) {
 
-        if (color == null || color.getClass() != Color.class)
-            throw new InvalidColorException();
-        else
-            this.diceColor = color;
+        this.diceColor = color;
 
         this.value = value;
 

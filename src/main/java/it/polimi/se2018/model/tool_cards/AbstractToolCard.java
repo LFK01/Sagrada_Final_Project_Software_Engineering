@@ -1,4 +1,4 @@
-package it.polimi.se2018.controller.tool_cards;
+package it.polimi.se2018.model.tool_cards;
 
 import it.polimi.se2018.model.Player;
 
@@ -29,5 +29,4 @@ public abstract class AbstractToolCard {
         return firstUsage;
     }
 
-    public abstract void activateCard(Player player);
 }

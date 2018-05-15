@@ -1,6 +1,5 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.InvalidColorException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -16,7 +15,7 @@ public class TestDiceBag {
      * Tests the DiceBag constructor. It checks that the object is actually created and that there are 90 dice
      */
     @Test
-    public void diceBagTest() throws InvalidColorException {
+    public void diceBagTest() {
 
         DiceBag diceBag = null;
 
@@ -35,7 +34,7 @@ public class TestDiceBag {
      * Tests that the red dice are 18
      */
     @Test
-    public void testRedDiceNumber() throws InvalidColorException {
+    public void testRedDiceNumber() {
 
         DiceBag diceBag = new DiceBag();
         int n = 0;
@@ -58,7 +57,7 @@ public class TestDiceBag {
      * Tests that the yellow dice number are 18
      */
     @Test
-    public void testYellowDiceNumber() throws InvalidColorException {
+    public void testYellowDiceNumber() {
 
         DiceBag diceBag = new DiceBag();
         int n = 0;
@@ -81,7 +80,7 @@ public class TestDiceBag {
      * Tests that the green dice are 18
      */
     @Test
-    public void testGreenDiceNumber() throws InvalidColorException {
+    public void testGreenDiceNumber() {
 
         DiceBag diceBag = new DiceBag();
         int n = 0;
@@ -104,7 +103,7 @@ public class TestDiceBag {
      * Tests that the blue dice are 18
      */
     @Test
-    public void testBlueDiceNumber() throws InvalidColorException {
+    public void testBlueDiceNumber() {
 
         DiceBag diceBag = new DiceBag();
         int n = 0;
@@ -127,7 +126,7 @@ public class TestDiceBag {
      * Tests that the purple dice are 18
      */
     @Test
-    public void testPurpleDiceNumber() throws InvalidColorException {
+    public void testPurpleDiceNumber() {
 
         DiceBag diceBag = new DiceBag();
         int n = 0;
@@ -150,7 +149,7 @@ public class TestDiceBag {
      * Tests that the dice value is between 1 and 6
      */
     @Test
-    public void testDiceValue() throws InvalidColorException {
+    public void testDiceValue() {
 
         DiceBag diceBag = new DiceBag();
         boolean invalidValue = false;

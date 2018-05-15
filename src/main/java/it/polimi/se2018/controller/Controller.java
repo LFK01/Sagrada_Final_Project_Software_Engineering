@@ -26,7 +26,7 @@ public class Controller implements Observer {
 
     private Model model;
     private View view;
-    private AbstractToolCard[] toolCards;
+    private InterfaceToolCard[] toolCards;
 
     /**
      * Class constructor
@@ -43,72 +43,10 @@ public class Controller implements Observer {
      * Method that randomly extracts 3 tool cards
      */
 
-    public void extractToolCards() {
+    private void extractCards() {
 
-        ArrayList<Integer> cardIndex = new ArrayList<>(12);
-
-        for(int i = 1; i <= 12; i++)
-            cardIndex.add(i);
-
-        Collections.shuffle(cardIndex);
-
-        for(int i = 0; i < 3; i++) {
-
-            switch (cardIndex.get(i)) {
-
-                case 1:
-                    toolCards[i] = PinzaSgrossatrice.getThisInstance();
-                    break;
-
-                case 2:
-                    toolCards[i] = PennelloPerEglomise.getThisInstance();
-                    break;
-
-                case 3:
-                    toolCards[i] = AlesatorePerLaminaDiRame.getThisInstance();
-                    break;
-
-                case 4:
-                    toolCards[i] = Lathekin.getThisInstance();
-                    break;
-
-                case 5:
-                    toolCards[i] = TaglierinaCircolare.getThisInstance();
-                    break;
-
-                case 6:
-                    toolCards[i] = PennelloPerPastaSalda.getThisInstance();
-                    break;
-
-                case 7:
-                    toolCards[i] = Martelletto.getThisInstance();
-                    break;
-
-                case 8:
-                    toolCards[i] = TenagliaARotelle.getThisInstance();
-                    break;
-
-                case 9:
-                    toolCards[i] = RigaInSughero.getThisInstance();
-                    break;
-
-                case 10:
-                    toolCards[i] = TamponeDiamantato.getThisInstance();
-                    break;
-
-                case 11:
-                    toolCards[i] = DiluentePerPastaSalda.getThisInstance();
-                    break;
-
-                case 12:
-                    toolCards[i] = TaglierinaManuale.getThisInstance();
-                    break;
-
-            }
-
-        }
-
-        model.getGameBoard().setToolCards(toolCards);
+        model.extractToolCards();
+        model.extractPublicObjectiveCards();
 
     }
 
@@ -116,7 +54,7 @@ public class Controller implements Observer {
      * Method that randomly extracts and deals one private objective card per player
      */
 
-    public void dealPrivateObjectiveCards() {
+    private void dealPrivateObjectiveCards() {
 
         ArrayList<Integer> cardIndex = new ArrayList<>(12);
 
@@ -159,64 +97,7 @@ public class Controller implements Observer {
      * Method that randomly extracts 3 public objective cards
      */
 
-    public void extractPublicObjectiveCards() {
 
-        ArrayList<Integer> cardIndex = new ArrayList<>(12);
-
-        for(int i = 1; i <= 10; i++)
-            cardIndex.add(i);
-
-        Collections.shuffle(cardIndex);
-
-        for(int i = 0; i < 3; i++) {
-
-            switch (cardIndex.get(i)) {
-
-                case 1:
-                    model.getGameBoard().setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
-                    break;
-
-                case 2:
-                    model.getGameBoard().setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
-                    break;
-
-                case 3:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
-                    break;
-
-                case 4:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
-                    break;
-
-                case 5:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
-                    break;
-
-                case 6:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
-                    break;
-
-                case 7:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
-                    break;
-
-                case 8:
-                    model.getGameBoard().setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
-                    break;
-
-                case 9:
-                    model.getGameBoard().setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
-                    break;
-
-                case 10:
-                    model.getGameBoard().setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
-                    break;
-
-            }
-
-        }
-
-    }
 
     /**
      * Method to roll one single dice, assigning a random int value
@@ -224,7 +105,7 @@ public class Controller implements Observer {
      * @throws NullPointerException in case the dice parameter is null
      */
 
-    public void rollSingleDice(Dice dice) throws NullPointerException, InvalidValueException{
+    private void rollSingleDice(Dice dice) throws NullPointerException, InvalidValueException{
 
         if (dice == null)
             throw new NullPointerException();
@@ -243,7 +124,7 @@ public class Controller implements Observer {
      * @throws InvalidRoundException in case the round number exceeds 10
      */
 
-    public void rollRoundDice(DiceBag diceBag, int round, int participants) throws NullPointerException, InvalidRoundException {
+    private void rollRoundDice(DiceBag diceBag, int round, int participants) throws NullPointerException, InvalidRoundException {
 
         if (round > 10)
             throw new InvalidRoundException();
@@ -264,7 +145,7 @@ public class Controller implements Observer {
      * @throws InvalidDraftPoolPosException in case the player gave an invalid input while choosing the dice
      */
 
-    public void performDiceMove(ChooseDiceMove move) throws InvalidCellPositionException, InvalidDraftPoolPosException {
+    private void performDiceMove(ChooseDiceMove move) throws InvalidCellPositionException, InvalidDraftPoolPosException {
 
         if (((ChooseDiceMove) move).getRow() < 0 ||
                 ((ChooseDiceMove) move).getRow() > 3 ||
@@ -279,6 +160,7 @@ public class Controller implements Observer {
             throw new InvalidDraftPoolPosException();
 
         }
+
 
         //gestione di altre eccezioni relative al caso
 
@@ -298,7 +180,7 @@ public class Controller implements Observer {
      * @throws NullPointerException in case the tool card is null
      */
 
-    public void performToolCardMove(UseToolCardMove move) throws NullPointerException {
+    private void performToolCardMove(UseToolCardMove move) throws NullPointerException {
 
         if (move.getToolCard() == null)
             throw new NullPointerException();

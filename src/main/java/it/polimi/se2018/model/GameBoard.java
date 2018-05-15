@@ -1,8 +1,7 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.controller.tool_cards.*;
+import it.polimi.se2018.model.tool_cards.*;
 import java.util.ArrayList;
 
 /**
@@ -21,7 +20,7 @@ public class GameBoard {
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
-    public GameBoard() throws InvalidColorException {
+    public GameBoard() {
         this.diceBag = new DiceBag();
     }
 
@@ -81,7 +80,7 @@ public class GameBoard {
         this.publicObjectiveCards[index] = publicObjectiveCards;
     }
 
-    public void setToolCards(AbstractToolCard[] toolCards) {
-        this.toolCards = toolCards;
+    public void setToolCards(AbstractToolCard toolCard, int index) {
+        this.toolCards[index] = toolCard;
     }
 }

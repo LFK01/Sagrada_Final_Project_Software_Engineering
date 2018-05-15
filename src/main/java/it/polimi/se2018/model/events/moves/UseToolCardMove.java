@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.events.moves;
 
-import it.polimi.se2018.controller.tool_cards.AbstractToolCard;
+import it.polimi.se2018.controller.tool_cards.InterfaceToolCard;
 import it.polimi.se2018.model.Player;
 
 /**
@@ -9,15 +9,15 @@ import it.polimi.se2018.model.Player;
 
 public class UseToolCardMove extends PlayerMove {
 
-    private AbstractToolCard toolCard;
+    private InterfaceToolCard toolCard;
 
 
-    public UseToolCardMove(AbstractToolCard toolCard, Player p) {
+    public UseToolCardMove(InterfaceToolCard toolCard, Player p) {
         super(p);
         this.toolCard = toolCard;
     }
 
-    public AbstractToolCard getToolCard() {
+    public InterfaceToolCard getToolCard() {
         return toolCard;
     }
 

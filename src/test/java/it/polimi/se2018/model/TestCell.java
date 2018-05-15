@@ -1,8 +1,6 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.InvalidColorException;
 import it.polimi.se2018.model.exceptions.NoColorException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import org.junit.Test;

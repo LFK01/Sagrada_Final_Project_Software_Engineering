@@ -53,7 +53,8 @@ public class Player {
     }
     
     public void setSchemaCard(SchemaCard schema){
-
+        this.schemaCard = schema;
+        this.favorTokens = schema.getDifficultyLevel();
     }
 
     public void setPoints(int points) {
@@ -62,9 +63,16 @@ public class Player {
 
     /**
      *method to decrease player's favor Tokens, also check if a player can use that card
+     * @param toolCardHasAlreadyBeenUsed boolean value that determines how many favor tokens
+     *                                   has to be detracted
      */
-    public void decreaseFavorTokens(){
-        this.favorTokens = this.favorTokens - 1;
+    public void decreaseFavorTokens(boolean toolCardHasAlreadyBeenUsed){
+        if(toolCardHasAlreadyBeenUsed){
+            this.favorTokens = this.favorTokens - 2;
+        }
+        else{
+            this.favorTokens = this.favorTokens - 1;
+        }
     }
 
 

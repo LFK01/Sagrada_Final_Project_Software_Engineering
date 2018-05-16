@@ -1,12 +1,10 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
+import it.polimi.se2018.model.exceptions.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
 
@@ -38,10 +36,7 @@ public class Model extends Observable {
      * to participants.size()-1*/
     private boolean firstDraftOfDice;
     /*local variable to memorize if every player has been given the option to choose
-    his/her first die*/
-    private boolean doubleDraftDone;
-    /*local variable to memorize if the last player in the first dice draft has already
-    * drafted the second die*/
+        his/her first die*/
 
     /**
      * Constructor method initializing turnOfTheRound and the participant list
@@ -50,7 +45,6 @@ public class Model extends Observable {
         this.gameBoard = new GameBoard();
         turnOfTheRound = 0;
         firstDraftOfDice = true;
-        doubleDraftDone = false;
         participants = new ArrayList<>();
     }
 
@@ -90,6 +84,7 @@ public class Model extends Observable {
     public boolean isFirstDraftOfDice() {
         return firstDraftOfDice;
     }
+
     /**
      * method to check if a player can place a die in a position on his/her schema card
      * @param move data structure containing all the information about the player move
@@ -156,7 +151,6 @@ public class Model extends Observable {
             /*first run of turns to choose a die*/
             if(turnOfTheRound == participants.size()-1){
                 turnOfTheRound = participants.size()-1;
-                doubleDraftDone = false;
                 firstDraftOfDice = false;
             }
             else {
@@ -165,16 +159,7 @@ public class Model extends Observable {
         }
         else{
             /*second run of turns to choose a die*/
-            if(turnOfTheRound == participants.size()-1) {
-                if (!doubleDraftDone) {
-                    turnOfTheRound = participants.size() - 1;
-                } else {
-                    turnOfTheRound--;
-                }
-            }
-            else{
                 turnOfTheRound--;
-            }
         }
         notifyObservers();
     }
@@ -183,12 +168,12 @@ public class Model extends Observable {
      * method to add a new player
      * @param name
      */
-    public void addPlayer(String name)/*throws PlayerNumberExceededException*/{
+    public void addPlayer(String name) throws PlayerNumberExceededException {
         if(participants.size()<4){
             participants.add(new Player(name));
         }
         else{
-            //throw PlayerNumberExceededException
+            throw new PlayerNumberExceededException("Impossibile aggiungere nuovi giocatori, numero massimo raggiunto!");
         }
         notifyObservers();
     }
@@ -198,36 +183,28 @@ public class Model extends Observable {
      * @param player
      * metodo per rimuovere giocatore dalla lista dei giocatori
      */
-    public void removePlayer(Player player)/*throws SinglePlayerException*/{
+    public void removePlayer(Player player) throws SinglePlayerException {
         if(participants.size()>1){
             participants.remove(participants.indexOf(player));
         }
         else{
-            //throw SinglePlayerMatchException
+            throw new SinglePlayerException("Impossibile rimuovere l'ultimo giocatore!");
         }
         notifyObservers();
     }
 
     /**
-     * method to modify the token numeber of a specific player
-     * @param index number of tokens to deduct
+     * method to modify the token numeber of a specific player, gets called after a tool card has been used
+     * @param toolCardIndex number of tokens to deduct
      * @param playerPosition integer number to get the player reference
      */
-    public  void  updateFavorTokens(int index, int playerPosition) throws NotEnoughFavorTokensException {
-        if (participants.get(playerPosition).getFavorTokens()==0)
-            throw new NotEnoughFavorTokensException();
-
-        if(gameBoard.getToolCard(index).isFirstUsage()) {
-                participants.get(playerPosition).decreaseFavorTokens();
+    public  void  updateFavorTokens(int toolCardIndex, int playerPosition){
+        if(gameBoard.getToolCard(toolCardIndex).isFirstUsage()){
+            participants.get(playerPosition).decreaseFavorTokens(false);
         }
         else {
-            if(participants.get(playerPosition).getFavorTokens()==1) throw new NotEnoughFavorTokensException();
-            else {
-                participants.get(playerPosition).decreaseFavorTokens();
-                participants.get(playerPosition).decreaseFavorTokens();
-            }
+            participants.get(playerPosition).decreaseFavorTokens(true);
         }
-
     }
 
     public void extractToolCards() {
@@ -297,7 +274,6 @@ public class Model extends Observable {
         }
 
         notifyObservers();
-        setChanged();
     }
 
     public void extractPublicObjectiveCards() {
@@ -354,11 +330,8 @@ public class Model extends Observable {
                     break;
 
             }
-
         }
-
         notifyObservers();
-        setChanged();
 
     }
 

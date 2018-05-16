@@ -29,4 +29,12 @@ public abstract class AbstractToolCard {
         return firstUsage;
     }
 
+    public void isBeingUsedForTheFirstTime(){
+        if(firstUsage){
+            firstUsage = false;
+        }
+        else{
+            //throw new ToolCardAlreadyBeenUsedException();
+        }
+    }
 }

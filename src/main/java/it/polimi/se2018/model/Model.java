@@ -57,7 +57,7 @@ public class Model extends Observable {
     }
 
     /**
-     *
+     * Getter method to access all the gaming components
      * @return gameBoard reference
      */
     public GameBoard getGameBoard() {
@@ -65,7 +65,7 @@ public class Model extends Observable {
     }
 
     /**
-     *
+     * Getter method for the participants number
      * @return integer value of the participants number
      */
     public int getParticipantsNumber() {
@@ -73,7 +73,7 @@ public class Model extends Observable {
     }
 
     /**
-     *
+     * Getter method for a specific player
      * @param index
      * @return reference of the player specified in the index parameter
      */
@@ -109,6 +109,7 @@ public class Model extends Observable {
     private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
+        notifyObservers();
     }
 
     /**
@@ -139,6 +140,7 @@ public class Model extends Observable {
     private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col);
+        notifyObservers();
     }
 
     /**
@@ -205,6 +207,7 @@ public class Model extends Observable {
         else {
             participants.get(playerPosition).decreaseFavorTokens(true);
         }
+        notifyObservers();
     }
 
     public void extractToolCards() {

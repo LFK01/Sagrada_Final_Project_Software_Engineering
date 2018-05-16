@@ -217,8 +217,24 @@ public class SchemaCard {
     }
     
     public void placeDie(Dice die, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
-        if (!hasADieNearOrEmptySchema(col, row)) throw (new RestrictionsNotRespectedException("Il dado deve essere piazzato lungo il bordo o deve avere un altro dado vicino"));
-        this.getCell(row, col).setAssignedDice(die);
+        boolean hasADieNear = this.hasADieNear(row, col);
+        boolean isPlacingFirstDie = (this.isEmpty() && ((row==0||row==3) || (col==0||col==4)));
+        if (isPlacingFirstDie){
+            this.getCell(row, col).setAssignedDice(die);    
+        }
+        else{
+            if(this.isEmpty()){
+                throw (new RestrictionsNotRespectedException("Il dado deve essere piazzato lungo il bordo"));                
+            }
+            else{
+                if(hasADieNear){
+                    this.getCell(row, col).setAssignedDice(die);
+                }
+                else{
+                    throw (new RestrictionsNotRespectedException("Il dado deve avere un altro dado vicino!"));
+                }
+            }
+        }
     }
 
     /**
@@ -228,44 +244,41 @@ public class SchemaCard {
      * @return true if there's die in any die in the cells near the one
      * of the considered die
      */
-    private boolean hasADieNearOrEmptySchema(int row, int col) {
-        if(this.isEmpty() && ((row==0||row==3) || (col==0||col==4))){
-            return true;
-        }
+    private boolean hasADieNear(int row, int col) {
         if (col == 0) {
             if (row == 0) {
                 /*checks upper left corner*/
-                return checkUpperLeftCorner(col, row);
+                return checkUpperLeftCorner(row, col);
             }
             if (row == 3) {
                 /*checks down left corner*/
-                return checkDownLeftCorner(col, row);
+                return checkDownLeftCorner(row, col);
             }
             /*check left column*/
-            return checkLeftColumn(col, row);
+            return checkLeftColumn(row, col);
         }
         if (col == 4) {
             if (row == 0) {
                 /*check upper right corner*/
-                return checkUpperRightCorner(col, row);
+                return checkUpperRightCorner(row, col);
             }
             if (row == 3) {
                 /*check down right corner*/
-                return checkDownRightCorner(col, row);
+                return checkDownRightCorner(row, col);
             }
             /*checks right column*/
-            return checkRightColumn(col, row);
+            return checkRightColumn(row, col);
         }
         if (row == 0) {
             /*check upper row*/
-            return checkUpperRow(col, row);
+            return checkUpperRow(row, col);
         }
         if (row == 3) {
             /*checks down row*/
-            return checkDownRow(col, row);
+            return checkDownRow(row, col);
         }
         /*checks middle cells*/
-        return checkMiddelCells(col, row);
+        return checkMiddelCells(row, col);
     }
 
     /**

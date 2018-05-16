@@ -44,9 +44,12 @@ public abstract class View extends Observable implements Observer{
     public void handleDiceMove(int draftPoolPos ,int row,int col){
         notifyObservers(new ChooseDiceMove(draftPoolPos,row,col,player));
     }
+    public void handleChooseCardMove(int index){
+        //notifyObservers(new );
+    }
 
-    public void handleToolCardMove(int index){
-
+    public void handleToolCardMove(){
+        //switch
 
     }
     public void showMessage(String message){

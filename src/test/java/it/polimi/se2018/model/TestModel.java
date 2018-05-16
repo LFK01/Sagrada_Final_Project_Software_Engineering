@@ -222,4 +222,32 @@ public class TestModel {
         model.updateFavorTokens(0,0);
         assertEquals((new SchemaCard(1).getDifficultyLevel())-3, model.getPlayer(0).getFavorTokens());
     }
+
+    @Test
+    public void testextractPublicObjectiveCards(){
+        Model model = new Model();
+
+        try{
+            model.extractPublicObjectiveCards();
+        }
+        catch(NullPointerException e){
+            fail();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
 }

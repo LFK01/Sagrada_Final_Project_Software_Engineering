@@ -289,10 +289,10 @@ public class SchemaCard {
      * @return
      */
     private boolean checkUpperLeftCorner(int row, int col){
-        if (this.getCell(row, col - 1).isFull()) {
+        if (this.getCell(row, col + 1).isFull()) {
             return true;
         }
-        if (this.getCell(row + 1, col - 1).isFull()) {
+        if (this.getCell(row + 1, col + 1).isFull()) {
             return true;
         }
 

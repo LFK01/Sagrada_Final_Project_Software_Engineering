@@ -8,7 +8,7 @@ import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.PlayerMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.controller.exceptions.InvalidValueException;
+import it.polimi.se2018.controller.exceptions.*;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.view.*;
@@ -101,7 +101,7 @@ public class Controller implements Observer {
      * @throws NullPointerException in case the dice parameter is null
      */
 
-    private void rollSingleDice(Dice dice) throws NullPointerException, InvalidValueException{
+    private void rollSingleDice(Dice dice) throws NullPointerException/*, InvalidValueException*/{
 
         if (dice == null)
             throw new NullPointerException();

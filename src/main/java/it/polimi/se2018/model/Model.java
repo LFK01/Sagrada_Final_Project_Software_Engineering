@@ -1,10 +1,13 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.PlayerNumberExceededException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.exceptions.SinglePlayerException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
 

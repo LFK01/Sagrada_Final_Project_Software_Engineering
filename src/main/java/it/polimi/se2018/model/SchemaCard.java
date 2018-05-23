@@ -1,6 +1,6 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.*;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 
 /**

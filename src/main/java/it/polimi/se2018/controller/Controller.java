@@ -28,7 +28,7 @@ public class Controller implements Observer {
      * Class constructor
      * @param view view reference
      */
-
+                        //tolgo il riferimento a view momentaneamente per il test
     public Controller(View view) {
 
         this.model = new Model();
@@ -258,5 +258,10 @@ public class Controller implements Observer {
         }
 
     }
+    //aggiungo classe che potrebbe servirmi per test su controller
+    public Model getModel(){
+        return model;
+    }
+
 
 }

@@ -19,7 +19,7 @@ public class RoundTrack {
      */
     public RoundTrack() {
         this.currentRound = 0;
-        roundDice = null;
+        roundDice = new RoundDice[10];
     }
 
     /**

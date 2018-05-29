@@ -2,14 +2,15 @@ package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.controller.exceptions.InvalidRoundException;
-import it.polimi.se2018.controller.tool_cards.*;
 import it.polimi.se2018.model.*;
+import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
+import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.PlayerMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.controller.exceptions.*;
-import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
+import it.polimi.se2018.model.exceptions.PlayerNumberExceededException;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.view.*;
 
@@ -198,66 +199,101 @@ public class Controller implements Observer {
 
     @Override
     public void update(Observable object, Object message) {
-
-        /**
-         * If condition to establish whether the message is ChooseDiceMove, UseToolCardMove or NoActionMove
-         */
-        if(((PlayerMove) message).isDiceMove()) {
-
-            try {
-
-                performDiceMove((ChooseDiceMove) message);
-
-            } catch (InvalidCellPositionException e1){
-
-                /**
-                 * InvalidCellPositionException handling: sends an ErrorMessage to the view asking for a valid input
-                 */
-                update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Scegli una posizione valida!"));
-
-            } catch (InvalidDraftPoolPosException e2) {
-
-                /**
-                 * InvalidDraftPoolPosException handling: sends an ErrorMessage to the view asking for a valid input
-                 */
-                update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Inserisci un indice valido per la scelta del dado!"));
-
-            }
-        }
-
-        else if (!((PlayerMove) message).isDiceMove()) {
-
-            /**
-             * In case the player decides not to do anything - or the time expires - calls the model method to update the turn
-             */
-
-            if (((PlayerMove) message).isNoActionMove()) {
-
-                model.updateTurnOfTheRound();
-
-            }
-
-            else {
-
+        if (this.getModel().isPlayerTurn(((Message)message).getPlayer())) {
+            if ((message instanceof CreatePlayerMessage)) {
                 try {
-
-                    performToolCardMove((UseToolCardMove) message);
-
-                } catch (NullPointerException e) {
-
-                    /**
-                     * NullPointerException handling: sends an ErrorMessage to the view asking for a valid input
-                     */
-
-                    update(view, new ErrorMessage(((UseToolCardMove) message).getPlayer(), "Scegli una carta utensile!"));
-
+                    model.addPlayer(((CreatePlayerMessage) message).getPlayerName());
+                } catch (PlayerNumberExceededException e) {
+                    System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
                 }
 
             }
 
+
+            /**
+             * If condition to establish whether the message is ChooseDiceMove, UseToolCardMove or NoActionMove
+             */{
+                if (message instanceof PlayerMove) {
+                    if (((PlayerMove) message).isDiceMove()) {
+
+                        try {
+
+                            performDiceMove((ChooseDiceMove) message);
+
+                        } catch (InvalidCellPositionException e1) {
+
+                            /**
+                             * InvalidCellPositionException handling: sends an ErrorMessage to the view asking for a valid input
+                             */
+                            update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Scegli una posizione valida!"));
+
+                        } catch (InvalidDraftPoolPosException e2) {
+
+                            /**
+                             * InvalidDraftPoolPosException handling: sends an ErrorMessage to the view asking for a valid input
+                             */
+                            update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Inserisci un indice valido per la scelta del dado!"));
+
+                        }
+                    } else if (!((PlayerMove) message).isDiceMove()) {
+
+                        /**
+                         * In case the player decides not to do anything - or the time expires - calls the model method to update the turn
+                         */
+
+                        if (((PlayerMove) message).isNoActionMove()) {
+
+                            model.updateTurnOfTheRound();
+
+                        } else {
+
+                            try {
+
+                                performToolCardMove((UseToolCardMove) message);
+
+                            } catch (NullPointerException e) {
+
+                                /**
+                                 * NullPointerException handling: sends an ErrorMessage to the view asking for a valid input
+                                 */
+
+                                update(view, new ErrorMessage(((UseToolCardMove) message).getPlayer(), "Scegli una carta utensile!"));
+
+                            }
+
+                        }
+
+                    }
+                }
+            }
+        }
+        else{
+            notify(); //notifica che non è il turno del giocatore
         }
 
     }
+
+    //metto un nuovo metodo update per poter gestire i messaggi che arrivano da Player message (inizializzazione del giocatore)
+    public void update(CreatePlayerMessage message){
+
+        try{
+            model.addPlayer(message.getPlayerName());
+        } catch (PlayerNumberExceededException e) {
+            System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
+        }
+
+
+    }
+
+    //update che serve per aggiornare il il turno e passarlo al giocatore successivo
+    public void update (Observable objecy, NoActionMove move){
+        model.updateTurnOfTheRound();
+    }
+
+
+
+
+
     //aggiungo classe che potrebbe servirmi per test su controller
     public Model getModel(){
         return model;

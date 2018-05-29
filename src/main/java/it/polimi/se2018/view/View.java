@@ -1,8 +1,7 @@
 package it.polimi.se2018.view;
-import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.model.PointTrack;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.MoveMessage;
 
@@ -44,6 +43,13 @@ public abstract class View extends Observable implements Observer{
     public void handleDiceMove(int draftPoolPos ,int row,int col){
         notifyObservers(new ChooseDiceMove(draftPoolPos,row,col,player));
     }
+
+    //metodo per inizializzare un giocatore
+    public void createPlayer(String name){
+        setChanged();   //dico che è cambiato
+        notifyObservers(new CreatePlayerMessage(name));
+    }
+
     public void handleChooseCardMove(int index){
         //notifyObservers(new );
     }
@@ -66,7 +72,7 @@ public abstract class View extends Observable implements Observer{
     }
     @Override
     public void update(Observable model, Object message){
-        message = (MoveMessage) message;
+        System.out.println(("giocatore aggiunto"));
     }
 
 

@@ -6,21 +6,22 @@ import it.polimi.se2018.model.Player;
  * @author Luciano
  */
 
-public class ErrorMessage extends MoveMessage {
+public class ErrorMessage extends Message {
 
-    private final String message;
+    private  String message;
+    private Player player;
 
     public ErrorMessage(Player player, String message) {
-        super(player);
+        this.player = player;
         this.message = message;
     }
 
-    @Override
+
     public boolean isError() {
         return true;
     }
 
-    @Override
+
     public boolean isNewRound() {
         return false;
     }

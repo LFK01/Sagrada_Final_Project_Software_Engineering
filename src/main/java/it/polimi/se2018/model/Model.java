@@ -149,7 +149,7 @@ public class Model extends Observable {
 
     /**
      *
-     * method to update the current player turnOfTheRound in a round
+     * method to updateClient the current player turnOfTheRound in a round
      * once the first run is completed, the method proceeds to count backwards
      */
     public void updateTurnOfTheRound(){

@@ -4,26 +4,33 @@ import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.MoveMessage;
+import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
+import it.polimi.se2018.network.client.socket.ClientSocketInterface;
+import it.polimi.se2018.network.server.ServerRMIInterface;
+import it.polimi.se2018.network.server.ServerSocketInterface;
 
+import java.io.InputStreamReader;
+import java.io.InputStreamReader;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Scanner;
+import java.util.Scanner;
 
 /**
  * @author giovanni
  */
 
-public abstract class View extends Observable implements Observer{
-    private Player player;
-    private Model model;
+public class View extends Observable implements Observer{
+
+    private Scanner scanner;
+    private ServerRMIInterface serverRMIInterface;
+    private ServerSocketInterface serverSocketInterface;
 
     /**
-     * Initializes view connected with player and model
-     * @param player
-     * @param model
+     * Initializes view
      */
-    public View(Player player, Model model){
-        this.player= player;
-        this.model = model;
+    public View(){
+        scanner = new Scanner(new InputStreamReader(System.in));
     }
 
     /**
@@ -60,23 +67,32 @@ public abstract class View extends Observable implements Observer{
     }
     public void showMessage(String message){
 
-
     }
+
     public void reportError(String message){
 
-
     }
+
     public void update(MoveMessage message){
 
+    }
+
+    public int demandConnectionType() {
+        return scanner.nextInt();
+    }
+
+    public void startRMIConnection() {
 
     }
+
+    public void startSocketConnection() {
+    }
+
     @Override
     public void update(Observable model, Object message){
-        System.out.println(("giocatore aggiunto"));
+
     }
-
-
-
 }
+
 
 

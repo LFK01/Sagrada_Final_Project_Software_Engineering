@@ -26,7 +26,7 @@ public class ColoriDiversiRiga extends AbstractObjectiveCard {
 
     /**
      * @param schemaCard
-     * @return update count points
+     * @return updateClient count points
      */
     @Override
     public int countPoints(SchemaCard schemaCard) {

@@ -217,7 +217,6 @@ public class SchemaCard {
     }
     
     public void placeDie(Dice die, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
-        boolean hasADieNear = this.hasADieNear(row, col);
         boolean isPlacingFirstDie = (this.isEmpty() && ((row==0||row==3) || (col==0||col==4)));
         if (isPlacingFirstDie){
             this.getCell(row, col).setAssignedDice(die);    
@@ -227,6 +226,7 @@ public class SchemaCard {
                 throw (new RestrictionsNotRespectedException("Il dado deve essere piazzato lungo il bordo"));                
             }
             else{
+                boolean hasADieNear = this.hasADieNear(row, col);
                 if(hasADieNear){
                     this.getCell(row, col).setAssignedDice(die);
                 }

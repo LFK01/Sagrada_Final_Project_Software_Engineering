@@ -21,10 +21,9 @@ import java.util.*;
  * @author Giorgia
  */
 
-public class Controller implements Observer {
+public class Controller extends Observable implements Observer {
 
     private Model model;
-    private View view;
     /**
      * Class constructor
      * @param view view reference
@@ -33,7 +32,6 @@ public class Controller implements Observer {
     public Controller(View view) {
 
         this.model = new Model();
-        this.view = view;
     }
 
     /**

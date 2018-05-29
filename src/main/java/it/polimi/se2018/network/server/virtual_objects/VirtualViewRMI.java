@@ -26,7 +26,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     }
 
     @Override
-    public void sendToClient(Message message) {
+    public void notifyClient(Message message) {
         try{
             virtualClientRMI.sendToServer(message);
         } catch (RemoteException e){
@@ -35,7 +35,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     }
 
     @Override
-    public void sendToServer(Message message) {
+    public void updateServer(Message message) {
         server.getController().update(this, message);
     }
 

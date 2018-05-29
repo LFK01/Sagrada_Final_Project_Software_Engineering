@@ -25,14 +25,10 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
 
     @Override
     public void update(Observable o, Object arg) {
-        if(arg instanceof String){
-            server.sendToServer();
-        }else{
-            if(arg instanceof Message){
-                server.sendToServer((Message) arg);
-            }else{
-                System.out.println("Errore Inserimento Parametri");
-            }
+        try{
+            server.sendToServer((Message)arg);
+        } catch (RemoteException e){
+            e.printStackTrace();
         }
     }
 

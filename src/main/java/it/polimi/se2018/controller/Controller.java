@@ -26,11 +26,8 @@ public class Controller extends Observable implements Observer {
     private Model model;
     /**
      * Class constructor
-     * @param view view reference
      */
-                        //tolgo il riferimento a view momentaneamente per il test
-    public Controller(View view) {
-
+    public Controller() {
         this.model = new Model();
     }
 
@@ -223,14 +220,14 @@ public class Controller extends Observable implements Observer {
                             /**
                              * InvalidCellPositionException handling: sends an ErrorMessage to the view asking for a valid input
                              */
-                            update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Scegli una posizione valida!"));
+                            notifyObservers(/*Insert errore message here*/);
 
                         } catch (InvalidDraftPoolPosException e2) {
 
                             /**
                              * InvalidDraftPoolPosException handling: sends an ErrorMessage to the view asking for a valid input
                              */
-                            update(view, new ErrorMessage(((ChooseDiceMove) message).getPlayer(), "Inserisci un indice valido per la scelta del dado!"));
+                            notifyObservers(/*Insert errore message here*/);
 
                         }
                     } else if (!((PlayerMove) message).isDiceMove()) {
@@ -255,8 +252,8 @@ public class Controller extends Observable implements Observer {
                                  * NullPointerException handling: sends an ErrorMessage to the view asking for a valid input
                                  */
 
-                                update(view, new ErrorMessage(((UseToolCardMove) message).getPlayer(), "Scegli una carta utensile!"));
-
+                                setChanged();
+                                notifyObservers(/*inserire messaggio di errore*/);
                             }
 
                         }
@@ -266,7 +263,7 @@ public class Controller extends Observable implements Observer {
             }
         }
         else{
-            notify(); //notifica che non è il turno del giocatore
+            notify(/*inserire messaggio*/); //notifica che non è il turno del giocatore
         }
 
     }

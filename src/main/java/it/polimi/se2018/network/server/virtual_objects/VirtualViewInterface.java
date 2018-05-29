@@ -6,7 +6,7 @@ import java.util.Observer;
 
 public interface VirtualViewInterface extends Observer{
 
-    void sendToClient(Message message);
+    void notifyClient(Message message);
 
-    void sendToServer(Message message);
+    void updateServer(Message message);
 }

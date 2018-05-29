@@ -2,6 +2,7 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
+import it.polimi.se2018.network.client.socket.RemoteViewSocket;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
@@ -19,6 +20,10 @@ public class Client {
     private static ClientGathererRMI clientGathererRMI;
     private static RemoteViewRMI remoteViewRMI;
     private static ServerRMIInterface serverRMIInterface;
+    private static RemoteViewSocket remoteViewSocket;
+    private static final int PORT=1111;
+    private static final String host = "localhost";
+
 
     public static void main(String args[]){
         view = new View();
@@ -43,10 +48,13 @@ public class Client {
             } catch (MalformedURLException e){
                 e.printStackTrace();
             }
-            view.startRMIConnection();
+            view.createPlayer();
         }
         else{
-            view.startSocketConnection();
+            remoteViewSocket = new RemoteViewSocket(host, PORT);
+            view.addObserver(remoteViewSocket);
+            remoteViewSocket.addObserver(view);
+            view.createPlayer();
         }
     }
 }

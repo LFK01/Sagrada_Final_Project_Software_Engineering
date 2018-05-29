@@ -24,6 +24,6 @@ public class VirtualClientRMI  implements ServerRMIInterface{
 
     @Override
     public void sendToServer(Message message) throws RemoteException {
-        virtualView.sendToServer(message);
+        virtualView.updateServer(message);
     }
 }

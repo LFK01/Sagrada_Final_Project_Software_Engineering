@@ -52,7 +52,8 @@ public class View extends Observable implements Observer{
     }
 
     //metodo per inizializzare un giocatore
-    public void createPlayer(String name){
+    public void createPlayer(){
+        String name = null;
         setChanged();   //dico che è cambiato
         notifyObservers(new CreatePlayerMessage(name));
     }
@@ -79,13 +80,6 @@ public class View extends Observable implements Observer{
 
     public int demandConnectionType() {
         return scanner.nextInt();
-    }
-
-    public void startRMIConnection() {
-
-    }
-
-    public void startSocketConnection() {
     }
 
     @Override

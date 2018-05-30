@@ -9,10 +9,9 @@ import it.polimi.se2018.model.Player;
 public class ErrorMessage extends Message {
 
     private  String message;
-    private Player player;
 
-    public ErrorMessage(Player player, String message) {
-        this.player = player;
+    public ErrorMessage(String sender,String recipient, String message) {
+        super(sender,recipient);
         this.message = message;
     }
 

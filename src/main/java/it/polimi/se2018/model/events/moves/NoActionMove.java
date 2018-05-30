@@ -1,21 +1,22 @@
 package it.polimi.se2018.model.events.moves;
 import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.events.messages.Message;
 
 /**
  * @author giovanni
  */
-public class NoActionMove extends PlayerMove {
-
-    public NoActionMove(Player player){
-        super(player);
+public class NoActionMove extends Message {
+    //aggiorna il turno
+    public NoActionMove(String sender,String recipient){
+        super(sender,recipient);
     }
 
-    @Override
+
     public boolean isDiceMove() {
         return false;
     }
 
-    @Override
+
     public boolean isNoActionMove() {
         return true;
     }

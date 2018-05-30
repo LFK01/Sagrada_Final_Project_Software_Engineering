@@ -2,7 +2,6 @@ package it.polimi.se2018.model.events.messages;
 
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Player;
-import it.polimi.se2018.model.events.messages.MoveMessage;
 
 /**
  * @author Luciano
@@ -13,8 +12,8 @@ public class SuccessMoveMessage extends Message {
     private GameBoard gameBoard;
     private Player player;
 
-    public SuccessMoveMessage(Player player, GameBoard gameBoard) {
-        this.player = player;
+    public SuccessMoveMessage( String sender, String recipient,GameBoard gameBoard) {
+        super(sender, recipient);
         this.gameBoard = gameBoard;
     }
 

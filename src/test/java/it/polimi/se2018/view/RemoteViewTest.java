@@ -13,14 +13,14 @@ public class RemoteViewTest {
     public void connectionTest(){
         Player player = new Player("luca");
         View remoteView = null;
-        Controller controller = new Controller(remoteView);
+        Controller controller = new Controller();
 
-        remoteView = new RemoteView(player,controller.getModel());
+        //remoteView = new RemoteView(player,controller.getModel());
 
 
         controller.getModel().addObserver(remoteView);
         remoteView.addObserver(controller);
-        remoteView.createPlayer("giacomo");
+        remoteView.createPlayer();
 
         assertEquals("giacomo",controller.getModel().getPlayer(0).getName());
     }

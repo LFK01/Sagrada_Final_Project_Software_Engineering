@@ -2,14 +2,22 @@ package it.polimi.se2018.model.events.messages;
 
 import it.polimi.se2018.model.Player;
 
-public abstract class Message {
-    private Player player;
+import java.io.Serializable;
 
-    public Message(Player player){
-        this.player = player;
+public abstract class Message {
+    private String sender;
+    private String recipient;
+
+    public Message(String sender,String recipient){
+        this.sender = sender;
+        this.recipient = recipient;
     }
 
-    public Player getPlayer() {
-        return player;
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public String getSender() {
+        return sender;
     }
 }

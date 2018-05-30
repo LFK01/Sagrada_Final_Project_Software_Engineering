@@ -1,5 +1,6 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
+import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;

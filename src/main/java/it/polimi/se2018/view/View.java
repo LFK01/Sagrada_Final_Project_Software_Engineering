@@ -1,19 +1,16 @@
 package it.polimi.se2018.view;
-import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.SuccessMessage;
+import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
+import it.polimi.se2018.model.events.messages.UpdateTurnMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.messages.MoveMessage;
-import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
-import it.polimi.se2018.network.client.socket.ClientSocketInterface;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 
 import java.io.InputStreamReader;
-import java.io.InputStreamReader;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Scanner;
 import java.util.Scanner;
 
 /**
@@ -25,12 +22,14 @@ public class View extends Observable implements Observer{
     private Scanner scanner;
     private ServerRMIInterface serverRMIInterface;
     private ServerSocketInterface serverSocketInterface;
-
+    private Player player;
+    private boolean isPlayerTurn;
     /**
      * Initializes view
      */
     public View(){
         scanner = new Scanner(new InputStreamReader(System.in));
+        this.isPlayerTurn=true;
     }
 
     /**
@@ -39,6 +38,14 @@ public class View extends Observable implements Observer{
      */
     public Player getPlayer() {
         return player;
+    }
+
+    public boolean getIsPlayerTurn(){
+        return this.isPlayerTurn;
+    }
+
+    public void setFalsePlayerTurn() {
+        isPlayerTurn =false;
     }
 
     /**
@@ -51,8 +58,10 @@ public class View extends Observable implements Observer{
         notifyObservers(new ChooseDiceMove(draftPoolPos,row,col,player));
     }
 
+
     //metodo per inizializzare un giocatore
     public void createPlayer(){
+        //finestra per inserimento nome
         String name = null;
         setChanged();   //dico che è cambiato
         notifyObservers(new CreatePlayerMessage(name));
@@ -74,16 +83,27 @@ public class View extends Observable implements Observer{
 
     }
 
-    public void update(MoveMessage message){
-
-    }
-
     public int demandConnectionType() {
         return scanner.nextInt();
     }
 
     @Override
     public void update(Observable model, Object message){
+
+        if(message instanceof SuccessMoveMessage) {
+            System.out.println("Giocatore creato" + ((CreatePlayerMessage) message).getPlayerName());
+            //fai vedere la schemacard aggiornata con i dati della schemacard fornita dal messaggio show gameboard
+
+        }
+
+        if(message instanceof SuccessMessage){
+            this.player = ((SuccessMessage) message).getPlayer();
+            setFalsePlayerTurn();
+        }
+
+        if(message instanceof UpdateTurnMessage){
+            //tocca al prossimo giocatore
+        }
 
     }
 }

@@ -1,4 +1,7 @@
 package it.polimi.se2018.network.server;
+/**
+ * @author Luciano
+ */
 
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
@@ -34,7 +37,8 @@ public class Server {
         }
         try{
             this.clientGathererRMI = new ClientGathererRMI(this);
-            Naming.rebind("//localhost/ClientGathereRMI", clientGathererRMI);
+            Naming.rebind("//localhost/ClientGathererRMI", clientGathererRMI);
+            System.out.println("ho creato il ClientGathererRMI ");
         } catch (RemoteException e){
             e.printStackTrace();
         } catch (MalformedURLException e){

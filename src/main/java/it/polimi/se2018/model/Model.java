@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
@@ -182,7 +183,7 @@ public class Model extends Observable {
             throw new PlayerNumberExceededException("Impossibile aggiungere nuovi giocatori, numero massimo raggiunto!");
         }
         setChanged();
-        notifyObservers();
+        notifyObservers(new SuccessMessage(participants.get(participants.size()-1)));
     }
 
     /**

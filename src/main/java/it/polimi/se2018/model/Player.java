@@ -1,11 +1,13 @@
 package it.polimi.se2018.model;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 
+import java.io.Serializable;
+
 /**
  * @author Giovanni
  */
 
-public class Player {
+public class Player implements Serializable {
 
     private String name;
     private boolean state;

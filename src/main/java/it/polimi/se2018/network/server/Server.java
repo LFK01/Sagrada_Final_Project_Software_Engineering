@@ -6,7 +6,6 @@ package it.polimi.se2018.network.server;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
-import it.polimi.se2018.network.server.virtual_objects.VirtualClientRMI;
 import it.polimi.se2018.network.server.virtual_objects.VirtualClientSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
@@ -61,7 +60,7 @@ public class Server {
         /*controller.getModel().removePlayer();*/
     }
 
-    private ArrayList<VirtualViewInterface> getPlayers(){
+    public ArrayList<VirtualViewInterface> getPlayers(){
         return players;
     }
 

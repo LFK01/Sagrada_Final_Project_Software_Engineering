@@ -14,7 +14,7 @@ public class UseToolCardMove extends Message {
 
 
     public UseToolCardMove(InterfaceToolCard toolCard, Player player) {
-        super(player);
+        super("prova", "prova");
         this.toolCard = toolCard;
     }
 

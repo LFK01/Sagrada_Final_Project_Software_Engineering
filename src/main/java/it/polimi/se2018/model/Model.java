@@ -1,13 +1,11 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.events.messages.SuccessMessage;
-import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.PlayerNumberExceededException;
+import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.exceptions.SinglePlayerException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
@@ -95,11 +93,7 @@ public class Model extends Observable {
      * @param move data structure containing all the information about the player move
      */
     public void doDiceMove(ChooseDiceMove move) {
-        if (!isPlayerTurn(move.getPlayer())) {
-            notifyObservers(new ErrorMessage(move.getPlayer(), "Non &eacute; il tuo turno!"));
-            return;
-        }
-        try{
+        /*try{
             placeDie(move.getPlayer().getSchemaCard(), move.getCol(), move.getRow(), move.getDraftPoolPos());
             removeDieFromDrafPool(move.getDraftPoolPos());
         }
@@ -108,7 +102,7 @@ public class Model extends Observable {
         }
         catch(RestrictionsNotRespectedException e){
             notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
-        }
+        }*/
     }
 
     private void removeDieFromDrafPool(int draftPoolPos) {
@@ -176,14 +170,9 @@ public class Model extends Observable {
      * @param name
      */
     public void addPlayer(String name) throws PlayerNumberExceededException {
-        if(participants.size()<4){
-            participants.add(new Player(name));
-        }
-        else{
-            throw new PlayerNumberExceededException("Impossibile aggiungere nuovi giocatori, numero massimo raggiunto!");
-        }
+        participants.add(new Player(name));
         setChanged();
-        notifyObservers(new SuccessMessage(participants.get(participants.size()-1)));
+        notifyObservers(new SuccessMessage("server", "@all"));
     }
 
     /**
@@ -192,13 +181,13 @@ public class Model extends Observable {
      * metodo per rimuovere giocatore dalla lista dei giocatori
      */
     public void removePlayer(Player player) throws SinglePlayerException {
-        if(participants.size()>1){
+        /*if(participants.size()>1){
             participants.remove(participants.indexOf(player));
         }
         else{
             throw new SinglePlayerException("Impossibile rimuovere l'ultimo giocatore!");
         }
-        notifyObservers(new SuccessMoveMessage(player,this.gameBoard));
+        notifyObservers(new SuccessMoveMessage(player,this.gameBoard));*/
     }
 
     /**

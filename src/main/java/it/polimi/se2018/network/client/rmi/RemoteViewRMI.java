@@ -1,9 +1,7 @@
 package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.model.events.messages.Message;
-import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
 import it.polimi.se2018.network.server.ServerRMIInterface;
-import it.polimi.se2018.view.View;
 
 import java.rmi.RemoteException;
 import java.util.Observable;

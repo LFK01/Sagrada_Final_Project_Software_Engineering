@@ -4,12 +4,8 @@ package it.polimi.se2018.model;
  * edited Luciano
  */
 
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.exceptions.NotEnoughFavorTokensException;
-import it.polimi.se2018.model.exceptions.PlayerNumberExceededException;
+import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.exceptions.SinglePlayerException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;

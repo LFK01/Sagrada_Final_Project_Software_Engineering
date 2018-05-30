@@ -9,7 +9,7 @@ import java.util.*;
 
 public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colore a cui viene associato un valore randomico da 1 a 6
 
-    private ArrayList<Dice> diceBag = new ArrayList<Dice>(90);
+    private ArrayList<Dice> diceBag = new ArrayList<>(90);
 
     /**
      * Class constructor. It generates 18 dice per color assigning a random value to every single instance.

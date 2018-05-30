@@ -1,7 +1,5 @@
 package it.polimi.se2018.model.tool_cards;
 
-import it.polimi.se2018.model.Player;
-
 public class TaglierinaCircolare extends AbstractToolCard {
 
     private static TaglierinaCircolare thisInstance;

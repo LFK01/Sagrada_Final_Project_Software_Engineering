@@ -1,6 +1,5 @@
 package it.polimi.se2018.model.events.moves;
 
-import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.events.messages.Message;
 
 /**

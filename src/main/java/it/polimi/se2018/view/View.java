@@ -1,5 +1,4 @@
 package it.polimi.se2018.view;
-import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
@@ -8,6 +7,10 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
 import java.util.Observable;
 import java.util.Observer;
@@ -22,25 +25,16 @@ public class View extends Observable implements Observer{
     private Scanner scanner;
     private ServerRMIInterface serverRMIInterface;
     private ServerSocketInterface serverSocketInterface;
-    private Player player;
+    private String username;
     private boolean isPlayerTurn;
     /**
      * Initializes view
      */
     public View(){
         scanner = new Scanner(new InputStreamReader(System.in));
-        this.isPlayerTurn=true;
     }
 
-    /**
-     *
-     * @return a referece to player
-     */
-    public Player getPlayer() {
-        return player;
-    }
-
-    public boolean getIsPlayerTurn(){
+    public boolean IsPlayerTurn(){
         return this.isPlayerTurn;
     }
 
@@ -55,16 +49,58 @@ public class View extends Observable implements Observer{
      * @param col   it serves for the position of the die
      */
     public void handleDiceMove(int draftPoolPos ,int row,int col){
-        notifyObservers(new ChooseDiceMove(draftPoolPos,row,col,player));
+        notifyObservers(new ChooseDiceMove(username, "server", draftPoolPos, row, col));
     }
-
 
     //metodo per inizializzare un giocatore
     public void createPlayer(){
-        //finestra per inserimento nome
-        String name = null;
-        setChanged();   //dico che è cambiato
-        notifyObservers(new CreatePlayerMessage(name));
+        JFrame frameCreatePlayer = new JFrame("New Player");
+        Container containerCreatePlayer = new Container();
+        GridLayout layourCreatePlayer = new GridLayout(3,1);
+        frameCreatePlayer.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frameCreatePlayer.setSize(300, 200);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        frameCreatePlayer.setLocation(dim.width/2-frameCreatePlayer.getSize().width/2, dim.height/2-frameCreatePlayer.getSize().height/2);
+        frameCreatePlayer.add(containerCreatePlayer);
+        containerCreatePlayer.setLayout(layourCreatePlayer);
+        JLabel instructionLabel = new JLabel("Username:", JLabel.LEFT);
+        JTextField usernameTextField = new JTextField("username", JTextField.CENTER);
+        usernameTextField.setEnabled(true);
+        JButton confirmButton = new JButton("OK");
+        confirmButton.setEnabled(true);
+        confirmButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                username = usernameTextField.getText();
+                setChanged();
+                notifyObservers(new CreatePlayerMessage(username, "server", username));
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        containerCreatePlayer.add(instructionLabel);
+        containerCreatePlayer.add(usernameTextField);
+        containerCreatePlayer.add(confirmButton);
+        frameCreatePlayer.setVisible(true);
+        //frameCreatePlayer.pack();
     }
 
     public void handleChooseCardMove(int index){
@@ -84,7 +120,16 @@ public class View extends Observable implements Observer{
     }
 
     public int demandConnectionType() {
-        return scanner.nextInt();
+        JFrame frameDemandConnection = new JFrame("Parent Window");
+        Object[] options = {"RMI", "Socket"};
+        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Scegliere tipo di connessione desiderata:", "Scelta connessione", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+        if(n == JOptionPane.YES_OPTION){
+            frameDemandConnection.dispose();
+            return 1;
+        }else{
+            frameDemandConnection.dispose();
+            return 2;
+        }
     }
 
     @Override
@@ -97,7 +142,6 @@ public class View extends Observable implements Observer{
         }
 
         if(message instanceof SuccessMessage){
-            this.player = ((SuccessMessage) message).getPlayer();
             setFalsePlayerTurn();
         }
 
@@ -105,6 +149,12 @@ public class View extends Observable implements Observer{
             //tocca al prossimo giocatore
         }
 
+    }
+
+    public void playerNumberExceededDialog() {
+        JFrame framePlayerNumberExceeded = new JFrame();
+        Object[] options = {"OK"};
+        JOptionPane.showOptionDialog(framePlayerNumberExceeded, "Connection Failed", "Player number limit already reached, unable to add another player", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, options, null);
     }
 }
 

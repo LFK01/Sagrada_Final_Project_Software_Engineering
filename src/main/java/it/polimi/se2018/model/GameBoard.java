@@ -15,7 +15,7 @@ public class GameBoard {
     private String matchId;
     private DiceBag diceBag;
     private AbstractObjectiveCard publicObjectiveCards[] = new AbstractObjectiveCard[3];
-    private ArrayList<AbstractObjectiveCard> privateObjectiveCards = new ArrayList<AbstractObjectiveCard>();
+    private ArrayList<AbstractObjectiveCard> privateObjectiveCards = new ArrayList<>();
     private AbstractToolCard toolCards[] = new AbstractToolCard[3];
     private RoundTrack roundTrack;
     private PointTrack pointTrack;

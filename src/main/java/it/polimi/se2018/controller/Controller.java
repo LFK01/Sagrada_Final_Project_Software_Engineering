@@ -1,18 +1,14 @@
 package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
-import it.polimi.se2018.controller.exceptions.InvalidRoundException;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.ErrorMessage;
-import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.PlayerMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.model.exceptions.PlayerNumberExceededException;
+import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.view.*;
 
 import java.util.*;
 
@@ -113,16 +109,9 @@ public class Controller extends Observable implements Observer {
      * @param round round number
      * @param participants number of players
      * @throws NullPointerException in case diceBag is null
-     * @throws InvalidRoundException in case the round number exceeds 10
      */
 
-    private void rollRoundDice(DiceBag diceBag, int round, int participants) throws NullPointerException, InvalidRoundException {
-
-        if (round > 10)
-            throw new InvalidRoundException();
-
-        if (diceBag == null)
-            throw new NullPointerException();
+    private void rollRoundDice(DiceBag diceBag, int round, int participants) {
 
         RoundDice roundDice = new RoundDice(participants, diceBag, round);
 
@@ -178,8 +167,6 @@ public class Controller extends Observable implements Observer {
         if (move.getToolCard() == null)
             throw new NullPointerException();
 
-        move.getToolCard().activateCard(move.getPlayer());
-
         //attivazione tool card
         //Idem di sopra, ci sarà una chiamata del tipo model.performToolCardMove((UseToolCardMove) move).
         //((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
@@ -194,79 +181,41 @@ public class Controller extends Observable implements Observer {
 
     @Override
     public void update(Observable object, Object message) {
-        if (this.getModel().isPlayerTurn(((Message)message).getPlayer())) {
-            if ((message instanceof CreatePlayerMessage)) {
+        if ((message instanceof CreatePlayerMessage)) {
+           try {
+                model.addPlayer(((CreatePlayerMessage) message).getPlayerName());
+           } catch (PlayerNumberExceededException e) {
+               System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
+           }
+        }
+        if (message instanceof PlayerMove) {
+            if (((PlayerMove) message).isDiceMove()) {
                 try {
-                    model.addPlayer(((CreatePlayerMessage) message).getPlayerName());
-                } catch (PlayerNumberExceededException e) {
-                    System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
+                    performDiceMove((ChooseDiceMove) message);
+                } catch (InvalidCellPositionException e) {
+                    notifyObservers(/*Insert errore message here*/);
+                } catch (InvalidDraftPoolPosException e) {
+                    notifyObservers(/*Insert errore message here*/);
                 }
-
-            }
-
-
-            /**
-             * If condition to establish whether the message is ChooseDiceMove, UseToolCardMove or NoActionMove
-             */{
-                if (message instanceof PlayerMove) {
-                    if (((PlayerMove) message).isDiceMove()) {
-
+            } else {
+                if (!((PlayerMove) message).isDiceMove()) {
+                    if (((PlayerMove) message).isNoActionMove()) {
+                        model.updateTurnOfTheRound();
+                    } else {
                         try {
-
-                            performDiceMove((ChooseDiceMove) message);
-
-                        } catch (InvalidCellPositionException e1) {
-
-                            /**
-                             * InvalidCellPositionException handling: sends an ErrorMessage to the view asking for a valid input
-                             */
-                            notifyObservers(/*Insert errore message here*/);
-
-                        } catch (InvalidDraftPoolPosException e2) {
-
-                            /**
-                             * InvalidDraftPoolPosException handling: sends an ErrorMessage to the view asking for a valid input
-                             */
-                            notifyObservers(/*Insert errore message here*/);
-
+                            performToolCardMove((UseToolCardMove) message);
+                        } catch (NullPointerException e) {
+                            setChanged();
+                            notifyObservers(/*inserire messaggio di errore*/);
                         }
-                    } else if (!((PlayerMove) message).isDiceMove()) {
-
-                        /**
-                         * In case the player decides not to do anything - or the time expires - calls the model method to update the turn
-                         */
-
-                        if (((PlayerMove) message).isNoActionMove()) {
-
-                            model.updateTurnOfTheRound();
-
-                        } else {
-
-                            try {
-
-                                performToolCardMove((UseToolCardMove) message);
-
-                            } catch (NullPointerException e) {
-
-                                /**
-                                 * NullPointerException handling: sends an ErrorMessage to the view asking for a valid input
-                                 */
-
-                                setChanged();
-                                notifyObservers(/*inserire messaggio di errore*/);
-                            }
-
-                        }
-
                     }
                 }
             }
         }
-        else{
-            notify(/*inserire messaggio*/); //notifica che non è il turno del giocatore
-        }
-
     }
+
+
+
 
     //metto un nuovo metodo update per poter gestire i messaggi che arrivano da Player message (inizializzazione del giocatore)
     public void update(CreatePlayerMessage message){

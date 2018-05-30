@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
-import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.server.Server;
 
 import java.io.IOException;

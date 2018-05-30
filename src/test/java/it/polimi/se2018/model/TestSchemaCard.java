@@ -7,7 +7,6 @@ import static org.junit.Assert.*;
 import it.polimi.se2018.model.exceptions.FullCellException;
 
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
-import jdk.nashorn.internal.ir.CatchNode;
 import org.junit.Test;
 
 

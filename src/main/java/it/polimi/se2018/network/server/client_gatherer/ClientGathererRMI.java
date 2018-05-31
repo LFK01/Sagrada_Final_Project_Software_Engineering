@@ -21,7 +21,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     @Override
     public ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException {
         if(server.getPlayers().size()<4){
-            VirtualViewRMI newVirtualView = new VirtualViewRMI(server, newClient);
+            VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient);
             server.getController().addObserver(newVirtualView);
             newVirtualView.addObserver(server.getController());
             server.getController().getModel().addObserver(newVirtualView);
@@ -39,6 +39,11 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     @Override
     public void sendToServer(Message message) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void updateClient(Message message) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 }

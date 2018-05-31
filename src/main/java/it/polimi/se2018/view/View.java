@@ -9,9 +9,9 @@ import it.polimi.se2018.network.server.ServerSocketInterface;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.InputStreamReader;
+import java.security.Key;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -19,14 +19,15 @@ import java.util.Scanner;
 /**
  * @author giovanni
  */
-
 public class View extends Observable implements Observer{
 
-    private Scanner scanner;
     private ServerRMIInterface serverRMIInterface;
     private ServerSocketInterface serverSocketInterface;
-    private String username;
+    protected String username;
     private boolean isPlayerTurn;
+
+    private Scanner scanner;
+
     /**
      * Initializes view
      */
@@ -54,53 +55,86 @@ public class View extends Observable implements Observer{
 
     //metodo per inizializzare un giocatore
     public void createPlayer(){
-        JFrame frameCreatePlayer = new JFrame("New Player");
+        /*JFrame frameCreatePlayer = new JFrame("New Player");
         Container containerCreatePlayer = new Container();
         GridLayout layourCreatePlayer = new GridLayout(3,1);
+
         frameCreatePlayer.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frameCreatePlayer.setSize(300, 200);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         frameCreatePlayer.setLocation(dim.width/2-frameCreatePlayer.getSize().width/2, dim.height/2-frameCreatePlayer.getSize().height/2);
         frameCreatePlayer.add(containerCreatePlayer);
         containerCreatePlayer.setLayout(layourCreatePlayer);
+
         JLabel instructionLabel = new JLabel("Username:", JLabel.LEFT);
         JTextField usernameTextField = new JTextField("username", JTextField.CENTER);
         usernameTextField.setEnabled(true);
+        usernameTextField.setFocusable(true);
+
+        usernameTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    username = usernameTextField.getText();
+                    frameCreatePlayer.dispose();
+                    setChanged();
+                    notifyObservers(new CreatePlayerMessage(username, "server", username));
+                }
+            }
+            @Override
+            public void keyPressed(KeyEvent e) {            }
+            @Override
+            public void keyReleased(KeyEvent e) {            }
+        });
+
+        usernameTextField.addMouseListener(new MouseListener() {
+            boolean firstPressed = false;
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!firstPressed){
+                    firstPressed=true;
+                    usernameTextField.setText("");
+                }}
+            @Override
+            public void mousePressed(MouseEvent e) {            }
+            @Override
+            public void mouseReleased(MouseEvent e) {            }
+            @Override
+            public void mouseEntered(MouseEvent e) {            }
+            @Override
+            public void mouseExited(MouseEvent e) {            }
+        });
+
         JButton confirmButton = new JButton("OK");
         confirmButton.setEnabled(true);
+
         confirmButton.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 username = usernameTextField.getText();
+                frameCreatePlayer.dispose();
                 setChanged();
                 notifyObservers(new CreatePlayerMessage(username, "server", username));
             }
-
             @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
+            public void mousePressed(MouseEvent e) {           }
             @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
+            public void mouseReleased(MouseEvent e) {            }
             @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
+            public void mouseEntered(MouseEvent e) {            }
             @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
+            public void mouseExited(MouseEvent e) {            }
         });
+
         containerCreatePlayer.add(instructionLabel);
         containerCreatePlayer.add(usernameTextField);
         containerCreatePlayer.add(confirmButton);
-        frameCreatePlayer.setVisible(true);
-        //frameCreatePlayer.pack();
+
+        frameCreatePlayer.setVisible(true);*/
+        System.out.println("Inserire username:");
+        username = scanner.nextLine();
+        setChanged();
+        notifyObservers(new CreatePlayerMessage(username, "server", username));
     }
 
     public void handleChooseCardMove(int index){
@@ -134,21 +168,17 @@ public class View extends Observable implements Observer{
 
     @Override
     public void update(Observable model, Object message){
-
         if(message instanceof SuccessMoveMessage) {
             System.out.println("Giocatore creato" + ((CreatePlayerMessage) message).getPlayerName());
-            //fai vedere la schemacard aggiornata con i dati della schemacard fornita dal messaggio show gameboard
-
         }
-
         if(message instanceof SuccessMessage){
-            setFalsePlayerTurn();
+            System.out.println("View successo");
+            JFrame parent = new JFrame();
+            showSuccessMessage(parent);
         }
-
         if(message instanceof UpdateTurnMessage){
             //tocca al prossimo giocatore
         }
-
     }
 
     public void playerNumberExceededDialog() {
@@ -156,7 +186,13 @@ public class View extends Observable implements Observer{
         Object[] options = {"OK"};
         JOptionPane.showOptionDialog(framePlayerNumberExceeded, "Connection Failed", "Player number limit already reached, unable to add another player", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, options, null);
     }
+
+    public static void showSuccessMessage(JFrame parent){
+        Object[] options = {"OK"};
+        JOptionPane.showOptionDialog(parent, "Registration successfully completed!", "Success!", JOptionPane.DEFAULT_OPTION , JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+    }
 }
+
 
 
 

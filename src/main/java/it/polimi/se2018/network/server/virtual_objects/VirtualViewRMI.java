@@ -10,10 +10,8 @@ import java.util.Observable;
 public class VirtualViewRMI extends Observable implements VirtualViewInterface {
 
     private VirtualClientRMI virtualClientRMI;
-    private Server server;
 
-    public VirtualViewRMI(Server server, ClientRMIInterface clientRMIInterface){
-        this.server = server;
+    public VirtualViewRMI(ClientRMIInterface clientRMIInterface){
         try{
             virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface);
         } catch (RemoteException e){
@@ -28,7 +26,8 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     @Override
     public void notifyClient(Message message) {
         try{
-            virtualClientRMI.sendToServer(message);
+            System.out.println("VirtualViewRMI 3");
+            virtualClientRMI.updateClient(message);
         } catch (RemoteException e){
             e.printStackTrace();
         }
@@ -36,11 +35,14 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
 
     @Override
     public void updateServer(Message message) {
-        server.getController().update(this, message);
+        System.out.println("VirtualViewRMI 1");
+        setChanged();
+        notifyObservers(message);
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-
+    public void update(Observable o, Object message) {
+        System.out.println("VirtualViewRMI 2");
+        notifyClient((Message) message);
     }
 }

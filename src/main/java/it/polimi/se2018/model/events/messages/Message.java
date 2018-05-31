@@ -1,6 +1,8 @@
 package it.polimi.se2018.model.events.messages;
 
-public abstract class Message {
+import java.io.Serializable;
+
+public abstract class Message implements Serializable{
     private String sender;
     private String recipient;
 

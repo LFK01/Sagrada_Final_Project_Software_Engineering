@@ -169,10 +169,11 @@ public class Model extends Observable {
      * method to add a new player
      * @param name
      */
-    public void addPlayer(String name) throws PlayerNumberExceededException {
+    public void addPlayer(String name){
+        System.out.println("Model 1");
         participants.add(new Player(name));
         setChanged();
-        notifyObservers(new SuccessMessage("server", "@all"));
+        notifyObservers(new SuccessMessage("server",name));
     }
 
     /**

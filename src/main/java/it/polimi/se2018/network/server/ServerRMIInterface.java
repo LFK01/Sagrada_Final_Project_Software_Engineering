@@ -13,4 +13,6 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(Message message) throws RemoteException;
 
+    void updateClient(Message message) throws RemoteException;
+
 }

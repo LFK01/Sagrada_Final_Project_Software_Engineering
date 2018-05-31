@@ -181,12 +181,10 @@ public class Controller extends Observable implements Observer {
 
     @Override
     public void update(Observable object, Object message) {
+        System.out.println("Controller 1");
         if ((message instanceof CreatePlayerMessage)) {
-           try {
-                model.addPlayer(((CreatePlayerMessage) message).getPlayerName());
-           } catch (PlayerNumberExceededException e) {
-               System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
-           }
+            System.out.println("Controller 2");
+            model.addPlayer(((CreatePlayerMessage) message).getSender());
         }
         if (message instanceof PlayerMove) {
             if (((PlayerMove) message).isDiceMove()) {
@@ -214,31 +212,6 @@ public class Controller extends Observable implements Observer {
         }
     }
 
-
-
-
-    //metto un nuovo metodo update per poter gestire i messaggi che arrivano da Player message (inizializzazione del giocatore)
-    public void update(CreatePlayerMessage message){
-
-        try{
-            model.addPlayer(message.getPlayerName());
-        } catch (PlayerNumberExceededException e) {
-            System.out.println("numero massimo di giocatori raggiunto");  //può essere sostituito dal messaggio presente nel'
-        }
-
-
-    }
-
-    //update che serve per aggiornare il il turno e passarlo al giocatore successivo
-    public void update (Observable objecy, NoActionMove move){
-        model.updateTurnOfTheRound();
-    }
-
-
-
-
-
-    //aggiungo classe che potrebbe servirmi per test su controller
     public Model getModel(){
         return model;
     }

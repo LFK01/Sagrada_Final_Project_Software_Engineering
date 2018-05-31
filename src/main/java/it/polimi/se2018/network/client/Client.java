@@ -8,11 +8,13 @@ import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.view.View;
 
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 public class Client {
 
@@ -24,10 +26,13 @@ public class Client {
     private static final int PORT=1111;
     private static final String host = "localhost";
 
+    private static Scanner scanner = new Scanner(new InputStreamReader(System.in));
 
     public static void main(String args[]){
         view = new View();
-        int choice = view.demandConnectionType();
+        //int choice = view.demandConnectionType();
+        System.out.println("1 RMI 2 Socket");
+        int choice = scanner.nextInt();
         if(choice == 1){
             try {
                 remoteViewRMI = new RemoteViewRMI();

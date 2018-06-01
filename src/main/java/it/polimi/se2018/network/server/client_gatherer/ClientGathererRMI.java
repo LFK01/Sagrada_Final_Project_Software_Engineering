@@ -4,9 +4,14 @@ import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
+import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
+import it.polimi.se2018.network.server.virtual_objects.VirtualClientRMI;
+import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewRMI;
+import it.polimi.se2018.network.server.virtual_objects.VirtualViewSocket;
 
+import java.awt.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -16,6 +21,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     public ClientGathererRMI(Server server) throws RemoteException{
         this.server = server;
+        Dimension d = new Dimension();
     }
 
     @Override
@@ -31,6 +37,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
             }catch (RemoteException e){
                 e.printStackTrace();
             }
+            server.addClient(newVirtualView);
             return remoteServerRef;
         } else{
             throw new PlayerNumberExceededException("Player number limit already reached.");
@@ -43,7 +50,13 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void updateClient(Message message) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
+    public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
+        for (VirtualViewInterface client : server.getPlayers()) {
+            if(client.getUsername().equals(username)){
+                client = new VirtualViewRMI(newClient, username);
+                ((VirtualViewRMI) client).addObserver(server.getController());
+            }
+        }
+        throw new PlayerNotFoundException();
     }
 }

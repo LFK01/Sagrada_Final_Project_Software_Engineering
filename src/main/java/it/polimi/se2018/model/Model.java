@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -170,10 +171,11 @@ public class Model extends Observable {
      * @param name
      */
     public void addPlayer(String name){
-        System.out.println("Model 1");
+        System.out.println("Model adds player");
         participants.add(new Player(name));
+        System.out.println("Model -> VWInterface");
         setChanged();
-        notifyObservers(new SuccessMessage("server",name));
+        notifyObservers(new SuccessCreatePlayerMessage("server",name));
     }
 
     /**

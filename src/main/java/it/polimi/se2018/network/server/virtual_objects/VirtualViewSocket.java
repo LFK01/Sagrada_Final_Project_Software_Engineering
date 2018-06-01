@@ -1,7 +1,12 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
-import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.network.server.Server;
+import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.Socket;
 import java.util.Observable;
 
 public class VirtualViewSocket extends Observable implements VirtualViewInterface {
@@ -14,20 +19,46 @@ public class VirtualViewSocket extends Observable implements VirtualViewInterfac
 
 
     @Override
-    public void update(Observable o, Object arg) {
-        if(arg instanceof Message){
-            notifyClient((Message) arg);
+    public void update(Observable o, Object message) {
+        try {
+            Method notifyClient = clientSocket.getClass().getMethod("notifyClient", message.getClass());
+            notifyClient.invoke(clientSocket, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateServer(CreatePlayerMessage message){
+        System.out.println("VWSocket -> Controller");
+        setChanged();
+        notifyObservers(message);
+    }
+
+    public void updateServer(ComebackSocketMessage message){
+        try{
+            clientSocket.resetOldPlayer(message);
+            setChanged();
+            notifyObservers(message);
+        } catch (PlayerNotFoundException e){
+            clientSocket.notifyClient(new ErrorMessage("server", clientSocket.getUsername(), "Player not found"));
         }
     }
 
     @Override
-    public void notifyClient(Message message) {
-        clientSocket.notifyClient(message);
+    public String getUsername() {
+        return clientSocket.getUsername();
     }
 
     @Override
-    public void updateServer(Message message) {
-        setChanged();
-        notifyObservers(message);
+    public void setClientConnection(Socket clientConnection) {
+        clientSocket.setClientConnection(clientConnection);
+    }
+
+    public VirtualClientSocket getClientSocket() {
+        return clientSocket;
+    }
+
+    public void setClientSocket(VirtualClientSocket clientSocket) {
+        this.clientSocket = clientSocket;
     }
 }

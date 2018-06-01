@@ -2,7 +2,9 @@ package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.*;
+import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.PlayerMove;
@@ -10,6 +12,8 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -20,6 +24,7 @@ import java.util.*;
 public class Controller extends Observable implements Observer {
 
     private Model model;
+
     /**
      * Class constructor
      */
@@ -28,78 +33,58 @@ public class Controller extends Observable implements Observer {
     }
 
     /**
-     * Method that randomly extracts 3 tool cards
+     * Method that randomly extracts game cards
      */
-
     private void cardsExtraction() {
-
         model.extractToolCards();
         model.extractPublicObjectiveCards();
-
     }
 
     /**
      * Method that randomly extracts and deals one private objective card per player
      */
-
     private void dealPrivateObjectiveCards() {
-
         ArrayList<Integer> cardIndex = new ArrayList<>(12);
-
-        for(int i = 1; i <= 5; i++)
+        for(int i = 1; i <= 5; i++){
             cardIndex.add(i);
-
+        }
         Collections.shuffle(cardIndex);
-
         for(int i = 0; i < model.getParticipantsNumber(); i++) {
-
             switch(cardIndex.get(i)) {
-
-                case 1:
+                case 1: {
                     model.getPlayer(i).setPrivateObjectiveCard(SfumatureRosse.getThisInstance());
                     break;
-
-                case 2:
+                }
+                case 2: {
                     model.getPlayer(i).setPrivateObjectiveCard(SfumatureGialle.getThisInstance());
                     break;
-
-                case 3:
+                }
+                case 3: {
                     model.getPlayer(i).setPrivateObjectiveCard(SfumatureVerdi.getThisInstance());
                     break;
-
-                case 4:
+                }
+                case 4: {
                     model.getPlayer(i).setPrivateObjectiveCard(SfumatureBlu.getThisInstance());
                     break;
-
-                case 5:
+                }
+                case 5: {
                     model.getPlayer(i).setPrivateObjectiveCard(SfumatureViola.getThisInstance());
                     break;
-
+                }
             }
-
         }
-
     }
 
     /**
      * Method that randomly extracts 3 public objective cards
      */
-
-
-
     /**
      * Method to roll one single dice, assigning a random int value
      * @param dice dice chosen by the player
      * @throws NullPointerException in case the dice parameter is null
      */
-
-    private void rollSingleDice(Dice dice) throws NullPointerException/*, InvalidValueException*/{
-
-        if (dice == null)
-            throw new NullPointerException();
-
+    private void rollSingleDice(Dice dice) {
         dice.setValue((int)Math.ceil(Math.random()*6));
-
     }
 
     /**
@@ -110,13 +95,9 @@ public class Controller extends Observable implements Observer {
      * @param participants number of players
      * @throws NullPointerException in case diceBag is null
      */
-
     private void rollRoundDice(DiceBag diceBag, int round, int participants) {
-
         RoundDice roundDice = new RoundDice(participants, diceBag, round);
-
         model.getGameBoard().getRoundTrack().setRoundDice(roundDice, round);
-
     }
 
     /**
@@ -125,35 +106,24 @@ public class Controller extends Observable implements Observer {
      * @throws InvalidCellPositionException in case the player gave an invalid input while choosing the cell
      * @throws InvalidDraftPoolPosException in case the player gave an invalid input while choosing the dice
      */
-
     private void performDiceMove(ChooseDiceMove move) throws InvalidCellPositionException, InvalidDraftPoolPosException {
-
         if (((ChooseDiceMove) move).getRow() < 0 ||
                 ((ChooseDiceMove) move).getRow() > 3 ||
                 ((ChooseDiceMove) move).getCol() < 0 ||
                 ((ChooseDiceMove) move).getCol() > 4) {
-
             throw new InvalidCellPositionException();
         }
-
         if (((ChooseDiceMove) move).getDraftPoolPos() < 0) {
-
             throw new InvalidDraftPoolPosException();
-
         }
-
         model.doDiceMove(move);
-
         //gestione di altre eccezioni relative al caso
-
         //scelta e piazzamento dado
         /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
-        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.*/
-        //model.doDiceMove((ChooseDiceMove) move);
-
-        //move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
-        //sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile
-
+        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.
+        model.doDiceMove((ChooseDiceMove) move);
+        move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
+        sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile*/
     }
 
     /**
@@ -161,16 +131,10 @@ public class Controller extends Observable implements Observer {
      * @param move the object representing the move
      * @throws NullPointerException in case the tool card is null
      */
-
-    private void performToolCardMove(UseToolCardMove move) throws NullPointerException {
-
-        if (move.getToolCard() == null)
-            throw new NullPointerException();
-
+    private void performToolCardMove(UseToolCardMove move){
         //attivazione tool card
         //Idem di sopra, ci sarà una chiamata del tipo model.performToolCardMove((UseToolCardMove) move).
         //((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
-
     }
 
     /**
@@ -178,14 +142,16 @@ public class Controller extends Observable implements Observer {
      * @param object the generic object that will receive the update (can be view or model)
      * @param message the generic message (can be a move or a message)
      */
-
     @Override
     public void update(Observable object, Object message) {
-        System.out.println("Controller 1");
-        if ((message instanceof CreatePlayerMessage)) {
-            System.out.println("Controller 2");
-            model.addPlayer(((CreatePlayerMessage) message).getSender());
+        try{
+            System.out.println("Controller calls method");
+            Method update = this.getClass().getMethod("update", message.getClass());
+            update.invoke(this, message);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e){
+            e.printStackTrace();
         }
+        //TODO new update(PlayerMove message) with all the instruction below
         if (message instanceof PlayerMove) {
             if (((PlayerMove) message).isDiceMove()) {
                 try {
@@ -212,9 +178,16 @@ public class Controller extends Observable implements Observer {
         }
     }
 
+    public void update(CreatePlayerMessage message){
+        model.addPlayer(message.getPlayerName());
+    }
+
+    public void update(ComebackSocketMessage message){
+        setChanged();
+        notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
+    }
+
     public Model getModel(){
         return model;
     }
-
-
 }

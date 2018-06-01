@@ -1,13 +1,20 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
-import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.server.Server;
+import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 
+/**
+ * @author Luciano
+ */
 public class VirtualClientSocket extends Thread {
 
     private Server server;
@@ -15,10 +22,13 @@ public class VirtualClientSocket extends Thread {
     private ObjectOutputStream writer;
     private ObjectInputStream inputStream;
     private VirtualViewSocket virtualViewSocket;
+    private boolean isConnected;
+    private String username;
 
     public VirtualClientSocket(Server server, Socket clientConnection){
         this.server = server;
         this.clientConnection = clientConnection;
+        this.isConnected = true;
         try{
             writer = new ObjectOutputStream(clientConnection.getOutputStream());
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
@@ -36,36 +46,85 @@ public class VirtualClientSocket extends Thread {
         Message message = null;
         try {
             boolean loop = true;
-            while (loop){
+            while (loop && isConnected){
                 try{
                     message = (Message) inputStream.readObject();
+                    System.out.println("VCSocket letto messaggio -> Server");
+                    this.isConnected = true;
                 } catch (ClassNotFoundException e){
                     e.printStackTrace();
                 } catch (IOException e){
-                    e.printStackTrace();
+                    System.out.println("Player: " + username +" disconnected");
+                    this.isConnected = false;
                 }
                 if(message == null){
                     loop = false;
                 }else {
-                    virtualViewSocket.updateServer(message);
+                    try{
+                        System.out.println("Try to invoke a method");
+                        Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
+                        updateServer.invoke(virtualViewSocket, message);
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
+                        e.printStackTrace();
+                    }
                 }
             }
             clientConnection.close();
-            server.removeClient(virtualViewSocket);
         } catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    public void notifyClient(Message message){
-        try {
-            writer.writeObject(message);
-        } catch (IOException e){
-            e.printStackTrace();
+    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        username = successCreatePlayerMessage.getRecipient();
+        if(isConnected){
+            try{
+                writer.writeObject(successCreatePlayerMessage);
+            } catch (IOException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
         }
+    }
+
+    public void notifyClient(ErrorMessage errorMessage){
+        username = errorMessage.getRecipient();
+        if(isConnected){
+            try{
+                writer.writeObject(errorMessage);
+            } catch (IOException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{
+        for (VirtualViewInterface client: server.getPlayers()) {
+            if(client.getUsername().equals((message).getUsername())){
+                client.setClientConnection((message).getNewClientConnection());
+                this.isConnected = false;
+                for (VirtualViewInterface uselessClient: server.getPlayers()) {
+                    if(client == this.virtualViewSocket){
+                        server.getPlayers().remove(uselessClient);
+                        this.isConnected = false;
+                    }
+                }
+            }
+        }
+        throw new PlayerNotFoundException();
     }
 
     public VirtualViewSocket getVirtualViewSocket() {
         return virtualViewSocket;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setClientConnection(Socket clientConnection) {
+        this.clientConnection = clientConnection;
+        this.isConnected = true;
     }
 }

@@ -2,6 +2,7 @@ package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
+import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 
 import java.rmi.Remote;
@@ -13,6 +14,5 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(Message message) throws RemoteException;
 
-    void updateClient(Message message) throws RemoteException;
-
+    ServerRMIInterface retrieveOldClient(ClientRMIInterface oldClient, String username) throws RemoteException, PlayerNotFoundException;
 }

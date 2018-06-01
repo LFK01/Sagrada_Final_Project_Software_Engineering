@@ -1,8 +1,5 @@
 package it.polimi.se2018.view;
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.SuccessMessage;
-import it.polimi.se2018.model.events.messages.SuccessMoveMessage;
-import it.polimi.se2018.model.events.messages.UpdateTurnMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.ServerSocketInterface;
@@ -11,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.Key;
 import java.util.Observable;
 import java.util.Observer;
@@ -53,7 +52,9 @@ public class View extends Observable implements Observer{
         notifyObservers(new ChooseDiceMove(username, "server", draftPoolPos, row, col));
     }
 
-    //metodo per inizializzare un giocatore
+    /**
+     * shows up a login window where the user can choose her/his name
+     */
     public void createPlayer(){
         /*JFrame frameCreatePlayer = new JFrame("New Player");
         Container containerCreatePlayer = new Container();
@@ -167,17 +168,30 @@ public class View extends Observable implements Observer{
     }
 
     @Override
-    public void update(Observable model, Object message){
-        if(message instanceof SuccessMoveMessage) {
-            System.out.println("Giocatore creato" + ((CreatePlayerMessage) message).getPlayerName());
+    public void update(Observable o, Object message){
+        try{
+            Method updateView = this.getClass().getDeclaredMethod("updateView", message.getClass());
+            updateView.invoke(this, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
-        if(message instanceof SuccessMessage){
-            System.out.println("View successo");
-            JFrame parent = new JFrame();
-            showSuccessMessage(parent);
+    }
+
+    private void updateClient(SuccessCreatePlayerMessage message){
+        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
+            System.out.println("Giocatore creato " + message.getRecipient());
         }
-        if(message instanceof UpdateTurnMessage){
-            //tocca al prossimo giocatore
+    }
+
+    private void updateClient(ErrorMessage message){
+        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
+
+        }
+    }
+
+    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username) || successCreatePlayerMessage.getRecipient().equals("@all")){
+            System.out.println("Giocatore creato " + successCreatePlayerMessage.getRecipient());
         }
     }
 

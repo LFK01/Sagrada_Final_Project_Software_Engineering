@@ -9,6 +9,7 @@ import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualClientSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
+import javax.swing.*;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
@@ -57,7 +58,6 @@ public class Server {
 
     public void removeClient(VirtualViewInterface oldClient){
         players.remove(oldClient);
-        /*controller.getModel().removePlayer();*/
     }
 
     public ArrayList<VirtualViewInterface> getPlayers(){

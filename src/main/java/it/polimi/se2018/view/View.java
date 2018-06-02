@@ -24,9 +24,9 @@ public class View extends Observable implements Observer{
     private ServerSocketInterface serverSocketInterface;
     protected String username;
     private boolean isPlayerTurn;
-
     private Scanner scanner;
-
+    boolean windowCreated = true;
+    private int choice = 0;
     /**
      * Initializes view
      */
@@ -205,6 +205,72 @@ public class View extends Observable implements Observer{
         Object[] options = {"OK"};
         JOptionPane.showOptionDialog(parent, "Registration successfully completed!", "Success!", JOptionPane.DEFAULT_OPTION , JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
     }
+
+    public int chooseConnectionWindow() {
+
+
+            if (windowCreated) {
+
+                JFrame frame = new JFrame("Quale connessione vuoi scegliere ?");
+                Container container = new Container();
+                ImageIcon iconRMI = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaRMI.PNG");
+                ImageIcon iconSocket = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaSocket.PNG");
+                ImageIcon iconComeBack = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\comeBack2.jpg");
+                JButton buttonRMI = new JButton(iconRMI);
+                JButton buttonComeBack = new JButton(iconComeBack);
+                JButton buttonSocket = new JButton(iconSocket);
+                buttonRMI.addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        setChoice();
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        setChoice();
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+                        setChoice();
+
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        setChoice();
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        setChoice();
+
+                    }
+                });
+
+                container.setLayout(new GridLayout(1, 3));
+                container.add(buttonRMI);
+                container.add(buttonComeBack);
+                container.add(buttonSocket);
+                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+                frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
+                frame.add(container);
+                frame.setSize(550, 750);
+                frame.setResizable(false);
+                frame.setVisible(true);
+                windowCreated = false;
+
+            }
+        return choice;
+    }
+
+
+    public void setChoice(){
+        choice = 1;
+    }
+
 }
 
 

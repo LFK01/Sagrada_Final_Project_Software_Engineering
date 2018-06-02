@@ -32,13 +32,17 @@ public class Client {
         boolean comeback = false;
         String username = null;
         View view = new View();
-        while(!correctChoice){
+        /*while(!correctChoice){
             if(!comeback){
                 System.out.println("1 RMI 2 Socket 3 Comeback");
             }else{
                 System.out.println("1 RMI 2 Socket");
+            }*/
+            //int choice = scanner.nextInt();
+        int choice =0;
+        while(choice ==0) {
+                 choice = view.chooseConnectionWindow();
             }
-            int choice = scanner.nextInt();
             switch (choice){
 
                 case 1:{
@@ -106,6 +110,6 @@ public class Client {
 
                 default: correctChoice = false;
             }
-        }
+
     }
 }

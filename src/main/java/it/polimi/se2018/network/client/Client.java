@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.client;
 
-import com.sun.net.httpserver.HttpServer;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
 import it.polimi.se2018.network.client.socket.RemoteViewSocket;
@@ -10,13 +9,11 @@ import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.view.View;
 
 import java.io.InputStreamReader;
-import java.net.*;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**

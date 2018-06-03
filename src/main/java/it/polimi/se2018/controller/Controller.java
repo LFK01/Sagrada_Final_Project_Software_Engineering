@@ -4,6 +4,7 @@ import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.SelectedSchemaMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -186,6 +187,20 @@ public class Controller extends Observable implements Observer {
         setChanged();
         notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
     }
+
+    public void update(SelectedSchemaMessage message){
+        for(int playerPos =0;playerPos< model.getParticipants().size();playerPos++){
+            if(model.getParticipants().get(playerPos).getName() == message.getSender()){
+                model.setSchemacardPlayer(playerPos,message.getSchemaSelected());
+            }
+        }
+    }
+
+    public void sendSchemaCardController(){
+        model.sendSchemaCard();
+    }
+
+
 
     public Model getModel(){
         return model;

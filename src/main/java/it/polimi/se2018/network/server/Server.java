@@ -53,7 +53,6 @@ public class Server {
         if(players.size()<4){
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
             this.addClient(virtualClientSocket.getVirtualViewSocket());
-            virtualClientSocket.start();
         }else{
             try{
                 ObjectOutputStream temporaryWriter = new ObjectOutputStream(newClient.getOutputStream());

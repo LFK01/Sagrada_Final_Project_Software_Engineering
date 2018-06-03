@@ -55,6 +55,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
+
     @Override
     public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
         /*method to be implemented in ClientGathererRMI*/
@@ -78,6 +79,17 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
             try{
                 System.out.println("VCRMI -> RemoteVRMI: " + errorMessage.toString());
                 remoteView.updateClient(errorMessage);
+            } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+    public void updateClient(ChooseSchemaMessage chooseSchemaMessage){
+        if(isConnected){
+            try{
+                System.out.println("VCRMI -> RemoteVRMI: " + chooseSchemaMessage.toString());
+                remoteView.updateClient(chooseSchemaMessage);
             } catch (RemoteException e) {
                 isConnected = false;
                 e.printStackTrace();

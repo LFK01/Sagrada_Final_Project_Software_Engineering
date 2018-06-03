@@ -1,9 +1,6 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.ErrorMessage;
-import it.polimi.se2018.model.events.messages.Message;
-import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import sun.dc.pr.PRError;
 
@@ -52,6 +49,12 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
             }
         }
     }
+    public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
+        setChanged();
+        notifyObservers(chooseSchemaMessage);
+    }
+
+
 
     /**
      * Override of Observer update method
@@ -84,4 +87,18 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         this.server = server;
         serverIsUp = true;
     }
+
+    private void sendToServer(SelectedSchemaMessage selectedSchemaMessage){
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + selectedSchemaMessage.toString());
+                server.sendToServer(selectedSchemaMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+
+
 }

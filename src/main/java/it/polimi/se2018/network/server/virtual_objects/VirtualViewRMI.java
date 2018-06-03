@@ -83,6 +83,13 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         System.out.println("VirtualViewRMI -> Controller comeback doesnt notify");
     }
 
+    public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
+        setChanged();
+        notifyObservers(selectedSchemaMessage);
+    }
+
+
+
     @Override
     public String getUsername() {
         return virtualClientRMI.getUsername();

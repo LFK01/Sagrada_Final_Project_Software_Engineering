@@ -97,6 +97,18 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
+    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
+        if(isConnected){
+            try{
+                writer.writeObject(chooseSchemaMessage);
+            } catch (IOException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{
         for (VirtualViewInterface client: server.getPlayers()) {
             if(client.getUsername().equals((message).getUsername())){

@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
+import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
@@ -12,9 +14,7 @@ import it.polimi.se2018.model.exceptions.SinglePlayerException;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Observable;
+import java.util.*;
 
 /**
  * This class is supposed to contain all the data about a game and all the
@@ -83,6 +83,10 @@ public class Model extends Observable {
      */
     public Player getPlayer(int index) {
         return participants.get(index);
+    }
+
+    public ArrayList<Player> getParticipants() {
+        return participants;
     }
 
     public boolean isFirstDraftOfDice() {
@@ -171,11 +175,38 @@ public class Model extends Observable {
      * @param name
      */
     public void addPlayer(String name){
+        Timer t = new Timer();
+        boolean numberOfParticipantReachedUp = false ;
         System.out.println("Model adds player");
         participants.add(new Player(name));
         System.out.println("Model -> VWInterface");
         setChanged();
         notifyObservers(new SuccessCreatePlayerMessage("server",name));
+        if(participants.size()==4){
+            numberOfParticipantReachedUp=true;
+            sendSchemaCard();
+        }
+        boolean n = numberOfParticipantReachedUp;
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(!n) {
+                    if(participants.size()>=2) {
+                        System.out.println("SONO ENTRATO NEL TIMER");
+                        sendSchemaCard();
+                    }
+                    else {
+                        System.out.println("NUMERO GIOCATORI NON RAGGIUNTO");
+                        notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
+
+                    }
+                }
+
+            }
+        }, 10000);
+
+
+
     }
 
     /**
@@ -335,6 +366,30 @@ public class Model extends Observable {
         notifyObservers();
 
     }
+
+
+    public void sendSchemaCard(){
+        System.out.println("STO ASSEGNANDO GLI SCHEMI");
+        ArrayList<Integer> schemaPosition = new ArrayList<Integer>(); //genero le 8 carte schema
+        int j=1;
+        for(int i =0;i<12;i++){
+            schemaPosition.add(j);
+            j++;
+        }
+        Collections.shuffle(schemaPosition);
+        for(int t=0;t< participants.size()-1;t++) {
+            int s =0;
+            setChanged();
+            notifyObservers(new ChooseSchemaMessage("model", participants.get(0).getName(),schemaPosition.get(s),schemaPosition.get(s+1)));
+            s = s+2;
+        }
+    }
+
+    public void setSchemacardPlayer(int platerPos,int schemaPos){
+        SchemaCard schema = new SchemaCard(schemaPos);
+        participants.get(platerPos).setSchemaCard(schema);
+    }
+
 
 
 

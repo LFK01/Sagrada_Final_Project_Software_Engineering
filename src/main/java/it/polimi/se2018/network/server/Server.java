@@ -4,12 +4,15 @@ package it.polimi.se2018.network.server;
  */
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualClientSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.rmi.Naming;
@@ -47,9 +50,19 @@ public class Server {
     }
 
     public void addClient(Socket newClient){
-        VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
-        this.addClient(virtualClientSocket.getVirtualViewSocket());
-        virtualClientSocket.start();
+        if(players.size()<4){
+            VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
+            this.addClient(virtualClientSocket.getVirtualViewSocket());
+            virtualClientSocket.start();
+        }else{
+            try{
+                ObjectOutputStream temporaryWriter = new ObjectOutputStream(newClient.getOutputStream());
+                temporaryWriter.writeObject(new ErrorMessage("server", newClient.getRemoteSocketAddress().toString(), "PlayerNumberExceeded"));
+                System.out.println("Mando messaggio di errore a :" + newClient.getRemoteSocketAddress().toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void addClient(VirtualViewInterface newClient){
@@ -66,6 +79,11 @@ public class Server {
 
     public Controller getController() {
         return controller;
+    }
+
+    @Override
+    public String toString(){
+        return "server";
     }
 
     public static void main(String args[]){

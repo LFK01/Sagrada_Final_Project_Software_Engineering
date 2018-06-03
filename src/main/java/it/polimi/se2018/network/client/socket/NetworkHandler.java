@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 /**
  * @author Luciano
@@ -56,7 +57,9 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             if(serverIsUp){
                 try{
                     Message message = (Message) inputStream.readObject();
-                    System.out.println("NetworkHandlet letto messaggio -> client");
+                    System.out.println("NetworkHandlet letto messaggio -> client: " + message.toString());
+                    System.out.println("destinatario messaggio: " + message.getRecipient());
+                    System.out.println("indirizzo locale: " + getAddress());
                     if(message == null){
                         loop=false;
                     }else {
@@ -68,7 +71,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                         }
                     }
                 } catch (ClassNotFoundException | IOException e){
-                    e.printStackTrace();
+                    System.out.println("Server disconnesso.");
+                    serverIsUp = false;
                 }
             }
         }
@@ -84,6 +88,11 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             serverIsUp = false;
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getAddress() {
+        return socket.getLocalSocketAddress().toString();
     }
 
     public void stopConnection(){

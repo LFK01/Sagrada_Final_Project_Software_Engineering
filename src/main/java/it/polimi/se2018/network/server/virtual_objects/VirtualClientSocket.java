@@ -15,7 +15,7 @@ import java.net.Socket;
 /**
  * @author Luciano
  */
-public class VirtualClientSocket extends Thread {
+public class VirtualClientSocket extends Thread implements VirtualClientInterface{
 
     private Server server;
     private Socket clientConnection;
@@ -23,6 +23,7 @@ public class VirtualClientSocket extends Thread {
     private ObjectInputStream inputStream;
     private VirtualViewSocket virtualViewSocket;
     private boolean isConnected;
+
     private String username;
 
     public VirtualClientSocket(Server server, Socket clientConnection){
@@ -50,7 +51,6 @@ public class VirtualClientSocket extends Thread {
                 try{
                     message = (Message) inputStream.readObject();
                     System.out.println("VCSocket letto messaggio -> Server");
-                    this.isConnected = true;
                 } catch (ClassNotFoundException e){
                     e.printStackTrace();
                 } catch (IOException e){
@@ -76,7 +76,6 @@ public class VirtualClientSocket extends Thread {
     }
 
     public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        username = successCreatePlayerMessage.getRecipient();
         if(isConnected){
             try{
                 writer.writeObject(successCreatePlayerMessage);
@@ -88,7 +87,6 @@ public class VirtualClientSocket extends Thread {
     }
 
     public void notifyClient(ErrorMessage errorMessage){
-        username = errorMessage.getRecipient();
         if(isConnected){
             try{
                 writer.writeObject(errorMessage);
@@ -107,7 +105,6 @@ public class VirtualClientSocket extends Thread {
                 for (VirtualViewInterface uselessClient: server.getPlayers()) {
                     if(client == this.virtualViewSocket){
                         server.getPlayers().remove(uselessClient);
-                        this.isConnected = false;
                     }
                 }
             }
@@ -119,8 +116,19 @@ public class VirtualClientSocket extends Thread {
         return virtualViewSocket;
     }
 
+    @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Override
+    public Server getServer() {
+        return server;
     }
 
     public void setClientConnection(Socket clientConnection) {

@@ -1,9 +1,6 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
-import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.Message;
-import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
@@ -11,6 +8,7 @@ import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Observable;
@@ -24,9 +22,9 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
      * username field will be setted when client and server will exchange the first CreatePlayerMessage
      * @param clientRMIInterface used to link the VirtualView with the Client
      */
-    public VirtualViewRMI(ClientRMIInterface clientRMIInterface){
+    public VirtualViewRMI(ClientRMIInterface clientRMIInterface, Server server){
         try{
-            virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface, null);
+            virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface, server);
         } catch (RemoteException e){
             e.printStackTrace();
         }
@@ -39,9 +37,9 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
      * @param clientRMIInterface used to link the VirtualView with the Client
      * @param username used to set the username field
      */
-    public VirtualViewRMI(ClientRMIInterface clientRMIInterface, String username){
+    public VirtualViewRMI(ClientRMIInterface clientRMIInterface, String username, Server server){
         try{
-            virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface, username);
+            virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface, server);
         } catch (RemoteException e){
             e.printStackTrace();
         }
@@ -56,9 +54,29 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     }
 
     public void updateServer(CreatePlayerMessage message) {
-        System.out.println("VirtualViewRMI -> Controller");
-        setChanged();
-        notifyObservers(message);
+        boolean correctUsername = true;
+        if(virtualClientRMI.getServer().getPlayers().size()>1){
+            System.out.println("check username usage on " + virtualClientRMI.getServer().getPlayers().size() + " clients");
+            for(VirtualViewInterface client: virtualClientRMI.getServer().getPlayers()){
+                System.out.println("Check username on client: " + client.toString());
+                System.out.println("desidered username: " + message.getPlayerName());
+                System.out.println("client username: " + client.getUsername());
+                if(client!=this){
+                    if(client.getUsername().equals(message.getPlayerName())){
+                        update(this, new ErrorMessage("server", message.getPlayerName(), "NotValidUsername"));
+                        correctUsername = false;
+                    }
+                }
+            }
+        } else {
+            correctUsername = true;
+        }
+        if(correctUsername){
+            virtualClientRMI.setUsername(message.getPlayerName());
+            System.out.println("VirtualViewRMI -> Controller");
+            setChanged();
+            notifyObservers(message);
+        }
     }
 
     public void updateServer(ComebackSocketMessage message){

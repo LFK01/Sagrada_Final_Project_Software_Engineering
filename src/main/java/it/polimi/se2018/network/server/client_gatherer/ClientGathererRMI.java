@@ -12,6 +12,8 @@ import it.polimi.se2018.network.server.virtual_objects.VirtualViewRMI;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewSocket;
 
 import java.awt.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -21,13 +23,12 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     public ClientGathererRMI(Server server) throws RemoteException{
         this.server = server;
-        Dimension d = new Dimension();
     }
 
     @Override
     public ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException {
         if(server.getPlayers().size()<4){
-            VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient);
+            VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient, server);
             server.getController().addObserver(newVirtualView);
             newVirtualView.addObserver(server.getController());
             server.getController().getModel().addObserver(newVirtualView);
@@ -38,6 +39,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
                 e.printStackTrace();
             }
             server.addClient(newVirtualView);
+            System.out.println("new client: " + newVirtualView.toString() + "added to serverList.");
             return remoteServerRef;
         } else{
             throw new PlayerNumberExceededException("Player number limit already reached.");
@@ -53,7 +55,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
         for (VirtualViewInterface client : server.getPlayers()) {
             if(client.getUsername().equals(username)){
-                client = new VirtualViewRMI(newClient, username);
+                client = new VirtualViewRMI(newClient, username, server);
                 ((VirtualViewRMI) client).addObserver(server.getController());
             }
         }

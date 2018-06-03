@@ -5,13 +5,14 @@ import it.polimi.se2018.network.server.ServerSocketInterface;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.SocketAddress;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
  * @author Luciano
  */
-public class RemoteViewSocket extends Observable implements ClientSocketInterface, Observer{
+public class RemoteViewSocket extends Observable implements Observer{
 
     private ServerSocketInterface server;
     private String username;
@@ -22,15 +23,6 @@ public class RemoteViewSocket extends Observable implements ClientSocketInterfac
 
     public RemoteViewSocket(String localhost, int port, String oldUsername){
         server = new NetworkHandler(localhost, port, this, oldUsername);
-    }
-
-    @Override
-    public void updateClient(Message message) {
-        System.out.println("VWSocket -> View");
-        if(message.getRecipient().equals(username)){
-            setChanged();
-            notifyObservers(message);
-        }
     }
 
     @Override
@@ -50,20 +42,44 @@ public class RemoteViewSocket extends Observable implements ClientSocketInterfac
     }
 
     public void sendToServer(CreatePlayerMessage createPlayerMessage){
+        username = createPlayerMessage.getPlayerName();
         System.out.println("RemoteWSocket -> Server: create player message");
         server.sendToServer(createPlayerMessage);
     }
 
     public void updateClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        System.out.println("RemoteWSocket -> Server: success create message");
-        setChanged();
-        notifyObservers(successCreatePlayerMessage);
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Server: success create message");
+            setChanged();
+            notifyObservers(successCreatePlayerMessage);
+        }
     }
 
     public void updateClient(SuccessMessage successMessage){
-        System.out.println("RemoteWSocket -> Server: success message");
-        setChanged();
-        notifyObservers(successMessage);
+        if(successMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Server: success message");
+            setChanged();
+            notifyObservers(successMessage);
+        }
     }
 
+    public void updateClient(ErrorMessage errorMessage){
+        System.out.println("Error message received 1");
+        System.out.println("destinatario: " + errorMessage.getRecipient());
+        System.out.println("indirizzo locale: " + server.getAddress());
+        if(errorMessage.getRecipient().equals(username) || server.getAddress().equals(errorMessage.getRecipient())){
+            System.out.println("Error message received 2");
+            if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("RemoteWSocket -> Server: error message not valid username");
+                username = "";
+                setChanged();
+                notifyObservers(errorMessage);
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                System.out.println("RemoteWSocket -> Server: error message player number exceeded");
+                setChanged();
+                notifyObservers(errorMessage);
+            }
+        }
+    }
 }

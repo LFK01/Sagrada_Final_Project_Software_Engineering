@@ -1,7 +1,9 @@
 package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import sun.dc.pr.PRError;
 
@@ -22,10 +24,32 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
 
     @Override
     public void updateClient(Message message) throws RemoteException {
-        if(message.getRecipient().equals(username)){
-            System.out.println("RemoteViewRMI -> View");
+        try{
+            Method notifyView = this.getClass().getMethod("notifyView", message.getClass());
+            notifyView.invoke(this, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
             setChanged();
-            notifyObservers(message);
+            notifyObservers(successCreatePlayerMessage);
+        }
+    }
+    public void notifyView(ErrorMessage errorMessage){
+        if(errorMessage.getRecipient().equals(username)){
+            System.out.println("check1");
+            if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("check2");
+                username = "";
+                setChanged();
+                notifyObservers(errorMessage);
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                /*should never be called here for RMI connection*/
+            }
         }
     }
 

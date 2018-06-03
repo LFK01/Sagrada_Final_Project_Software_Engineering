@@ -14,5 +14,5 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(Message message) throws RemoteException;
 
-    ServerRMIInterface retrieveOldClient(ClientRMIInterface oldClient, String username) throws RemoteException, PlayerNotFoundException;
+    ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException;
 }

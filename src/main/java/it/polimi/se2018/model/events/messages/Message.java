@@ -3,6 +3,7 @@ package it.polimi.se2018.model.events.messages;
 import java.io.Serializable;
 
 public abstract class Message implements Serializable{
+
     private String sender;
     private String recipient;
 

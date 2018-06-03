@@ -1,16 +1,12 @@
 package it.polimi.se2018.view;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.network.server.ServerRMIInterface;
-import it.polimi.se2018.network.server.ServerSocketInterface;
-
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.Key;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -20,10 +16,9 @@ import java.util.Scanner;
  */
 public class View extends Observable implements Observer{
 
-    private ServerRMIInterface serverRMIInterface;
-    private ServerSocketInterface serverSocketInterface;
     protected String username;
     private boolean isPlayerTurn;
+    private String localAddress;
 
     private Scanner scanner;
 
@@ -32,6 +27,11 @@ public class View extends Observable implements Observer{
      */
     public View(){
         scanner = new Scanner(new InputStreamReader(System.in));
+        try{
+            localAddress = InetAddress.getLocalHost().getHostAddress();
+        } catch(UnknownHostException e){
+            e.printStackTrace();
+        }
     }
 
     public boolean IsPlayerTurn(){
@@ -56,6 +56,7 @@ public class View extends Observable implements Observer{
      * shows up a login window where the user can choose her/his name
      */
     public void createPlayer(){
+        //TODO when called by socket connection we have to check player number is lower than 4
         /*JFrame frameCreatePlayer = new JFrame("New Player");
         Container containerCreatePlayer = new Container();
         GridLayout layourCreatePlayer = new GridLayout(3,1);
@@ -132,26 +133,10 @@ public class View extends Observable implements Observer{
         containerCreatePlayer.add(confirmButton);
 
         frameCreatePlayer.setVisible(true);*/
-        System.out.println("Inserire username:");
+        System.out.print("New username: ");
         username = scanner.nextLine();
         setChanged();
-        notifyObservers(new CreatePlayerMessage(username, "server", username));
-    }
-
-    public void handleChooseCardMove(int index){
-        //notifyObservers(new );
-    }
-
-    public void handleToolCardMove(){
-        //switch
-
-    }
-    public void showMessage(String message){
-
-    }
-
-    public void reportError(String message){
-
+        notifyObservers(new CreatePlayerMessage(localAddress, "server", username));
     }
 
     public int demandConnectionType() {
@@ -169,6 +154,7 @@ public class View extends Observable implements Observer{
 
     @Override
     public void update(Observable o, Object message){
+        System.out.println("check3");
         try{
             Method updateView = this.getClass().getDeclaredMethod("updateView", message.getClass());
             updateView.invoke(this, message);
@@ -178,20 +164,27 @@ public class View extends Observable implements Observer{
     }
 
     private void updateClient(SuccessCreatePlayerMessage message){
-        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
+        if(message.getRecipient().equals(username)){
             System.out.println("Giocatore creato " + message.getRecipient());
         }
     }
 
-    private void updateClient(ErrorMessage message){
-        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
-
+    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("Giocatore creato " + successCreatePlayerMessage.getRecipient());
         }
     }
 
-    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username) || successCreatePlayerMessage.getRecipient().equals("@all")){
-            System.out.println("Giocatore creato " + successCreatePlayerMessage.getRecipient());
+    private void updateView(ErrorMessage errorMessage){
+        System.out.println("check4");
+        if(errorMessage.getRecipient().equals(username)){
+            if(errorMessage.toString().equals("NotValidUsername")){
+                this.createPlayer();
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                //TODO waiting lobby
+                System.out.print("Impossibile connettersi");
+            }
         }
     }
 

@@ -13,16 +13,6 @@ public class ErrorMessage extends Message {
         this.message = message;
     }
 
-
-    public boolean isError() {
-        return true;
-    }
-
-
-    public boolean isNewRound() {
-        return false;
-    }
-
     @Override
     public String toString() {
         return message;

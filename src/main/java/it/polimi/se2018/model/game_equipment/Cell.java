@@ -20,7 +20,7 @@ public class Cell {
     private boolean avoidColorRestriction;
     private boolean avoidNearnessRestriction;
     private PaintingTool paintingTool;
-    private static final String square = "\u2223";
+    private String square = "\u2226";
 
     /*boolean values to know if some tool cards have been activated and we dont have to consider value restriction
     * on this cell*/
@@ -146,4 +146,7 @@ public class Cell {
         return paintingTool;
     }
 
+    public String getSquare() {
+        return square ;
+    }
 }

@@ -229,4 +229,10 @@ public class TestCell {
 
     }
 
+    @Test
+    public void squareTest(){
+        Cell cell = new Cell(Color.BLUE,5);
+        System.out.println(cell.getSquare());
+    }
+
 }

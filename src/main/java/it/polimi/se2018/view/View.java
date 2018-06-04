@@ -181,7 +181,19 @@ public class View extends Observable implements Observer{
     }
     private void updateView(ChooseSchemaMessage message){
         if(username.equals(message.getRecipient())){
-            chooseSchemaWindow(message.getSchema1(),message.getSchema2());
+            System.out.println("type 1 to choose this schema");
+            message.getSchemaCard1().toString();
+            System.out.println("type 2 to choose this schema");
+            message.getSchemaCard2().toString();
+            System.out.println("type 3 to choose this schema");
+            message.getSchemaCard3().toString();
+            System.out.println("type 4 to choose this schema");
+            message.getSchemaCard4().toString();
+
+            scanner = new Scanner(System.in);
+            choice = scanner.nextInt();
+
+            notifyObservers(new SelectedSchemaMessage(username,"server",choice));
         }
 
     }
@@ -612,7 +624,7 @@ public class View extends Observable implements Observer{
     }
 
     public void showPrivateObjectiveCard(String description){
-        System.out.println(description);
+        System.out.println("Il tuo obiettivo privato è " + description);
     }
 
 

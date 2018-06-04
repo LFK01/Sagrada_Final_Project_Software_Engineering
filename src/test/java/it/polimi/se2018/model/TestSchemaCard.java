@@ -82,7 +82,6 @@ public class TestSchemaCard {
                    System.out.print("[" + schema.getCell(i, j).getValue() + "]");
                }
                else System.out.print("[ ]");
-
             }
             System.out.println();
         }

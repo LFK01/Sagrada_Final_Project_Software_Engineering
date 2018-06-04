@@ -365,7 +365,7 @@ public class Model extends Observable {
         int s =0;
         for(int t=0;t< participants.size()-1;t++) {
             setChanged();
-            notifyObservers(new ChooseSchemaMessage("model", participants.get(0).getName(),schemaPosition.get(s),schemaPosition.get(s+1)));
+            //notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(),participants.get(t).getSchemaCard()));
             s =  +2;
         }
     }
@@ -390,7 +390,7 @@ public class Model extends Observable {
         Collections.shuffle(privateCards);
         //notifica a tutti delle schemacard
         int s =0;
-        for(int i=0;i< participants.size()-1;i++) {
+        for(int i=0;i< participants.size();i++) {
             String colorString = privateCards.get(i).getDescription();
             setChanged();
             notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(),colorString));

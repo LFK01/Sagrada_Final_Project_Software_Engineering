@@ -222,6 +222,13 @@ public class Controller extends Observable implements Observer {
                 model.setSchemacardPlayer(playerPos,message.getSchemaSelected());
             }
         }
+        //estrae le toolcard e le manda
+        model.extractPublicObjectiveCards();
+        model.extractToolCards();
+
+
+
+
     }
 
     public void sendSchemaCardController(){

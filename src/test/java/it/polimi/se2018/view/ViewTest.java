@@ -36,6 +36,22 @@ public class ViewTest {
 
     }
 
+    @Test
+    public void sendPrivateObjectiveCard(){
+        View view = new View();
+        Controller controller = new Controller();
+        view.addObserver(controller);
+        view.setUsername("luca");
+        controller.getModel().addObserver(view);
+        controller.getModel().addPlayer("luca");
+        controller.getModel().addPlayer("username");
+        controller.getModel().addPlayer("fabio");
+        controller.getModel().addPlayer("biccu");
+
+        controller.getModel().sendPrivateObjectiveCard();
+
+    }
+
 
 
 

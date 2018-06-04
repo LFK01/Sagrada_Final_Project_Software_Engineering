@@ -22,7 +22,6 @@ public class Dice {
      */
     public Dice(Color color, int value) {
 
-
         this.diceColor = color;
         this.value = value;
         inSchema = false;

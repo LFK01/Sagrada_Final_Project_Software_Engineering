@@ -2,6 +2,11 @@ package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.model.exceptions.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+
 /**
  * Schema Cards class
  * @author Giorgia
@@ -17,144 +22,106 @@ public class SchemaCard {
 
     /**
      * constructor method initializing schemacard using n to choose one of the 24 different schemacard
-     * @param n
+     * @param schemaCardIndex
      */
-    public SchemaCard(int n) {          //costruttore con switch per creare le carte schema pescate dal giocatore
+    public SchemaCard(int schemaCardIndex) {          //costruttore con switch per creare le carte schema pescate dal giocatore
 
-        switch (n) {
+        Scanner inputFile = null;
 
-            case 1:         //Virtus
-                this.name1 = "Virtus";
-                this.name2 = "Kaleidoscopic Dream";
-                this.cells[0][0] = new Cell(null, 4);
-                this.cells[0][1] = new Cell(null, 0);
-                this.cells[0][2] = new Cell(null, 2);
-                this.cells[0][3] = new Cell(null, 5);
-                this.cells[0][4] = new Cell(Color.GREEN, 0);
-                this.cells[1][0] = new Cell(null, 0);
-                this.cells[1][1] = new Cell(null, 0);
-                this.cells[1][2] = new Cell(null, 6);
-                this.cells[1][3] = new Cell(Color.GREEN, 0);
-                this.cells[1][4] = new Cell(null, 2);
-                this.cells[2][0] = new Cell(null, 0);
-                this.cells[2][1] = new Cell(null, 3);
-                this.cells[2][2] = new Cell(Color.GREEN, 0);
-                this.cells[2][3] = new Cell(null, 4);
-                this.cells[2][4] = new Cell(null, 0);
-                this.cells[3][0] = new Cell(null, 5);
-                this.cells[3][1] = new Cell(Color.GREEN, 0);
-                this.cells[3][2] = new Cell(null, 1);
-                this.cells[3][3] = new Cell(null, 0);
-                this.cells[3][4] = new Cell(null, 0);
-                this.difficultyLevel = 5;
-                break;
-
-            case 2:
-                this.name1 = "Via Lux";
-                this.name2 = "Aurorae Magnificus";
-                this.cells[0][0] = new Cell(Color.YELLOW, 0);
-                this.cells[1][1] = new Cell(null, 0);
-                this.cells[2][2] = new Cell(null, 6);
-                this.cells[3][3] = new Cell(null, 0);
-                this.cells[0][4] = new Cell(null, 0);
-                this.cells[1][0] = new Cell(null, 0);
-                this.cells[2][1] = new Cell(null, 1);
-                this.cells[3][2] = new Cell(null, 5);
-                this.cells[0][3] = new Cell(null, 0);
-                this.cells[1][4] = new Cell(null, 2);
-                this.cells[2][0] = new Cell(null, 3);
-                this.cells[3][1] = new Cell(Color.YELLOW, 0);
-                this.cells[0][2] = new Cell(Color.RED, 0);
-                this.cells[1][3] = new Cell(Color.PURPLE, 0);
-                this.cells[2][4] = new Cell(null, 0);
-                this.cells[3][0] = new Cell(null, 0);
-                this.cells[0][1] = new Cell(null, 0);
-                this.cells[1][2] = new Cell(null, 4);
-                this.cells[2][3] = new Cell(null, 3);
-                this.cells[3][4] = new Cell(Color.RED, 0);
-                this.difficultyLevel = 4;
-                break;
-
-            case 3:
-                this.name1 = "Bellesguard";
-                this.name2 = "Sun Catcher";
-                this.cells[0][0] = new Cell(Color.BLUE, 0);
-                this.cells[1][1] = new Cell(null, 6);
-                this.cells[2][2] = new Cell(null, 0);
-                this.cells[3][3] = new Cell(null, 0);
-                this.cells[0][4] = new Cell(Color.YELLOW, 0);
-                this.cells[1][0] = new Cell(null, 0);
-                this.cells[2][1] = new Cell(null, 3);
-                this.cells[3][2] = new Cell(Color.BLUE, 0);
-                this.cells[0][3] = new Cell(null, 0);
-                this.cells[1][4] = new Cell(null, 0);
-                this.cells[2][0] = new Cell(null, 0);
-                this.cells[3][1] = new Cell(null, 5);
-                this.cells[0][2] = new Cell(null, 6);
-                this.cells[1][3] = new Cell(null, 2);
-                this.cells[2][4] = new Cell(null, 0);
-                this.cells[3][0] = new Cell(null, 0);
-                this.cells[0][1] = new Cell(null, 4);
-                this.cells[1][2] = new Cell(null, 0);
-                this.cells[2][3] = new Cell(null, 1);
-                this.cells[3][4] = new Cell(Color.GREEN, 0);
-                this.difficultyLevel = 3;
-                break;
-
-            case 4:
-                this.name1 = "Firmitas";
-                this.name2 = "Symphony of Light";
-                this.cells[0][0] = new Cell(Color.PURPLE, 0);
-                this.cells[1][1] = new Cell(null, 6);
-                this.cells[2][2] = new Cell(null, 0);
-                this.cells[3][3] = new Cell(null, 0);
-                this.cells[0][4] = new Cell(null, 3);
-                this.cells[1][0] = new Cell(null, 5);
-                this.cells[2][1] = new Cell(Color.PURPLE, 0);
-                this.cells[3][2] = new Cell(null, 3);
-                this.cells[0][3] = new Cell(null, 0);
-                this.cells[1][4] = new Cell(null, 0);
-                this.cells[2][0] = new Cell(null, 0);
-                this.cells[3][1] = new Cell(null, 2);
-                this.cells[0][2] = new Cell(Color.PURPLE, 0);
-                this.cells[1][3] = new Cell(null, 1);
-                this.cells[2][4] = new Cell(null, 0);
-                this.cells[3][0] = new Cell(null, 0);
-                this.cells[0][1] = new Cell(null, 1);
-                this.cells[1][2] = new Cell(null, 5);
-                this.cells[2][3] = new Cell(Color.PURPLE, 0);
-                this.cells[3][4] = new Cell(null, 4);
-                this.difficultyLevel = 5;
-                break;
-
-            case 5:
-                this.name1 = "Aurora Sagradis";
-                this.name2 = "Industria";
-                this.cells[0][0] = new Cell(Color.RED, 0);
-                this.cells[1][1] = new Cell(null, 0);
-                this.cells[2][2] = new Cell(Color.BLUE, 0);
-                this.cells[3][3] = new Cell(null, 0);
-                this.cells[0][4] = new Cell(Color.YELLOW, 0);
-                this.cells[1][0] = new Cell(null, 4);
-                this.cells[2][1] = new Cell(Color.PURPLE, 0);
-                this.cells[3][2] = new Cell(null, 3);
-                this.cells[0][3] = new Cell(Color.GREEN, 0);
-                this.cells[1][4] = new Cell(null, 2);
-                this.cells[2][0] = new Cell(null, 0);
-                this.cells[3][1] = new Cell(null, 1);
-                this.cells[0][2] = new Cell(null, 0);
-                this.cells[1][3] = new Cell(null, 5);
-                this.cells[2][4] = new Cell(null, 0);
-                this.cells[3][0] = new Cell(null, 0);
-                this.cells[0][1] = new Cell(null, 0);
-                this.cells[1][2] = new Cell(null, 6);
-                this.cells[2][3] = new Cell(null, 0);
-                this.cells[3][4] = new Cell(null, 0);
-                this.difficultyLevel = 4;
-                break;
-
-                //[...] resto delle carte*/
-
+        try{
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\in.txt"));
+            String line = "";
+            boolean hasNextLine = true;
+            boolean cardFound = false;
+            int row=0;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("Numero: ")){
+                        if(schemaCardIndex == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                        }
+                    }
+                    if(cardFound){
+                        if(words[i].trim().equals("Nome: ")){
+                            name1 = words[i+1];
+                        }
+                        if(words[i].trim().equals("Difficoltà: ")){
+                            difficultyLevel = Integer.parseInt(words[i+1]);
+                        }
+                        if(words[i].startsWith("[")){
+                            for(int col=0; col<words.length; col++){
+                                switch(words[col]){
+                                    case "[ ]":{
+                                        this.cells[row][col] = new Cell(null, 0);
+                                        break;
+                                    }
+                                    case "[1]":{
+                                        this.cells[row][col] = new Cell(null, 1);
+                                        break;
+                                    }
+                                    case "[2]":{
+                                        this.cells[row][col] = new Cell(null, 2);
+                                        break;
+                                    }
+                                    case "[3]":{
+                                        this.cells[row][col] = new Cell(null, 3);
+                                        break;
+                                    }
+                                    case "[4]":{
+                                        this.cells[row][col] = new Cell(null, 4);
+                                        break;
+                                    }
+                                    case "[5]":{
+                                        this.cells[row][col] = new Cell(null, 5);
+                                        break;
+                                    }
+                                    case "[6]":{
+                                        this.cells[row][col] = new Cell(null, 6);
+                                        break;
+                                    }
+                                    case "[Y]":{
+                                        this.cells[row][col] = new Cell(Color.YELLOW, 0);
+                                        break;
+                                    }
+                                    case "[R]":{
+                                        this.cells[row][col] = new Cell(Color.RED, 0);
+                                        break;
+                                    }
+                                    case "[B]":{
+                                        this.cells[row][col] = new Cell(Color.BLUE, 0);
+                                        break;
+                                    }
+                                    case "[G]":{
+                                        this.cells[row][col] = new Cell(Color.GREEN, 0);
+                                        break;
+                                    }
+                                    case "[P]":{
+                                        this.cells[row][col] = new Cell(Color.PURPLE, 0);
+                                        break;
+                                    }
+                                }
+                            }
+                            row++;
+                        }
+                    }
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
         }
 
         }
@@ -474,6 +441,77 @@ public class SchemaCard {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder schema = new StringBuilder();
+        for(int row=0; row<cells.length; row++){
+            for(int col=0; col<cells[row].length; col++){
+                if(cells[row][col].isFull()){
+                    schema.append(cells[row][col].getAssignedDice().toString());
+                }
+                else {
+                    try{
+                        switch (cells[row][col].getCellColor()){
+                            case BLUE:{
+                                schema.append(PaintingTool.ANSI_BLUE.escape() + "[ ]" + PaintingTool.RESET);
+                                break;
+                            }
+                            case GREEN:{
+                                schema.append(PaintingTool.ANSI_GREEN.escape() + "[ ]" + PaintingTool.RESET);
+                                break;
+                            }
+                            case PURPLE:{
+                                schema.append(PaintingTool.ANSI_PURPLE.escape() + "[ ]" + PaintingTool.RESET);
+                                break;
+                            }
+                            case RED:{
+                                schema.append(PaintingTool.ANSI_RED.escape() + "[ ]" + PaintingTool.RESET);
+                                break;
+                            }
+                            case YELLOW:{
+                                schema.append(PaintingTool.ANSI_YELLOW.escape() + "[ ]" + PaintingTool.RESET);
+                                break;
+                            }
+                        }
+                    } catch (NoColorException e){
+                        switch (cells[row][col].getValue()){
+                            case 0:{
+                                schema.append("[ ]");
+                                break;
+                            }
+                            case 1:{
+                                schema.append("[1]");
+                                break;
+                            }
+                            case 2:{
+                                schema.append("[2]");
+                                break;
+                            }
+                            case 3:{
+                                schema.append("[3]");
+                                break;
+                            }
+                            case 4:{
+                                schema.append("[4]");
+                                break;
+                            }
+                            case 5:{
+                                schema.append("[5]");
+                                break;
+                            }
+                            case 6:{
+                                schema.append("[6]");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            schema.append("\n");
+        }
+        return schema.toString();
     }
 }
 

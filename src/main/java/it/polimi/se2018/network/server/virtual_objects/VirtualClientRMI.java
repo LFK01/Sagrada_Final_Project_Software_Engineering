@@ -45,6 +45,12 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
+    public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
+        /*method to be implemented in ClientGathererRMI*/
+        return null;
+    }
+
+    @Override
     public void sendToServer(Message message) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + message.toString());
         try{
@@ -55,14 +61,19 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-
-    @Override
-    public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
-        /*method to be implemented in ClientGathererRMI*/
-        return null;
+    public void notifyClient(Message message){
+        if(isConnected){
+            try{
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + message.toString());
+                remoteView.updateClient(message);
+            } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void updateClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
+    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(isConnected){
             try{
                 System.out.println("VirtualClientRMI -> RemoteVRMI: " + successCreatePlayerMessage.toString());
@@ -74,7 +85,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void updateClient(ErrorMessage errorMessage){
+    public void notifyClient(ErrorMessage errorMessage){
         if(isConnected){
             try{
                 System.out.println("VCRMI -> RemoteVRMI: " + errorMessage.toString());
@@ -86,11 +97,24 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
             }
         }
     }
-    public void updateClient(ChooseSchemaMessage chooseSchemaMessage){
+
+    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
         if(isConnected){
             try{
-                System.out.println("VCRMI -> RemoteVRMI: " + chooseSchemaMessage.toString());
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + chooseSchemaMessage.toString());
                 remoteView.updateClient(chooseSchemaMessage);
+            } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void notifyClient(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
+        if(isConnected){
+            try{
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + showPrivateObjectiveCardsMessage.toString());
+                remoteView.updateClient(showPrivateObjectiveCardsMessage);
             } catch (RemoteException e) {
                 isConnected = false;
                 e.printStackTrace();
@@ -104,12 +128,12 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void setUsername(String username) {
-        this.username = username;
+    public Server getServer() {
+        return server;
     }
 
     @Override
-    public Server getServer() {
-        return server;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

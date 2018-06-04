@@ -100,9 +100,6 @@ public class Dice {
         return escape + "[" + face + "]" + PaintingTool.RESET;
     }
 
-    public void dump(){
-        System.out.println(this);
-    }
 
     public static final String[] faces ={
             "1",

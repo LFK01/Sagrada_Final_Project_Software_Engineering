@@ -45,12 +45,21 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         }
     }
 
-    public VirtualClientRMI getVirtualClientRMI() {
-        return virtualClientRMI;
+    @Override
+    public void update(Observable o, Object message) {
+        System.out.println("VirtualViewRMI -> Client");
+        try{
+            Method notifyClient = virtualClientRMI.getClass().getMethod("notifyClient", message.getClass());
+            notifyClient.invoke(virtualClientRMI, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setVirtualClientRMI(VirtualClientRMI virtualClientRMI) {
-        this.virtualClientRMI = virtualClientRMI;
+    public void updateServer(Message message){
+        System.out.println("VirtualViewRMI -> Controller: " + message.toString());
+        setChanged();
+        notifyObservers(message);
     }
 
     public void updateServer(CreatePlayerMessage message) {
@@ -76,7 +85,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     }
 
     public void updateServer(ComebackSocketMessage message){
-        System.out.println("VirtualViewRMI -> Controller comeback doesnt notify");
+        System.out.println("VirtualViewRMI -> Controller comeback doesn't notify");
     }
 
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
@@ -84,11 +93,13 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         notifyObservers(selectedSchemaMessage);
     }
 
-
-
     @Override
     public String getUsername() {
         return virtualClientRMI.getUsername();
+    }
+
+    public VirtualClientRMI getVirtualClientRMI() {
+        return virtualClientRMI;
     }
 
     @Override
@@ -96,14 +107,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         /*method to be implemented in VirtualViewSocket*/
     }
 
-    @Override
-    public void update(Observable o, Object message) {
-        System.out.println("VirtualViewRMI -> Client");
-        try{
-            Method notifyClient = virtualClientRMI.getClass().getMethod("updateClient", message.getClass());
-            notifyClient.invoke(virtualClientRMI, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    public void setVirtualClientRMI(VirtualClientRMI virtualClientRMI) {
+        this.virtualClientRMI = virtualClientRMI;
     }
 }

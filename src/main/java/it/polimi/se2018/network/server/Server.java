@@ -91,6 +91,7 @@ public class Server {
 
     public void addClient(Socket newClient){
         if(players.size()<4){
+            System.out.println("New socket client connection...");
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
             virtualClientSocket.start();
             this.addClient(virtualClientSocket.getVirtualViewSocket());
@@ -128,5 +129,27 @@ public class Server {
 
     public static void main(String args[]){
         new Server();
+    }
+
+    public void resetOldClientSocket(Socket newClientConnection, String username) {
+        System.out.println("Comeback procedure started.");
+        boolean clientFound = false;
+        for(VirtualViewInterface client: players){
+            if(client.getUsername().equals(username)){
+                System.out.println("Found old VirtualClient.");
+                clientFound = true;
+                client.setClientConnection(newClientConnection);
+            }
+        }
+        if(!clientFound){
+            System.out.println("Old VirtualClient not found");
+            ObjectOutputStream temporaryOutput;
+            try {
+                temporaryOutput = new ObjectOutputStream(newClientConnection.getOutputStream());
+                temporaryOutput.writeObject(new ErrorMessage("server", newClientConnection.getRemoteSocketAddress().toString(), "UsernameNotFound"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -35,6 +35,8 @@ import java.util.*;
 
 public class Model extends Observable {
 
+    private static final int schemaCardExtractNumber = 2;
+    private static final int schemaCardNumber = 24;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -180,33 +182,20 @@ public class Model extends Observable {
      * @param name
      */
     public void addPlayer(String name){
-        Timer t = new Timer();
-        boolean numberOfParticipantReachedUp = false ;
         System.out.println("Model adds player");
         participants.add(new Player(name));
         System.out.println("Model -> VWInterface");
         setChanged();
         notifyObservers(new SuccessCreatePlayerMessage("server",name));
-        if(participants.size()==4){
-            numberOfParticipantReachedUp=true;
-            sendSchemaCard();
-        }
-        boolean n = numberOfParticipantReachedUp;
     }
 
     /**
+     * Method to remove a player from the model
+     * @param username String to retrieve player name
      *
-     * @param player
-     * metodo per rimuovere giocatore dalla lista dei giocatori
      */
-    public void removePlayer(Player player) throws SinglePlayerException {
-        /*if(participants.size()>1){
-            participants.remove(participants.indexOf(player));
-        }
-        else{
-            throw new SinglePlayerException("Impossibile rimuovere l'ultimo giocatore!");
-        }
-        notifyObservers(new SuccessMoveMessage(player,this.gameBoard));*/
+    public void removePlayer(String username){
+
     }
 
     /**
@@ -349,24 +338,28 @@ public class Model extends Observable {
             }
         }
         notifyObservers();
-
     }
 
 
     public void sendSchemaCard(){
-        System.out.println("STO ASSEGNANDO GLI SCHEMI");
-        ArrayList<Integer> schemaPosition = new ArrayList<Integer>(); //genero le 8 carte schema
-        int j=1;
-        for(int i =0;i<12;i++){
-            schemaPosition.add(j);
-            j++;
+        System.out.println("Dealing SchemaCards to players ");
+        int extractedCardIndex = 0;
+        ArrayList<Integer> randomValues = new ArrayList<Integer>();
+        for(int i=1; i<=schemaCardNumber/2; i++){
+            randomValues.add(i);
+            i++;
         }
-        Collections.shuffle(schemaPosition);
-        int s =0;
-        for(int t=0;t< participants.size()-1;t++) {
+        Collections.shuffle(randomValues);
+        for(int t=0; t < participants.size(); t++) {
+            SchemaCard[] extractedSchemaCards = new SchemaCard[schemaCardExtractNumber*2];
+            String[] schemaCards = new String[schemaCardExtractNumber*2];
+            for(int i=0; i<schemaCardExtractNumber; i++){
+                extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
+                schemaCards[i] = extractedSchemaCards[i].toString();
+                extractedCardIndex++;
+            }
             setChanged();
-            //notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(),participants.get(t).getSchemaCard()));
-            s =  +2;
+            notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards));
         }
     }
 
@@ -390,18 +383,14 @@ public class Model extends Observable {
         Collections.shuffle(privateCards);
         //notifica a tutti delle schemacard
         int s =0;
-        for(int i=0;i< participants.size();i++) {
+        for(int i=0; i < participants.size(); i++) {
             String colorString = privateCards.get(i).getDescription();
             setChanged();
-            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(),colorString));
+            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString));
             s = s+1;
         }
         //alla fine di tutto distribuisce le carte schema
         sendSchemaCard();
-
     }
-
-
-
 
 }

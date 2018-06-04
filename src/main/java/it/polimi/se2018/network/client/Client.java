@@ -89,6 +89,8 @@ public class Client {
                 correctInput = true;
             } catch (InputMismatchException e){
                 System.out.println("Wrong input!");
+                correctInput = false;
+                scanner.next();
                 //TODO handle exception
             }
             if(correctInput){
@@ -150,6 +152,7 @@ public class Client {
                             System.out.println("Socket connection estabilished");
                             view.createPlayer();
                         } else {
+                            System.out.println("Comeback with socket, old username: " + username);
                             remoteViewSocket = new RemoteViewSocket(serverIP, portSocket, username);
                             view.addObserver(remoteViewSocket);
                             remoteViewSocket.addObserver(view);
@@ -170,6 +173,7 @@ public class Client {
                     default: {
                         System.out.println("Wrong input!");
                         correctChoice = false;
+                        correctInput = false;
                     }
                 }
             }

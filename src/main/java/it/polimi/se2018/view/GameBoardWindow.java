@@ -1,6 +1,6 @@
 package it.polimi.se2018.view;
 
-import it.polimi.se2018.model.GameBoard;
+import it.polimi.se2018.model.game_equipment.GameBoard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -94,12 +94,4 @@ JFrame frame = new JFrame("GameBoard");
         frame.setVisible(true);
 
     }
-
-
-    public static void main(String[] args){
-        new GameBoardWindow();
-    }
-
-
-
 }

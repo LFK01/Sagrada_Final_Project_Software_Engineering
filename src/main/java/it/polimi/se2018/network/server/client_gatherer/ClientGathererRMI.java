@@ -21,27 +21,27 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     private Server server;
 
-    public ClientGathererRMI(Server server) throws RemoteException{
+    public ClientGathererRMI(Server server) throws RemoteException {
         this.server = server;
     }
 
     @Override
     public ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException {
-        if(server.getPlayers().size()<4){
+        if (server.getPlayers().size() < 4) {
             VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient, server);
             server.getController().addObserver(newVirtualView);
             newVirtualView.addObserver(server.getController());
             server.getController().getModel().addObserver(newVirtualView);
             ServerRMIInterface remoteServerRef = null;
-            try{
+            try {
                 remoteServerRef = (ServerRMIInterface) UnicastRemoteObject.exportObject(newVirtualView.getVirtualClientRMI(), 0);
-            }catch (RemoteException e){
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
             server.addClient(newVirtualView);
             System.out.println("new client: " + newVirtualView.toString() + "added to serverList.");
             return remoteServerRef;
-        } else{
+        } else {
             throw new PlayerNumberExceededException("Player number limit already reached.");
         }
     }
@@ -53,12 +53,20 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     @Override
     public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
+        boolean playerFound = false;
+        ServerRMIInterface remoteRef = null;
         for (VirtualViewInterface client : server.getPlayers()) {
-            if(client.getUsername().equals(username)){
+            if (client.getUsername().equals(username)) {
+                playerFound = true;
                 client = new VirtualViewRMI(newClient, username, server);
                 ((VirtualViewRMI) client).addObserver(server.getController());
+                remoteRef = (ServerRMIInterface) UnicastRemoteObject.exportObject(((VirtualViewRMI) client).getVirtualClientRMI(), 0);
             }
         }
-        throw new PlayerNotFoundException();
+        if (!playerFound) {
+            throw new PlayerNotFoundException();
+        } else {
+            return remoteRef;
+        }
     }
 }

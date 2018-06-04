@@ -46,12 +46,6 @@ public class Cell {
 
     }
 
-    public Cell( Color color, int value,PaintingTool paintingTool){
-        this.paintingTool = paintingTool;
-        this.value = value;
-        this.cellColor = color;
-    }
-
     /**
      * Return true if the cell hasn't any color restrictions
      * @return noColor

@@ -22,31 +22,32 @@ public class RemoteViewSocket extends Observable implements Observer{
     }
 
     public RemoteViewSocket(String localhost, int port, String oldUsername){
+        System.out.println("Socket comeback: RemoteView created");
         server = new NetworkHandler(localhost, port, this, oldUsername);
     }
 
     @Override
     public void update(Observable o, Object message) {
         try{
-            Method sendToServer = this.getClass().getMethod("sendToServer", message.getClass());
+            Method sendToServer = this.getClass().getDeclaredMethod("sendToServer", message.getClass());
             sendToServer.invoke(this, message);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
             e.printStackTrace();
         }
     }
 
-    public void sendToServer(ComebackSocketMessage comebackSocketMessage){
+    private void sendToServer(ComebackSocketMessage comebackSocketMessage){
         System.out.println("RemoteWSocket -> Server: comeback player message");
         server.sendToServer(comebackSocketMessage);
     }
 
-    public void sendToServer(CreatePlayerMessage createPlayerMessage){
+    private void sendToServer(CreatePlayerMessage createPlayerMessage){
         username = createPlayerMessage.getPlayerName();
         System.out.println("RemoteWSocket -> Server: create player message");
         server.sendToServer(createPlayerMessage);
     }
 
-    public void updateClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
+    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
             System.out.println("RemoteWSocket -> Server: success create message");
             setChanged();
@@ -54,26 +55,47 @@ public class RemoteViewSocket extends Observable implements Observer{
         }
     }
 
-    public void updateClient(SuccessMessage successMessage){
+    public void notifyView(SuccessMessage successMessage){
         if(successMessage.getRecipient().equals(username)){
-            System.out.println("RemoteWSocket -> Server: success message");
+            System.out.println("RemoteWSocket -> Client: success message");
             setChanged();
             notifyObservers(successMessage);
         }
     }
 
-    public void updateClient(ErrorMessage errorMessage){
+    public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
+        if(chooseSchemaMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Client: success message");
+            setChanged();
+            notifyObservers(chooseSchemaMessage);
+        }
+    }
+
+    public void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
+        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Client: success message");
+            setChanged();
+            notifyObservers(showPrivateObjectiveCardsMessage);
+        }
+    }
+
+    public void notifyView(ErrorMessage errorMessage){
         if(errorMessage.getRecipient().equals(username) || server.getAddress().equals(errorMessage.getRecipient())){
             if(errorMessage.toString().equals("NotValidUsername")){
-                System.out.println("RemoteWSocket -> Server: error message not valid username");
+                System.out.println("RemoteWSocket -> Client: error message not valid username");
                 username = "";
                 setChanged();
                 notifyObservers(errorMessage);
             }
             if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                System.out.println("RemoteWSocket -> Server: error message player number exceeded");
+                System.out.println("RemoteWSocket -> Client: error message player number exceeded");
                 setChanged();
                 notifyObservers(errorMessage);
+            }
+            if(errorMessage.toString().equals("UsernameNotFound")){
+                System.out.println("RemoteWSocket -> Client: error message username not found");
+                setChanged();
+                notifyObservers();
             }
         }
     }

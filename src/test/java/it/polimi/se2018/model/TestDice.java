@@ -63,7 +63,7 @@ public class TestDice {
         //System.out.println(redString)
         DiceBag  diceBag = new DiceBag();
         for(int i=0;i < diceBag.getDiceBag().size();i++){
-            diceBag.getDiceBag().get(i).dump();
+            System.out.println(diceBag.getDiceBag().get(i).toString());
         }
 
     }

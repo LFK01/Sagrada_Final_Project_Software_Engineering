@@ -206,6 +206,7 @@ public class Controller extends Observable implements Observer {
         }
         model.addPlayer(message.getPlayerName());
         if(model.getParticipants().size()==4){
+            System.out.println("Maximum player number reached");
             enoughPlayers = true;
             model.sendPrivateObjectiveCard();
         }

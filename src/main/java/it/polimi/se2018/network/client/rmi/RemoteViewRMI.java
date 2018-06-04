@@ -19,40 +19,6 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
     public RemoteViewRMI() throws RemoteException{
     }
 
-    @Override
-    public void updateClient(Message message) throws RemoteException {
-        try{
-            Method notifyView = this.getClass().getMethod("notifyView", message.getClass());
-            notifyView.invoke(this, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username)){
-            setChanged();
-            notifyObservers(successCreatePlayerMessage);
-        }
-    }
-    public void notifyView(ErrorMessage errorMessage){
-        if(errorMessage.getRecipient().equals(username)){
-            if(errorMessage.toString().equals("NotValidUsername")){
-                setChanged();
-                notifyObservers(errorMessage);
-            }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                /*should never be called here for RMI connection*/
-            }
-        }
-    }
-    public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
-        setChanged();
-        notifyObservers(chooseSchemaMessage);
-    }
-
-
-
     /**
      * Override of Observer update method
      * @param o sender
@@ -68,6 +34,59 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         }
     }
 
+    @Override
+    public void updateClient(Message message) throws RemoteException {
+        try{
+            Method notifyView = this.getClass().getDeclaredMethod("notifyView", message.getClass());
+            notifyView.invoke(this, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void notifyView(Message message){
+        if(message.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(message);
+        }
+    }
+    /*useless*/
+
+    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(successCreatePlayerMessage);
+        }
+    }
+
+    private void notifyView(ErrorMessage errorMessage){
+        if(errorMessage.getRecipient().equals(username)){
+            if(errorMessage.toString().equals("NotValidUsername")){
+                setChanged();
+                notifyObservers(errorMessage);
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                /*should never be called here for RMI connection*/
+            }
+        }
+    }
+
+    private void notifyView(ChooseSchemaMessage chooseSchemaMessage){
+        if(chooseSchemaMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(chooseSchemaMessage);
+        }
+    }
+
+    private void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
+        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(showPrivateObjectiveCardsMessage);
+        }
+    }
+
+
+
     private void sendToServer(CreatePlayerMessage createPlayerMessage){
         username = createPlayerMessage.getPlayerName();
         if(serverIsUp){
@@ -78,11 +97,6 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
                 serverIsUp = false;
             }
         }
-    }
-
-    public void setServer(ServerRMIInterface server) {
-        this.server = server;
-        serverIsUp = true;
     }
 
     private void sendToServer(SelectedSchemaMessage selectedSchemaMessage){
@@ -96,6 +110,9 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         }
     }
 
-
+    public void setServer(ServerRMIInterface server) {
+        this.server = server;
+        serverIsUp = true;
+    }
 
 }

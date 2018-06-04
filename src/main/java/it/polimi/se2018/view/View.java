@@ -177,31 +177,25 @@ public class View extends Observable implements Observer{
             if(errorMessage.toString().equals("NotEnoughPlayer")){
                 System.out.println("Minimum players number not reached.");
             }
+            if(errorMessage.toString().equals("UsernameNotFound")){
+
+            }
         }
     }
     private void updateView(ChooseSchemaMessage message){
-        if(username.equals(message.getRecipient())){
-            System.out.println("type 1 to choose this schema");
-            message.getSchemaCard1().toString();
-            System.out.println("type 2 to choose this schema");
-            message.getSchemaCard2().toString();
-            System.out.println("type 3 to choose this schema");
-            message.getSchemaCard3().toString();
-            System.out.println("type 4 to choose this schema");
-            message.getSchemaCard4().toString();
-
-            scanner = new Scanner(System.in);
-            choice = scanner.nextInt();
-
-            notifyObservers(new SelectedSchemaMessage(username,"server",choice));
+        for (int i=0; i<4;i++){
+            System.out.println("type"+ (i+1) + "to choose this schema");
+            message.getSchemaCards(i).toString();
         }
-
+        scanner = new Scanner(System.in);
+        choice = scanner.nextInt();
+        notifyObservers(new SelectedSchemaMessage(username,"server",choice));
     }
+
     private void updateView(ShowPrivateObjectiveCardsMessage message){
         if(username.equals(message.getRecipient())){
             showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
         }
-
     }
 
     public void playerNumberExceededDialog() {

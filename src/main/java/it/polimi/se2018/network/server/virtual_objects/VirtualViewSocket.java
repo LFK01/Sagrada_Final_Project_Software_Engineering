@@ -19,12 +19,19 @@ public class VirtualViewSocket extends Observable implements VirtualViewInterfac
 
     @Override
     public void update(Observable o, Object message) {
+        System.out.println("VirtualViewSocket -> Client");
         try {
             Method notifyClient = virtualClientSocket.getClass().getMethod("notifyClient", message.getClass());
             notifyClient.invoke(virtualClientSocket, message);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateServer(Message message){
+        System.out.println("VWSocket -> Controller: " + message.toString());
+        setChanged();
+        notifyObservers(message);
     }
 
     public void updateServer(CreatePlayerMessage message){
@@ -53,6 +60,7 @@ public class VirtualViewSocket extends Observable implements VirtualViewInterfac
         try{
             virtualClientSocket.resetOldPlayer(message);
             setChanged();
+            System.out.println("VWSocket -> Controller: " + message.toString());
             notifyObservers(message);
         } catch (PlayerNotFoundException e){
             virtualClientSocket.notifyClient(new ErrorMessage("server", virtualClientSocket.getUsername(), "Player not found"));

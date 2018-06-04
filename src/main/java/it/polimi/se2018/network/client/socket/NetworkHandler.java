@@ -26,14 +26,40 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
 
     public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket) {
         socketSetUp(localhost, port, remoteViewSocket);
+        /*String message = "";
+        System.out.println("NetworkHandler setup...");
+        try{
+            message = (String) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if(message.equals("ConnectionEnabled")){
+            serverIsUp = true;
+            this.start();
+        }*/
+        this.start();
+        serverIsUp = true;
+        System.out.println("Network handler started.");
     }
 
     public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket, String oldUsername){
         socketSetUp(localhost, port, remoteViewSocket);
+        System.out.println("Socket comeback: network handler created, socket set up");
+        String message = "";
         try{
-            outputStream.writeObject(new ComebackSocketMessage(oldUsername, "server", oldUsername));
-        } catch (IOException e){
+            message = (String) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        if(message.equals("ConnectionEnabled")){
+            System.out.println("handshake received.");
+            serverIsUp = true;
+            this.start();
+            try{
+                outputStream.writeObject(new ComebackSocketMessage(oldUsername, "server", oldUsername));
+            } catch (IOException e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -43,8 +69,6 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             this.client = remoteViewSocket;
-            this.serverIsUp = true;
-            this.start();
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -61,7 +85,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                         loop=false;
                     }else {
                         try{
-                            Method updateClient = client.getClass().getMethod("updateClient", message.getClass());
+                            Method updateClient = client.getClass().getMethod("notifyView", message.getClass());
                             updateClient.invoke(client, message);
                         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();

@@ -2,12 +2,16 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.GameBoard;
+import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
+import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.exceptions.SinglePlayerException;
 import it.polimi.se2018.model.game_equipment.Player;
@@ -358,17 +362,43 @@ public class Model extends Observable {
             j++;
         }
         Collections.shuffle(schemaPosition);
+        int s =0;
         for(int t=0;t< participants.size()-1;t++) {
-            int s =0;
             setChanged();
             notifyObservers(new ChooseSchemaMessage("model", participants.get(0).getName(),schemaPosition.get(s),schemaPosition.get(s+1)));
-            s = s+2;
+            s =  +2;
         }
     }
 
     public void setSchemacardPlayer(int platerPos,int schemaPos){
         SchemaCard schema = new SchemaCard(schemaPos);
         participants.get(platerPos).setSchemaCard(schema);
+    }
+
+    public void sendPrivateObjectiveCard(){
+        ArrayList<AbstractObjectiveCard> privateCards = new ArrayList<AbstractObjectiveCard>();
+        SfumatureBlu sfumatureBlu = SfumatureBlu.getThisInstance();
+        SfumatureGialle sfumatureGialle = SfumatureGialle.getThisInstance();
+        SfumatureRosse sfumatureRosse = SfumatureRosse.getThisInstance();
+        SfumatureVerdi sfumatureVerdi = SfumatureVerdi.getThisInstance();
+        SfumatureViola sfumatureViola = SfumatureViola.getThisInstance();
+        privateCards.add(sfumatureBlu);
+        privateCards.add(sfumatureGialle);
+        privateCards.add(sfumatureVerdi);
+        privateCards.add(sfumatureRosse);
+        privateCards.add(sfumatureViola);
+        Collections.shuffle(privateCards);
+        //notifica a tutti delle schemacard
+        int s =0;
+        for(int i=0;i< participants.size()-1;i++) {
+            String colorString = privateCards.get(i).getDescription();
+            setChanged();
+            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(),colorString));
+            s = s+1;
+        }
+        //alla fine di tutto distribuisce le carte schema
+        sendSchemaCard();
+
     }
 
 

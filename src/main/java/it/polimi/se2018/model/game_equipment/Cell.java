@@ -19,10 +19,12 @@ public class Cell {
     private boolean avoidValueRestriction;
     private boolean avoidColorRestriction;
     private boolean avoidNearnessRestriction;
+    private PaintingTool paintingTool;
+    private static final String square = "\u2223";
+
     /*boolean values to know if some tool cards have been activated and we dont have to consider value restriction
     * on this cell*/
     private Dice assignedDice; /*Dice reference to the die placed on the cell*/
-
     /**
      * constructor method
      * @param color to assign a color restriction, if null noColor becomes true
@@ -44,6 +46,12 @@ public class Cell {
 
     }
 
+    public Cell( Color color, int value,PaintingTool paintingTool){
+        this.paintingTool = paintingTool;
+        this.value = value;
+        this.cellColor = color;
+    }
+
     /**
      * Return true if the cell hasn't any color restrictions
      * @return noColor
@@ -57,9 +65,10 @@ public class Cell {
      * @exception NoColorException
      * @return cellColor
      */
-    public Color getCellColor() throws NoColorException {
+    public Color getCellColor() throws NoColorException  {
         if(this.noColor) throw new NoColorException();
         return cellColor;
+
     }
 
     /**
@@ -130,6 +139,11 @@ public class Cell {
      */
     public Dice getAssignedDice() {
         return assignedDice;
+    }
+
+
+    public PaintingTool getPaintingTool(){
+        return paintingTool;
     }
 
 }

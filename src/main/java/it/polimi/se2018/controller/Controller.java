@@ -193,7 +193,7 @@ public class Controller extends Observable implements Observer {
                         if(model.getParticipants().size()>=2) {
                             /*enough player to start a match*/
                             System.out.println("Time's up, match starting with " + model.getParticipants().size() + " players");
-                            model.sendSchemaCard();
+                            model.sendPrivateObjectiveCard();
                         }
                         else {
                             /*Not enough player*/
@@ -207,7 +207,7 @@ public class Controller extends Observable implements Observer {
         model.addPlayer(message.getPlayerName());
         if(model.getParticipants().size()==4){
             enoughPlayers = true;
-            model.sendSchemaCard();
+            model.sendPrivateObjectiveCard();
         }
     }
 

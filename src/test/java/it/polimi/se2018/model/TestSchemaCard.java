@@ -72,4 +72,23 @@ public class TestSchemaCard {
        }
    }
 
+   @Test
+    public void schemaTest(){
+        SchemaCard schema = new SchemaCard(1);
+
+        for (int i =0; i<4;i++){
+            for(int j=0; j<5;j++){
+               if(schema.getCell(i,j).getValue()!=0) {
+                   System.out.print("[" + schema.getCell(i, j).getValue() + "]");
+               }
+               else System.out.print("[ ]");
+
+            }
+            System.out.println();
+        }
+
+   }
+
+
+
 }

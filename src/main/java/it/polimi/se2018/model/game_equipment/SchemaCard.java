@@ -1,9 +1,6 @@
 package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.model.exceptions.*;
-import it.polimi.se2018.model.game_equipment.Cell;
-import it.polimi.se2018.model.game_equipment.Color;
-import it.polimi.se2018.model.game_equipment.Dice;
 
 /**
  * Schema Cards class

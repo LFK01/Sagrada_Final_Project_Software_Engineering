@@ -13,11 +13,11 @@ import static org.junit.Assert.*;
 public class TestCell {
 
     @Test
-    public void Cell(){
+    public void Cell() {
         Cell cell = null;
         boolean correctExcpetioncCalling=false;
         try{
-            cell = new Cell(null, 0);
+            cell = new Cell(null,0);
         }
         catch(NullPointerException e){
             fail();
@@ -205,4 +205,28 @@ public class TestCell {
         assertNotNull(color2);
         assertEquals(Color.RED, color2);
     }
+
+    //nuovi test per CLI
+    @Test
+    public void testColor() {
+        //Cell cell1 = new Cell(true, PaintingTool.ANSI_RED,0);
+        //Cell cell2 = new Cell(true,PaintingTool.ANSI_BLUE,0);
+        //Cell cell3 = new Cell(true,PaintingTool.ANSI_GREEN,5);
+
+        //ArrayList<Cell> schema = new ArrayList<Cell>();
+        //schema.add(cell1);
+        //schema.add(cell2);
+        //schema.add(cell3);
+/*
+        for (int i=0;i<schema.size();i++){
+            if(schema.get(i).getValue()!=0){
+                System.out.println("[" + schema.get(i).getValue() + "]");
+            }
+
+        }
+
+    }*/
+
+    }
+
 }

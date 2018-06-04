@@ -18,19 +18,24 @@ public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colo
     public DiceBag() {
 
         for(int i = 0; i < 18; i++)
-            diceBag.add(new Dice(Color.RED, (int)Math.ceil(Math.random()*6)));
+            //diceBag.add(new Dice(Color.RED, (int)Math.ceil(Math.random()*6)));
+            diceBag.add(new Dice(PaintingTool.ANSI_RED));
 
         for(int i = 18; i < 36; i++)
-            diceBag.add(new Dice(Color.YELLOW, (int)Math.ceil(Math.random()*6)));
+            //diceBag.add(new Dice(Color.YELLOW, (int)Math.ceil(Math.random()*6)));
+        diceBag.add(new Dice(PaintingTool.ANSI_YELLOW));
 
         for(int i = 36; i < 54; i++)
-            diceBag.add(new Dice(Color.GREEN, (int)Math.ceil(Math.random()*6)));
+            //diceBag.add(new Dice(Color.GREEN, (int)Math.ceil(Math.random()*6)));
+        diceBag.add(new Dice(PaintingTool.ANSI_GREEN));
 
         for(int i = 54; i < 72; i++)
-            diceBag.add(new Dice(Color.BLUE, (int)Math.ceil(Math.random()*6)));
+            //diceBag.add(new Dice(Color.BLUE, (int)Math.ceil(Math.random()*6)));
+        diceBag.add(new Dice(PaintingTool.ANSI_BLUE));
 
         for(int i = 72; i < 90; i++)
-            diceBag.add(new Dice(Color.PURPLE, (int)Math.ceil(Math.random()*6)));
+            //diceBag.add(new Dice(Color.PURPLE, (int)Math.ceil(Math.random()*6)));
+        diceBag.add(new Dice(PaintingTool.ANSI_PURPLE));
 
         Collections.shuffle(diceBag);
 

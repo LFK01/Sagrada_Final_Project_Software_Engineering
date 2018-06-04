@@ -1,5 +1,7 @@
 package it.polimi.se2018.model.game_equipment;
 
+import java.util.Random;
+
 /**
  * Dice class
  * @author Giorgia
@@ -11,7 +13,8 @@ public class Dice {
     private boolean inSchema;
     private boolean inTrack;
     private boolean inDraftPool;
-
+    private PaintingTool paintingTool;
+    private String face;
     /**
      * Class constructor
      * @param color the dice color
@@ -19,16 +22,19 @@ public class Dice {
      */
     public Dice(Color color, int value) {
 
+
         this.diceColor = color;
-
         this.value = value;
-
         inSchema = false;
         inTrack = false;
         inDraftPool = false;
 
     }
 
+    public Dice(PaintingTool paintingTool){
+        this.paintingTool = paintingTool;
+        roll();
+    }
     /**
      * Dice color getter
      * @return the dice color
@@ -78,5 +84,45 @@ public class Dice {
     public void setValue(int value) {
             this.value = value;
     }
+
+
+   public void setPaintingTool(PaintingTool paintingTool){
+        this.paintingTool = paintingTool;
+   }
+
+   public PaintingTool getPaintingTool(){
+        return paintingTool;
+   }
+
+
+    @Override
+    public String toString() {
+        String escape = this.paintingTool.escape();
+        return escape + "[" + face + "]" + PaintingTool.RESET;
+    }
+
+    public void dump(){
+        System.out.println(this);
+    }
+
+    public static final String[] faces ={
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+    };
+
+    public void roll(){
+        int count = faces.length;
+        Random rand = new Random();
+        int index = rand.nextInt(count);
+        this.face = faces[index];
+    }
+
+
+
+
 
 }

@@ -2,6 +2,7 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.DiceBag;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -53,6 +54,17 @@ public class TestDice {
         assertNotNull(dice);
         assertEquals(7, dice.getValue());
         assertNotEquals(5, dice.getValue());
+
+    }
+
+    @Test
+    public void colorTest(){
+        //String redString =  PaintingTool.ANSI_RED.escape() + "Hello" + PaintingTool.ANSI_BLUE.escape() + "World" + PaintingTool.RESET;
+        //System.out.println(redString)
+        DiceBag  diceBag = new DiceBag();
+        for(int i=0;i < diceBag.getDiceBag().size();i++){
+            diceBag.getDiceBag().get(i).dump();
+        }
 
     }
 

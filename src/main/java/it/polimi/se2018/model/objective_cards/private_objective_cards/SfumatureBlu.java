@@ -11,6 +11,7 @@ import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 public class SfumatureBlu extends AbstractObjectiveCard {
 
     private static SfumatureBlu thisInstance;
+    private String color;
 
     private SfumatureBlu(){
         super("SfumatureBlu","Somma dei valori su tutti i dadi viola","#",true);

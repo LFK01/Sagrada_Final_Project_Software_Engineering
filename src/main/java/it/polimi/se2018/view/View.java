@@ -185,6 +185,12 @@ public class View extends Observable implements Observer{
         }
 
     }
+    private void updateView(ShowPrivateObjectiveCardsMessage message){
+        if(username.equals(message.getRecipient())){
+            showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
+        }
+
+    }
 
     public void playerNumberExceededDialog() {
         JFrame framePlayerNumberExceeded = new JFrame();
@@ -604,7 +610,15 @@ public class View extends Observable implements Observer{
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public void showPrivateObjectiveCard(String description){
+        System.out.println(description);
+    }
+
+
 }
+
+
 
 
 

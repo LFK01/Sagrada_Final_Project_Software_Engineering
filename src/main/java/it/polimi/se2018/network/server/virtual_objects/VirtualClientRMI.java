@@ -80,6 +80,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
                 System.out.println("VCRMI -> RemoteVRMI: " + errorMessage.toString());
                 remoteView.updateClient(errorMessage);
             } catch (RemoteException e) {
+                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
                 isConnected = false;
                 e.printStackTrace();
             }

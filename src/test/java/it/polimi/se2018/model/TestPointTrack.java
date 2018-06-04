@@ -1,7 +1,7 @@
 package it.polimi.se2018.model;
 import static org.junit.Assert.*;
 
-import it.polimi.se2018.model.PointTrack;
+import it.polimi.se2018.model.game_equipment.PointTrack;
 import org.junit.Test;
 
 /**

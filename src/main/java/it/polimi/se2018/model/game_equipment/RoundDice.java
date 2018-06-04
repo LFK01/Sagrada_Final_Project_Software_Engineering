@@ -1,4 +1,7 @@
-package it.polimi.se2018.model;
+package it.polimi.se2018.model.game_equipment;
+import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.DiceBag;
+
 import java.util.*;
 
 /**

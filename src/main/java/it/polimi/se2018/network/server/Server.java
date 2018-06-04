@@ -10,7 +10,8 @@ import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualClientSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
-import javax.swing.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
@@ -19,32 +20,71 @@ import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class Server {
 
-    private int PORTSocket = 1111;
-    private int PORTRMI = 1099;
-    private ClientGathererRMI clientGathererRMI;
-    private ClientGathererSocket clientGathererSocket;
+    private static int portSocket = 1111;
+    private static int portRMI = 1099;
+    private static int timer;
     private ArrayList<VirtualViewInterface> players = new ArrayList<>();
     private final Controller controller;
 
     public Server() {
+
+        Scanner inputFile = null;
+
+        try{
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\in.txt"));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("Timer:")){
+                        timer = Integer.parseInt(words[i+1]);
+                    }
+                    if(words[i].trim().equals("PortRMI:")){
+                        portRMI = Integer.parseInt(words[i+1]);
+                    }
+                    if(words[i].trim().equals("PortSocket:")){
+                        portSocket = Integer.parseInt(words[i+1]);
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+
         controller = new Controller();
-        clientGathererSocket = new ClientGathererSocket(this, PORTSocket);
+        controller.setTimer(timer);
+        ClientGathererSocket clientGathererSocket = new ClientGathererSocket(this, portSocket);
         clientGathererSocket.start();
         try{
-            LocateRegistry.createRegistry(PORTRMI);
+            LocateRegistry.createRegistry(portRMI);
         }catch (RemoteException e){
             e.printStackTrace();
         }
         try{
-            this.clientGathererRMI = new ClientGathererRMI(this);
+            ClientGathererRMI clientGathererRMI = new ClientGathererRMI(this);
             Naming.rebind("//localhost/ClientGathererRMI", clientGathererRMI);
-            System.out.println("ho creato il ClientGathererRMI ");
-        } catch (RemoteException e){
-            e.printStackTrace();
-        } catch (MalformedURLException e){
+        } catch (RemoteException | MalformedURLException e){
             e.printStackTrace();
         }
     }
@@ -52,6 +92,7 @@ public class Server {
     public void addClient(Socket newClient){
         if(players.size()<4){
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
+            virtualClientSocket.start();
             this.addClient(virtualClientSocket.getVirtualViewSocket());
         }else{
             try{
@@ -72,7 +113,7 @@ public class Server {
         players.remove(oldClient);
     }
 
-    public ArrayList<VirtualViewInterface> getPlayers(){
+    public List<VirtualViewInterface> getPlayers(){
         return players;
     }
 

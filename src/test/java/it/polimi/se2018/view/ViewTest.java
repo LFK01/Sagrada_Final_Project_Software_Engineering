@@ -1,14 +1,9 @@
 package it.polimi.se2018.view;
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.model.Player;
 import org.junit.Test;
 
 import javax.swing.*;
-
-import java.util.ArrayList;
-
-import static javax.swing.JOptionPane.DEFAULT_OPTION;
 
 public class ViewTest {
 

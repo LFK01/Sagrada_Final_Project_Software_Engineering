@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
-import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
@@ -46,11 +45,11 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     public void run(){
         Message message = null;
         try {
-            boolean loop = true;
-            while (loop && isConnected){
+            isConnected = true;
+            while (isConnected){
                 try{
                     message = (Message) inputStream.readObject();
-                    System.out.println("VCSocket letto messaggio -> Server");
+                    System.out.println("VCSocket -> Server: " + message.toString());
                 } catch (ClassNotFoundException e){
                     e.printStackTrace();
                 } catch (IOException e){
@@ -58,10 +57,9 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                     this.isConnected = false;
                 }
                 if(message == null){
-                    loop = false;
+                    this.isConnected = false;
                 }else {
                     try{
-                        System.out.println("Try to invoke a method");
                         Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
                         updateServer.invoke(virtualViewSocket, message);
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
@@ -81,7 +79,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                 writer.writeObject(successCreatePlayerMessage);
             } catch (IOException e) {
                 isConnected = false;
-                e.printStackTrace();
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
             }
         }
     }
@@ -91,8 +89,8 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
             try{
                 writer.writeObject(errorMessage);
             } catch (IOException e) {
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
                 isConnected = false;
-                e.printStackTrace();
             }
         }
     }
@@ -103,7 +101,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                 writer.writeObject(chooseSchemaMessage);
             } catch (IOException e) {
                 isConnected = false;
-                e.printStackTrace();
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
             }
         }
     }
@@ -112,13 +110,8 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{
         for (VirtualViewInterface client: server.getPlayers()) {
             if(client.getUsername().equals((message).getUsername())){
-                client.setClientConnection((message).getNewClientConnection());
-                this.isConnected = false;
-                for (VirtualViewInterface uselessClient: server.getPlayers()) {
-                    if(client == this.virtualViewSocket){
-                        server.getPlayers().remove(uselessClient);
-                    }
-                }
+                server.getPlayers().remove(client);
+                server.addClient(this.virtualViewSocket);
             }
         }
         throw new PlayerNotFoundException();

@@ -29,13 +29,10 @@ public class VirtualViewSocket extends Observable implements VirtualViewInterfac
 
     public void updateServer(CreatePlayerMessage message){
         boolean correctUsername = true;
-        System.out.println("check username usage on " + virtualClientSocket.getServer().getPlayers().size() + " clients");
         if(virtualClientSocket.getServer().getPlayers().size()>1){
-            System.out.println("desidered username: " + message.getPlayerName());
             for(VirtualViewInterface client: virtualClientSocket.getServer().getPlayers()){
-                System.out.println("client #" + (virtualClientSocket.getServer().getPlayers().indexOf(client)+1) + " username: " + client.getUsername());
                 if(client!=this){
-                    if(client.getUsername().equals(message.getPlayerName())){
+                    if(client.getUsername().equals(message.getPlayerName()) || message.getPlayerName().equals("")){
                         update(this, new ErrorMessage(virtualClientSocket.getServer().toString(), message.getPlayerName(), "NotValidUsername"));
                         correctUsername = false;
                     }

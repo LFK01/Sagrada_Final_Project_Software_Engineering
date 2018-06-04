@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.events.moves;
 
-import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.game_equipment.Player;
 
 /**
  * @author Giorgia

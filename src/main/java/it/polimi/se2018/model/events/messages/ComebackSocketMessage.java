@@ -4,14 +4,8 @@ import java.net.Socket;
 
 public class ComebackSocketMessage extends ComebackMessage {
 
-    Socket newClientConnection;
-
-    public ComebackSocketMessage(String sender, String recipient, String oldUsername, Socket newClientConnection) {
+    public ComebackSocketMessage(String sender, String recipient, String oldUsername) {
         super(sender, recipient, oldUsername);
-        this.newClientConnection = newClientConnection;
     }
 
-    public Socket getNewClientConnection() {
-        return newClientConnection;
-    }
 }

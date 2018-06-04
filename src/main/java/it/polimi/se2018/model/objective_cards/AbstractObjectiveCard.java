@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.objective_cards;
 
-import it.polimi.se2018.model.SchemaCard;
+import it.polimi.se2018.model.game_equipment.SchemaCard;
 
 /**
  * @author Luciano

@@ -1,6 +1,6 @@
 package it.polimi.se2018.model;
 import static org.junit.Assert.*;
-import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.game_equipment.Player;
 import org.junit.Test;
 
 /**

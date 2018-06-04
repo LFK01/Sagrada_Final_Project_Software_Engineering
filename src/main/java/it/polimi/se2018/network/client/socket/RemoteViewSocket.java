@@ -28,7 +28,6 @@ public class RemoteViewSocket extends Observable implements Observer{
     @Override
     public void update(Observable o, Object message) {
         try{
-            System.out.println("RemoteVSocket tries to invoke a method " + message.getClass().toString());
             Method sendToServer = this.getClass().getMethod("sendToServer", message.getClass());
             sendToServer.invoke(this, message);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
@@ -64,11 +63,7 @@ public class RemoteViewSocket extends Observable implements Observer{
     }
 
     public void updateClient(ErrorMessage errorMessage){
-        System.out.println("Error message received 1");
-        System.out.println("destinatario: " + errorMessage.getRecipient());
-        System.out.println("indirizzo locale: " + server.getAddress());
         if(errorMessage.getRecipient().equals(username) || server.getAddress().equals(errorMessage.getRecipient())){
-            System.out.println("Error message received 2");
             if(errorMessage.toString().equals("NotValidUsername")){
                 System.out.println("RemoteWSocket -> Server: error message not valid username");
                 username = "";

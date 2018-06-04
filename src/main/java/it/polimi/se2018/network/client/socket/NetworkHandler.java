@@ -31,7 +31,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket, String oldUsername){
         socketSetUp(localhost, port, remoteViewSocket);
         try{
-            outputStream.writeObject(new ComebackSocketMessage(oldUsername, "server", oldUsername, socket));
+            outputStream.writeObject(new ComebackSocketMessage(oldUsername, "server", oldUsername));
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -57,9 +57,6 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             if(serverIsUp){
                 try{
                     Message message = (Message) inputStream.readObject();
-                    System.out.println("NetworkHandlet letto messaggio -> client: " + message.toString());
-                    System.out.println("destinatario messaggio: " + message.getRecipient());
-                    System.out.println("indirizzo locale: " + getAddress());
                     if(message == null){
                         loop=false;
                     }else {
@@ -71,7 +68,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                         }
                     }
                 } catch (ClassNotFoundException | IOException e){
-                    System.out.println("Server disconnesso.");
+                    System.out.println("Server disconnected.");
                     serverIsUp = false;
                 }
             }
@@ -99,6 +96,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
         if(!this.socket.isClosed()){
             try{
                 this.socket.close();
+                System.out.println("Connection closed.");
             } catch (IOException e){
                 e.printStackTrace();
             }

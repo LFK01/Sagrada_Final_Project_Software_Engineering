@@ -4,8 +4,8 @@ package it.polimi.se2018.model;
  * edited Luciano
  */
 
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
-import it.polimi.se2018.model.exceptions.SinglePlayerException;
+import it.polimi.se2018.model.game_equipment.GameBoard;
+import it.polimi.se2018.model.game_equipment.Player;
 import org.junit.Test;
 
 import java.util.ArrayList;

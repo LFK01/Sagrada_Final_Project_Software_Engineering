@@ -1,5 +1,5 @@
 package it.polimi.se2018.model;
-import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.game_equipment.Player;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import org.junit.Test;
 

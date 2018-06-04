@@ -56,11 +56,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
     public void updateServer(CreatePlayerMessage message) {
         boolean correctUsername = true;
         if(virtualClientRMI.getServer().getPlayers().size()>1){
-            System.out.println("check username usage on " + virtualClientRMI.getServer().getPlayers().size() + " clients");
             for(VirtualViewInterface client: virtualClientRMI.getServer().getPlayers()){
-                System.out.println("Check username on client: " + client.toString());
-                System.out.println("desidered username: " + message.getPlayerName());
-                System.out.println("client username: " + client.getUsername());
                 if(client!=this){
                     if(client.getUsername().equals(message.getPlayerName())){
                         update(this, new ErrorMessage("server", message.getPlayerName(), "NotValidUsername"));
@@ -73,7 +69,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         }
         if(correctUsername){
             virtualClientRMI.setUsername(message.getPlayerName());
-            System.out.println("VirtualViewRMI -> Controller");
+            System.out.println("VirtualViewRMI -> Controller: " + message.toString());
             setChanged();
             notifyObservers(message);
         }

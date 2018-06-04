@@ -1,4 +1,4 @@
-package it.polimi.se2018.model;
+package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.NoColorException;

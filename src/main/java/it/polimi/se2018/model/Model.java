@@ -1,16 +1,17 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
-import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
+import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.GameBoard;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.exceptions.SinglePlayerException;
+import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
 
@@ -187,26 +188,6 @@ public class Model extends Observable {
             sendSchemaCard();
         }
         boolean n = numberOfParticipantReachedUp;
-        t.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(!n) {
-                    if(participants.size()>=2) {
-                        System.out.println("SONO ENTRATO NEL TIMER");
-                        sendSchemaCard();
-                    }
-                    else {
-                        System.out.println("NUMERO GIOCATORI NON RAGGIUNTO");
-                        notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
-
-                    }
-                }
-
-            }
-        }, 10000);
-
-
-
     }
 
     /**

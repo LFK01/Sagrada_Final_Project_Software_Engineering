@@ -37,10 +37,7 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
     }
     public void notifyView(ErrorMessage errorMessage){
         if(errorMessage.getRecipient().equals(username)){
-            System.out.println("check1");
             if(errorMessage.toString().equals("NotValidUsername")){
-                System.out.println("check2");
-                username = "";
                 setChanged();
                 notifyObservers(errorMessage);
             }

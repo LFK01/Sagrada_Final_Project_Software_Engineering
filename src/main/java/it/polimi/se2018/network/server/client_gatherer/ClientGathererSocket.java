@@ -31,7 +31,6 @@ public class ClientGathererSocket extends Thread{
             Socket newClientConnection;
             try{
                 newClientConnection = serverSocket.accept();
-                System.out.println("Socket address server side: " + newClientConnection.getLocalAddress().toString());
                 server.addClient(newClientConnection);
             } catch (IOException e){
                 e.printStackTrace();

@@ -2,15 +2,12 @@ package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.*;
-import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.SelectedSchemaMessage;
-import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.PlayerMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
+import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.DiceBag;
+import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,18 +16,25 @@ import java.util.*;
 
 /**
  * Controller class
- * @author Giorgia
+ * @author Luciano, Giovanni
  */
 
 public class Controller extends Observable implements Observer {
 
     private Model model;
+    private int time;
+    private boolean timerStarted;
+    private Timer t;
+    private boolean enoughPlayers;
 
     /**
      * Class constructor
      */
     public Controller() {
         this.model = new Model();
+        timerStarted = false;
+        t = new Timer();
+        enoughPlayers = false;
     }
 
     /**
@@ -146,21 +150,20 @@ public class Controller extends Observable implements Observer {
     @Override
     public void update(Observable object, Object message) {
         try{
-            System.out.println("Controller calls method");
             Method update = this.getClass().getMethod("update", message.getClass());
             update.invoke(this, message);
         } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e){
             e.printStackTrace();
         }
         //TODO new update(PlayerMove message) with all the instruction below
-        if (message instanceof PlayerMove) {
+        /*if (message instanceof PlayerMove) {
             if (((PlayerMove) message).isDiceMove()) {
                 try {
                     performDiceMove((ChooseDiceMove) message);
                 } catch (InvalidCellPositionException e) {
-                    notifyObservers(/*Insert errore message here*/);
+                    notifyObservers(/*Insert errore message here);
                 } catch (InvalidDraftPoolPosException e) {
-                    notifyObservers(/*Insert errore message here*/);
+                    notifyObservers(/*Insert errore message here);
                 }
             } else {
                 if (!((PlayerMove) message).isDiceMove()) {
@@ -171,16 +174,41 @@ public class Controller extends Observable implements Observer {
                             performToolCardMove((UseToolCardMove) message);
                         } catch (NullPointerException e) {
                             setChanged();
-                            notifyObservers(/*inserire messaggio di errore*/);
+                            notifyObservers(inserire messaggio di errore);
                         }
                     }
                 }
             }
-        }
+        }*/
     }
 
     public void update(CreatePlayerMessage message){
+        if(!timerStarted){
+            timerStarted = true;
+            System.out.println("timer inizializzato");
+            t.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if(!enoughPlayers) {
+                        if(model.getParticipants().size()>=2) {
+                            /*enough player to start a match*/
+                            System.out.println("Time's up, match starting with " + model.getParticipants().size() + " players");
+                            model.sendSchemaCard();
+                        }
+                        else {
+                            /*Not enough player*/
+                            System.out.println("Time's up, minimun player number not reached!");
+                            notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
+                        }
+                    }
+                }
+            }, 1000*time);
+        }
         model.addPlayer(message.getPlayerName());
+        if(model.getParticipants().size()==4){
+            enoughPlayers = true;
+            model.sendSchemaCard();
+        }
     }
 
     public void update(ComebackSocketMessage message){
@@ -200,9 +228,11 @@ public class Controller extends Observable implements Observer {
         model.sendSchemaCard();
     }
 
-
-
     public Model getModel(){
         return model;
+    }
+
+    public void setTimer(int time){
+        this.time = time;
     }
 }

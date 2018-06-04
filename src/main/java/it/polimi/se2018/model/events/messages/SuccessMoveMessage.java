@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.events.messages;
 
-import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.game_equipment.GameBoard;
+import it.polimi.se2018.model.game_equipment.Player;
 
 /**
  * @author Luciano

@@ -22,6 +22,7 @@ public class View extends Observable implements Observer{
     private Scanner scanner;
     boolean windowCreated = true;
     private int choice = 0;
+
     /**
      * Initializes view
      */
@@ -137,7 +138,7 @@ public class View extends Observable implements Observer{
     public int demandConnectionType() {
         JFrame frameDemandConnection = new JFrame("Parent Window");
         Object[] options = {"RMI", "Socket"};
-        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Scegliere tipo di connessione desiderata:", "Scelta connessione", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Choose connection:", "Connection", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
         if(n == JOptionPane.YES_OPTION){
             frameDemandConnection.dispose();
             return 1;
@@ -157,27 +158,24 @@ public class View extends Observable implements Observer{
         }
     }
 
-    private void updateClient(SuccessCreatePlayerMessage message){
-        if(message.getRecipient().equals(username)){
-            System.out.println("Giocatore creato " + message.getRecipient());
-        }
-    }
-
     private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
-            System.out.println("Giocatore creato " + successCreatePlayerMessage.getRecipient());
+            System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
         }
     }
 
     private void updateView(ErrorMessage errorMessage){
-        System.out.println("check4");
         if(errorMessage.getRecipient().equals(username)){
             if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("Username not available!");
                 this.createPlayer();
             }
             if(errorMessage.toString().equals("PlayerNumberExceeded")){
                 //TODO waiting lobby
                 System.out.print("Impossibile connettersi");
+            }
+            if(errorMessage.toString().equals("NotEnoughPlayer")){
+                System.out.println("Minimum players number not reached.");
             }
         }
     }
@@ -200,7 +198,6 @@ public class View extends Observable implements Observer{
     }
 
     public int chooseConnectionWindow() {
-
 
             if (windowCreated) {
 

@@ -1,4 +1,4 @@
-package it.polimi.se2018.model;
+package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.model.tool_cards.*;

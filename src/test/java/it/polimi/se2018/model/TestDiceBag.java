@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.game_equipment.Color;
+import it.polimi.se2018.model.game_equipment.DiceBag;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

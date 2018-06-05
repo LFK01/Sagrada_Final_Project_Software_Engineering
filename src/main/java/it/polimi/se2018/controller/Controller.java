@@ -226,10 +226,6 @@ public class Controller extends Observable implements Observer {
         //estrae le toolcard e le manda
         model.extractPublicObjectiveCards();
         model.extractToolCards();
-
-
-
-
     }
 
     public void sendSchemaCardController(){

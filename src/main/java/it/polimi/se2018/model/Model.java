@@ -353,7 +353,7 @@ public class Model extends Observable {
         for(int t=0; t < participants.size(); t++) {
             SchemaCard[] extractedSchemaCards = new SchemaCard[schemaCardExtractNumber*2];
             String[] schemaCards = new String[schemaCardExtractNumber*2];
-            for(int i=0; i<schemaCardExtractNumber; i++){
+            for(int i=0; i<schemaCardExtractNumber*2; i++){
                 extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
                 extractedCardIndex++;

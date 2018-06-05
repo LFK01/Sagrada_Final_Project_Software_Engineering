@@ -37,105 +37,83 @@ public class SchemaCard {
             int row=0;
             try{
                 line = inputFile.nextLine();
-                System.out.println("leggo riga: " + line);
             } catch (NoSuchElementException e){
                 hasNextLine = false;
             }
             while(hasNextLine && !stopReading){
-                System.out.println("entro nel ciclo");
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length && !completedRows){
-                    System.out.println("analizzo la parola: " + words[i]);
                     if(words[i].trim().equals("Number:")){
                         if(schemaCardIndex == Integer.parseInt(words[i+1])){
                             cardFound = true;
-                            System.out.println("found card!");
                             i++;
                         }
                     }
                     if(cardFound){
                         if(words[i].trim().equals("name:")){
                             name = words[i+1].replace('/', ' ');
-                            System.out.println("card name:" + name);
                             i++;
                         }
                         if(words[i].trim().equals("difficulty:")){
                             difficultyLevel = Integer.parseInt(words[i+1]);
-                            System.out.println("difficulty level: " + difficultyLevel);
                             i++;
                         }
                         if(words[i].startsWith("[")){
-                            System.out.println("lettura carta in corso...");
-                            System.out.println("numero parole: " + words.length);
                             for(int col=0; col<words.length; col++){
                                 switch(words[col].trim()){
                                     case "[]":{
                                         this.cells[row][col] = new Cell(null, 0);
-                                        System.out.print("vuota");
                                         break;
                                     }
                                     case "[1]":{
                                         this.cells[row][col] = new Cell(null, 1);
-                                        System.out.print("1");
                                         break;
                                     }
                                     case "[2]":{
                                         this.cells[row][col] = new Cell(null, 2);
-                                        System.out.print("2");
                                         break;
                                     }
                                     case "[3]":{
                                         this.cells[row][col] = new Cell(null, 3);
-                                        System.out.print("3");
                                         break;
                                     }
                                     case "[4]":{
                                         this.cells[row][col] = new Cell(null, 4);
-                                        System.out.print("4");
                                         break;
                                     }
                                     case "[5]":{
                                         this.cells[row][col] = new Cell(null, 5);
-                                        System.out.print("5");
                                         break;
                                     }
                                     case "[6]":{
                                         this.cells[row][col] = new Cell(null, 6);
-                                        System.out.print("6");
                                         break;
                                     }
                                     case "[Y]":{
                                         this.cells[row][col] = new Cell(Color.YELLOW, 0);
-                                        System.out.print("giallo");
                                         break;
                                     }
                                     case "[R]":{
                                         this.cells[row][col] = new Cell(Color.RED, 0);
-                                        System.out.print("red");
                                         break;
                                     }
                                     case "[B]":{
                                         this.cells[row][col] = new Cell(Color.BLUE, 0);
-                                        System.out.print("blu");
                                         break;
                                     }
                                     case "[G]":{
                                         this.cells[row][col] = new Cell(Color.GREEN, 0);
-                                        System.out.print("verde");
                                         break;
                                     }
                                     case "[P]":{
                                         this.cells[row][col] = new Cell(Color.PURPLE, 0);
-                                        System.out.print("purple");
                                         break;
                                     }
                                 }
                             }
-                            System.out.println("\ndone reading row");
                             row++;
                             if(row>3){
-                                System.out.println("4 righe lette, fermo lettura");
                                 completedRows = true;
                                 cardFound = false;
                                 stopReading = true;
@@ -164,7 +142,6 @@ public class SchemaCard {
     public String getName () {
             return name;
         }
-
 
     /**
      *

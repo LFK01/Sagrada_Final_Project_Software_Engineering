@@ -11,7 +11,7 @@ name: Fractal/Drops
 difficulty: 3
 [] [4] [] [Y] [6]
 [R] [] [2] [] []
-[] [] [R] [V] [1]
+[] [] [R] [P] [1]
 [B] [Y] [] [] []
 
 
@@ -37,15 +37,15 @@ difficulty: 3
 [] [B] [2] [] [Y]
 [] [4] [] [R] []
 [] [] [5] [Y] []
-[G] [3] [] [] [V]
+[G] [3] [] [] [P]
 
 
 Number: 6
 name: Aurorae/Magnificus
 difficulty: 5
-[5] [G] [B] [V] [2]
-[V] [] [] [] [Y]
-[Y] [] [6] [G] [V]
+[5] [G] [B] [P] [2]
+[P] [] [] [] [Y]
+[Y] [] [6] [G] [P]
 [1] [] [] [] [4]
 
 
@@ -53,7 +53,7 @@ Number: 7
 name: Symphony/of/Light
 difficulty: 6
 [2] [] [5] [] [1]
-[Y] [6] [V] [2] [R]
+[Y] [6] [P] [2] [R]
 [] [B] [4] [G] []
 [] [3] [] [5] []
 
@@ -72,7 +72,7 @@ name: Battlo
 difficulty: 5
 [] [] [6] [] []
 [] [5] [B] [4] []
-[3] [G] [Y] [V] [2]
+[3] [G] [Y] [P] [2]
 [1] [4] [R] [5] [3]
 
 
@@ -90,7 +90,7 @@ name: Chromatic/Splendor
 difficulty: 4
 [] [] [G] [] []
 [2] [Y] [5] [B] [1]
-[] [R] [3] [V] []
+[] [R] [3] [P] []
 [1] [] [6] [] [4]
 
 Number: 12
@@ -98,7 +98,7 @@ name: Via/Lux
 difficulty: 4
 [Y] [] [6] [] []
 [] [1] [5] [] [2]
-[3] [Y] [R] [V] []
+[3] [Y] [R] [P] []
 [] [] [4] [3] [R]
 
 Number: 13
@@ -122,7 +122,7 @@ Number: 15
 name: Luz/Celestial
 difficulty: 3
 [] [] [R] [5] []
-[V] [4] [] [G] [3]
+[P] [4] [] [G] [3]
 [6] [] [] [B] []
 [] [Y] [2] [] []
 
@@ -138,8 +138,8 @@ difficulty: 3
 Number: 17
 name: Sun's/Glory
 difficulty: 6
-[1] [V] [Y] [] [4]
-[V] [Y] [] [] [6]
+[1] [P] [Y] [] [4]
+[P] [Y] [] [] [6]
 [Y] [] [] [5] [3]
 [] [5] [4] [2] [1]
 
@@ -157,7 +157,7 @@ Number: 19
 name: Aurora/Sagradis
 difficulty: 4
 [R] [] [B] [] [Y]
-[4] [V] [3] [G] [2]
+[4] [P] [3] [G] [2]
 [] [1] [] [5] []
 [] [] [6] [] []
 
@@ -165,9 +165,9 @@ difficulty: 4
 Number: 20
 name: Shadow/Thief
 difficulty: 5
-[6] [V] [] [] [5]
-[5] [] [V] [] []
-[R] [6] [] [V] []
+[6] [P] [] [] [5]
+[5] [] [P] [] []
+[R] [6] [] [P] []
 [Y] [Y] [5] [4] [3]
 
 
@@ -177,30 +177,30 @@ difficulty: 6
 [6] [B] [] [] [1]
 [] [5] [B] [] []
 [4] [R] [2] [B] []
-[G] [6] [G] [3] [V]
+[G] [6] [G] [3] [P]
 
 
 
 Number: 22
 name: Lux/Astram
 difficulty: 5
-[] [1] [G] [V] [4]
-[6] [V] [2] [5] [G]
-[1] [G] [5] [3] [V]
+[] [1] [G] [P] [4]
+[6] [P] [2] [5] [G]
+[1] [G] [5] [3] [P]
 [] [] [] [] []
 
 Number: 23
 name: Ripples/of/Light
 difficulty: 5
 [] [] [] [R] [5]
-[] [] [V] [4] [B]
+[] [] [P] [4] [B]
 [] [B] [3] [Y] [6]
 [Y] [2] [G] [1] [R]
 
-Numero: 24
+Number: 24
 name: Firmitas
 difficulty: 5
-[v] [6] [] [] [3]
-[5] [V] [3] [] []
-[] [2] [V] [1] []
-[] [1] [5] [V] [4]
+[P] [6] [] [] [3]
+[5] [P] [3] [] []
+[] [2] [P] [1] []
+[] [1] [5] [P] [4]

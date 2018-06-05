@@ -14,6 +14,15 @@ import org.junit.Test;
 
 
 public class TestSchemaCard {
+
+    @Test
+    public void initializationTest(){
+        for(int i=0; i<24; i++){
+            SchemaCard schemaCard = new SchemaCard(i+1);
+            System.out.println(schemaCard.toString());
+        }
+    }
+
     @Test
     public void testSchemaCard() {
         int n = 1;

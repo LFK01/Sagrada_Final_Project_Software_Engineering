@@ -20,7 +20,7 @@ public class TestChooseDiceMove {
         int row=2,col=1,draftPoolPos=0;
         Player player = null;
         try{
-            //chooseDiceMove = new ChooseDiceMove(draftPoolPos,row,col,player);
+            chooseDiceMove = new ChooseDiceMove("p1", "server", draftPoolPos, row, col);
         }
         catch(NullPointerException e){
             fail();

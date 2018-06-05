@@ -15,8 +15,7 @@ import java.util.Scanner;
 
 public class SchemaCard {
 
-    private String name1;
-    private String name2;
+    private String name;
     private Cell[][] cells = new Cell[4][5];
     private int difficultyLevel;
 
@@ -24,41 +23,53 @@ public class SchemaCard {
      * constructor method initializing schemacard using n to choose one of the 24 different schemacard
      * @param schemaCardIndex
      */
-    public SchemaCard(int schemaCardIndex) {          //costruttore con switch per creare le carte schema pescate dal giocatore
+    public SchemaCard(int schemaCardIndex) {
 
         Scanner inputFile = null;
 
         try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\in.txt"));
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\SchemaCards.txt"));
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
+            boolean completedRows = false;
+            boolean doneReadingRow = false;
             int row=0;
             try{
                 line = inputFile.nextLine();
+                System.out.println("leggo riga: " + line);
             } catch (NoSuchElementException e){
                 hasNextLine = false;
             }
             while(hasNextLine){
+                System.out.println("entro nel ciclo");
                 String[] words = line.split(" ");
                 int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("Numero: ")){
+                while(i<words.length && !completedRows){
+                    System.out.println("analizzo la parola: " + words[i]);
+                    if(words[i].trim().equals("Number:")){
                         if(schemaCardIndex == Integer.parseInt(words[i+1])){
                             cardFound = true;
+                            System.out.println("found card!");
+                            i++;
                         }
                     }
                     if(cardFound){
-                        if(words[i].trim().equals("Nome: ")){
-                            name1 = words[i+1];
+                        if(words[i].trim().equals("name:")){
+                            name = words[i+1].replace('/', ' ');
+                            System.out.println("card name:" + name);
+                            i++;
                         }
-                        if(words[i].trim().equals("Difficoltà: ")){
+                        if(words[i].trim().equals("difficulty:")){
                             difficultyLevel = Integer.parseInt(words[i+1]);
+                            System.out.println("difficulty level: " + difficultyLevel);
+                            i++;
                         }
                         if(words[i].startsWith("[")){
+                            System.out.println("lettura carta in corso...");
                             for(int col=0; col<words.length; col++){
-                                switch(words[col]){
-                                    case "[ ]":{
+                                switch(words[col].trim()){
+                                    case "[]":{
                                         this.cells[row][col] = new Cell(null, 0);
                                         break;
                                     }
@@ -108,12 +119,22 @@ public class SchemaCard {
                                     }
                                 }
                             }
+                            doneReadingRow = true;
                             row++;
+                            if(row==5){
+                                completedRows = true;
+                            }
                         }
+                    }
+                    if(!doneReadingRow){
+                        i++;
+                    } else{
+                        i=words.length;
                     }
                 }
                 try{
                     line = inputFile.nextLine();
+                    doneReadingRow = false;
                 } catch (NoSuchElementException e){
                     hasNextLine = false;
                 }
@@ -123,25 +144,17 @@ public class SchemaCard {
         } finally {
             inputFile.close();
         }
-
+        System.out.println(this.toString());
         }
 
     /**
      *
      * @return name1 first name of schemacard
      */
-    public String getName1 () {
-            return name1;
+    public String getName () {
+            return name;
         }
 
-    /**
-     *
-     * @return name2 second name of schemacard
-     */
-
-    public String getName2 () {
-            return name2;
-        }
 
     /**
      *

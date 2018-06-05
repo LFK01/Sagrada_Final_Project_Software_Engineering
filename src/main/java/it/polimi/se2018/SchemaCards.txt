@@ -1,0 +1,206 @@
+Number: 1
+name: Kaleidoscopic/Dream
+difficulty: 4
+[Y] [B] [] [] [1]
+[G] [] [5] [] [4]
+[3] [] [R] [] [G]
+[2] [] [] [B] [Y]
+
+Number: 2
+name: Fractal/Drops
+difficulty: 3
+[] [4] [] [Y] [6]
+[R] [] [2] [] []
+[] [] [R] [V] [1]
+[B] [Y] [] [] []
+
+
+Number: 3
+name: Lux/Mundi
+difficulty: 6
+[] [] [1] [] []
+[1] [G] [3] [B] [2]
+[B] [5] [4] [5] [G]
+[] [B] [5] [G] []
+
+Number: 4
+name: Gravitas
+difficulty: 5
+[1] [] [3] [B] []
+[] [2] [B] [] []
+[6] [B] [] [4] []
+[B] [5] [2] [] [1]
+
+Number: 5
+name: Sun/Catcher
+difficulty: 3
+[] [B] [2] [] [Y]
+[] [4] [] [R] []
+[] [] [5] [Y] []
+[G] [3] [] [] [V]
+
+
+Number: 6
+name: Aurorae/Magnificus
+difficulty: 5
+[5] [G] [B] [V] [2]
+[V] [] [] [] [Y]
+[Y] [] [6] [G] [V]
+[1] [] [] [] [4]
+
+
+Number: 7
+name: Symphony/of/Light
+difficulty: 6
+[2] [] [5] [] [1]
+[Y] [6] [V] [2] [R]
+[] [B] [4] [G] []
+[] [3] [] [5] []
+
+
+Number: 8
+name: Firelight
+difficulty: 5
+[3] [4] [1] [5] []
+[] [6] [2] [] [Y]
+[] [] [] [Y] [R]
+[5] [] [Y] [R] [6]
+
+
+Number: 9
+name: Battlo
+difficulty: 5
+[] [] [6] [] []
+[] [5] [B] [4] []
+[3] [G] [Y] [V] [2]
+[1] [4] [R] [5] [3]
+
+
+Number: 10
+name: Fulgor/del/Cielo
+difficulty: 5
+[] [B] [R] [] []
+[] [4] [5] [] [B]
+[B] [2] [] [R] [5]
+[6] [R] [3] [1] []
+
+
+Number: 11
+name: Chromatic/Splendor
+difficulty: 4
+[] [] [G] [] []
+[2] [Y] [5] [B] [1]
+[] [R] [3] [V] []
+[1] [] [6] [] [4]
+
+Number: 12
+name: Via/Lux
+difficulty: 4
+[Y] [] [6] [] []
+[] [1] [5] [] [2]
+[3] [Y] [R] [V] []
+[] [] [4] [3] [R]
+
+Number: 13
+name: Industria
+difficulty: 5
+[1] [R] [3] [] [6]
+[5] [4] [R] [2] []
+[] [] [5] [R] [1]
+[] [] [] [3] [R]
+
+Number: 14
+name: Comitas
+difficulty: 5
+[Y] [] [2] [] [6]
+[] [4] [] [5] [Y]
+[] [] [] [Y] [5]
+[1] [2] [Y] [3] []
+
+
+Number: 15
+name: Luz/Celestial
+difficulty: 3
+[] [] [R] [5] []
+[V] [4] [] [G] [3]
+[6] [] [] [B] []
+[] [Y] [2] [] []
+
+
+Number: 16
+name: Bellesguard
+difficulty: 3
+[B] [5] [] [] [Y]
+[] [3] [B] [] []
+[] [5] [6] [2] []
+[] [4] [] [1] [G]
+
+Number: 17
+name: Sun's/Glory
+difficulty: 6
+[1] [V] [Y] [] [4]
+[V] [Y] [] [] [6]
+[Y] [] [] [5] [3]
+[] [5] [4] [2] [1]
+
+
+Number: 18
+name: Virtus
+difficulty: 5
+[4] [] [2] [5] [G]
+[] [] [6] [G] [2]
+[] [3] [G] [4] []
+[5] [G] [] [] []
+
+
+Number: 19
+name: Aurora/Sagradis
+difficulty: 4
+[R] [] [B] [] [Y]
+[4] [V] [3] [G] [2]
+[] [1] [] [5] []
+[] [] [6] [] []
+
+
+Number: 20
+name: Shadow/Thief
+difficulty: 5
+[6] [V] [] [] [5]
+[5] [] [V] [] []
+[R] [6] [] [V] []
+[Y] [Y] [5] [4] [3]
+
+
+Number: 21
+name: Water/of/Life
+difficulty: 6
+[6] [B] [] [] [1]
+[] [5] [B] [] []
+[4] [R] [2] [B] []
+[G] [6] [G] [3] [V]
+
+
+
+Number: 22
+name: Lux/Astram
+difficulty: 5
+[] [1] [G] [V] [4]
+[6] [V] [2] [5] [G]
+[1] [G] [5] [3] [V]
+[] [] [] [] []
+
+Number: 23
+name: Ripples/of/Light
+difficulty: 5
+[] [] [] [R] [5]
+[] [] [V] [4] [B]
+[] [B] [3] [Y] [6]
+[Y] [2] [G] [1] [R]
+
+Numero: 24
+name: Firmitas
+difficulty: 5
+[v] [6] [] [] [3]
+[5] [V] [3] [] []
+[] [2] [V] [1] []
+[] [1] [5] [V] [4]

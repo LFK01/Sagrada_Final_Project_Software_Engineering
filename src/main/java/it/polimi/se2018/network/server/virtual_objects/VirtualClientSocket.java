@@ -48,10 +48,10 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         Message message = null;
         try {
             isConnected = true;
+            Object o;
             while (isConnected){
                 try{
                     message = (Message) inputStream.readObject();
-                    System.out.println("VCSocket -> Server: " + message.toString());
                 } catch (ClassNotFoundException e){
                     e.printStackTrace();
                 } catch (IOException e){
@@ -61,10 +61,13 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                 if(message == null){
                     this.isConnected = false;
                 }else {
-                    try{
+                    /*
+                    virtualViewSocket.updateServer(message);*/
+                    System.out.println("VCSocket -> VWSocket: " + message.toString());
+                    try {
                         Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
                         updateServer.invoke(virtualViewSocket, message);
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                 }

@@ -17,30 +17,16 @@ public class ChooseSchemaWindow {
             @Override
             public void mouseClicked(MouseEvent e) {
                 notify();
-
             }
-
             @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
+            public void mousePressed(MouseEvent e) {            }
             @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
+            public void mouseReleased(MouseEvent e) {            }
             @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
+            public void mouseEntered(MouseEvent e) {            }
             @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
+            public void mouseExited(MouseEvent e) {            }
         });
-
         container.setLayout(new GridLayout(2,2));
         container.add(buttonSchema1);
         container.add( new JButton(schemaIcon1));
@@ -54,13 +40,4 @@ public class ChooseSchemaWindow {
         frame.setResizable(true);
         frame.setVisible(true);
     }
-
-public static void main(String[] args){
-        ChooseSchemaWindow window = new ChooseSchemaWindow();
-
-}
-
-
-
-
 }

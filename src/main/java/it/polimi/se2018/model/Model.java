@@ -11,8 +11,11 @@ import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
+import it.polimi.se2018.utils.ProjectObservable;
 
 import java.util.*;
 
@@ -28,7 +31,8 @@ import java.util.*;
  * edited Luciano 14/05/2018;
  */
 
-public class Model extends Observable {
+public class Model extends ProjectObservable implements Runnable{
+
     private static final int SCHEMA_CARD_EXTRACT_NUMBER = 2;
     private static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
@@ -115,7 +119,7 @@ public class Model extends Observable {
     private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
-        notifyObservers();
+        //TODO notifyObservers(new Message)
     }
 
     /**
@@ -146,7 +150,7 @@ public class Model extends Observable {
     private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col);
-        notifyObservers();
+        //TODO notifyObservers
     }
 
     /**
@@ -169,7 +173,7 @@ public class Model extends Observable {
             /*second run of turns to choose a die*/
                 turnOfTheRound--;
         }
-        notifyObservers();
+        //TODO notifyObservers
     }
 
     /**
@@ -205,8 +209,7 @@ public class Model extends Observable {
         else {
             participants.get(playerPosition).decreaseFavorTokens(true);
         }
-        setChanged();
-        notifyObservers();
+        //TODO notifyObservers
     }
 
     public void extractToolCards() {
@@ -274,8 +277,7 @@ public class Model extends Observable {
             }
 
         }
-        setChanged();
-        notifyObservers();
+        //TODO notifyObservers
     }
 
     public void extractPublicObjectiveCards() {
@@ -333,8 +335,7 @@ public class Model extends Observable {
 
             }
         }
-        notifyObservers();
-
+        //TODO notifyObservers
     }
         //metodo per estrarre dadi dalla dicebag e metterli nella roundtrack
     public void extractRoundTrack(){
@@ -355,7 +356,7 @@ public class Model extends Observable {
         System.out.println("Dealing SchemaCards to players ");
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<Integer>();
-        for(int i = 1; i<= 24; i++){
+        for(int i = 1; i<= SCHEMA_CARD_NUMBER /2; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
@@ -370,9 +371,9 @@ public class Model extends Observable {
             setChanged();
             notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards));
         }
-        setChanged();
-        notifyObservers(new DemandSchemaCardMessage("model","all"));
 
+        memorizeMessage(new DemandSchemaCardMessage("model","all"));
+        new Thread(this).start();
 
     }
 
@@ -411,4 +412,9 @@ public class Model extends Observable {
         sendSchemaCard();
     }
 
+    @Override
+    public void run() {
+        setChanged();
+        notifyObservers();
+    }
 }

@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
-import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -48,6 +48,71 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     @Override
     public void sendToServer(Message message) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(ComebackMessage comebackMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(ComebackSocketMessage comebackSocketMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(DemandSchemaCardMessage demandSchemaCardMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(SuccessMessage successMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 

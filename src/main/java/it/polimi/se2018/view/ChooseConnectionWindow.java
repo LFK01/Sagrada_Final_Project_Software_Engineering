@@ -94,11 +94,4 @@ public class ChooseConnectionWindow implements Runnable{
         choice = new Integer(1);
     }
 
-    public static void  main(String[] args){
-        Integer choice = new Integer(0);
-        ChooseConnectionWindow c = new ChooseConnectionWindow(choice);
-    }
-
-
-
 }

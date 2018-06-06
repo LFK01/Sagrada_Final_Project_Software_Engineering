@@ -24,16 +24,13 @@ public class Dice {
 
         this.diceColor = color;
         this.value = value;
+        this.face = faces[value-1];
         inSchema = false;
         inTrack = false;
         inDraftPool = false;
 
     }
 
-    public Dice(PaintingTool paintingTool){
-        this.paintingTool = paintingTool;
-        roll();
-    }
     /**
      * Dice color getter
      * @return the dice color
@@ -96,8 +93,26 @@ public class Dice {
 
     @Override
     public String toString() {
-        String escape = this.paintingTool.escape();
-        return escape + "[" + face + "]" + PaintingTool.RESET;
+        switch (diceColor){
+            case YELLOW:{
+                return PaintingTool.ANSI_YELLOW.escape() + "[" + face + "]" + PaintingTool.RESET;
+            }
+            case RED:{
+                return PaintingTool.ANSI_RED.escape() + "[" + face + "]" + PaintingTool.RESET;
+            }
+            case PURPLE:{
+                return PaintingTool.ANSI_PURPLE.escape() + "[" + face + "]" + PaintingTool.RESET;
+            }
+            case GREEN:{
+                return PaintingTool.ANSI_GREEN.escape() + "[" + face + "]" + PaintingTool.RESET;
+            }
+            case BLUE:{
+                return PaintingTool.ANSI_BLUE.escape() + "[" + face + "]" + PaintingTool.RESET;
+            }
+            default:{
+                return PaintingTool.RESET + "[" + face + "]" + PaintingTool.RESET;
+            }
+        }
     }
 
 

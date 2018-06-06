@@ -9,6 +9,8 @@ import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
+import it.polimi.se2018.utils.ProjectObservable;
+import it.polimi.se2018.utils.ProjectObserver;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,7 +21,7 @@ import java.util.*;
  * @author Luciano, Giovanni
  */
 
-public class Controller extends Observable implements Observer {
+public class Controller extends ProjectObservable implements ProjectObserver {
 
     private Model model;
     private int time;
@@ -142,19 +144,6 @@ public class Controller extends Observable implements Observer {
         //((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
     }
 
-    /**
-     * Override of method update from observer
-     * @param object the generic object that will receive the update (can be view or model)
-     * @param message the generic message (can be a move or a message)
-     */
-    @Override
-    public void update(Observable object, Object message) {
-        try{
-            Method update = this.getClass().getMethod("update", message.getClass());
-            update.invoke(this, message);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e){
-            e.printStackTrace();
-        }
         //TODO new update(PlayerMove message) with all the instruction below
         /*if (message instanceof PlayerMove) {
             if (((PlayerMove) message).isDiceMove()) {
@@ -179,13 +168,18 @@ public class Controller extends Observable implements Observer {
                     }
                 }
             }
-        }*/
+    }*/
+
+    @Override
+    public void update(Message message) {
+        System.out.println("calls the wrong method");
     }
 
-    public void update(CreatePlayerMessage message){
+    public void update(CreatePlayerMessage createPlayerMessage){
+        System.out.println("controller received create player message");
         if(!timerStarted){
             timerStarted = true;
-            System.out.println("timer inizializzato");
+            System.out.println("timer initialized");
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -197,19 +191,39 @@ public class Controller extends Observable implements Observer {
                         }
                         else {
                             /*Not enough player*/
-                            System.out.println("Time's up, minimun player number not reached!");
+                            System.out.println("Time's up, minimum player number not reached!");
                             notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
                         }
                     }
                 }
             }, 1000*time);
         }
-        model.addPlayer(message.getPlayerName());
+        model.addPlayer(createPlayerMessage.getPlayerName());
         if(model.getParticipants().size()==4){
             System.out.println("Maximum player number reached");
             enoughPlayers = true;
             model.sendPrivateObjectiveCard();
         }
+    }
+
+    @Override
+    public void update(DemandSchemaCardMessage message) {
+
+    }
+
+    @Override
+    public void update(ErrorMessage errorMessage) {
+
+    }
+
+    @Override
+    public void update(NewRoundMessage newRoundMessage) {
+
+    }
+
+    @Override
+    public void update(ChooseSchemaMessage chooseSchemaMessage) {
+
     }
 
     public void update(ComebackSocketMessage message){
@@ -226,9 +240,25 @@ public class Controller extends Observable implements Observer {
         //estrae le toolcard e le manda
         model.extractPublicObjectiveCards();
         model.extractToolCards();
+    }
 
+    @Override
+    public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
 
+    }
 
+    @Override
+    public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
+
+    }
+
+    @Override
+    public void update(SuccessMoveMessage successMoveMessage) {
+
+    }
+
+    @Override
+    public void update(UpdateTurnMessage updateTurnMessage) {
 
     }
 
@@ -244,11 +274,10 @@ public class Controller extends Observable implements Observer {
         this.time = time;
     }
 
-    public void roundManager() {
+    public void manageRound() {
         model.extractPublicObjectiveCards();
         model.extractToolCards();
         model.getGameBoard().getRoundDice();
-
     }
 
 

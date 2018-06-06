@@ -28,6 +28,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         this.remoteView = remoteView;
         this.server = server;
         isConnected = true;
+        username = "defaultUsername";
     }
 
     public VirtualClientRMI(VirtualViewRMI virtualView, ClientRMIInterface remoteView, String username, Server server) throws RemoteException{
@@ -53,12 +54,85 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     @Override
     public void sendToServer(Message message) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + message.toString());
-        try{
-            Method updateServer = virtualView.getClass().getMethod("updateServer", message.getClass());
-            updateServer.invoke(virtualView, message);
-        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
-            e.printStackTrace();
-        }
+        virtualView.updateServer(message);
+    }
+
+    @Override
+    public void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + chooseSchemaMessage.toString());
+        virtualView.updateServer(chooseSchemaMessage);
+    }
+
+    @Override
+    public void sendToServer(ComebackMessage comebackMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + comebackMessage.toString());
+        virtualView.updateServer(comebackMessage);
+    }
+
+    @Override
+    public void sendToServer(ComebackSocketMessage comebackSocketMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + comebackSocketMessage.toString());
+        virtualView.updateServer(comebackSocketMessage);
+    }
+
+    @Override
+    public void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + createPlayerMessage.toString());
+        virtualView.updateServer(createPlayerMessage);
+    }
+
+    @Override
+    public void sendToServer(DemandSchemaCardMessage demandSchemaCardMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + demandSchemaCardMessage.toString());
+        virtualView.updateServer(demandSchemaCardMessage);
+    }
+
+    @Override
+    public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + errorMessage.toString());
+        virtualView.updateServer(errorMessage);
+    }
+
+    @Override
+    public void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + newRoundMessage.toString());
+        virtualView.updateServer(newRoundMessage);
+    }
+
+    @Override
+    public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + selectedSchemaMessage.toString());
+        virtualView.updateServer(selectedSchemaMessage);
+    }
+
+    @Override
+    public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + showPrivateObjectiveCardsMessage.toString());
+        virtualView.updateServer(showPrivateObjectiveCardsMessage);
+    }
+
+    @Override
+    public void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + successCreatePlayerMessage.toString());
+        virtualView.updateServer(successCreatePlayerMessage);
+    }
+
+    @Override
+    public void sendToServer(SuccessMessage successMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + successMessage.toString());
+        virtualView.updateServer(successMessage);
+    }
+
+    @Override
+    public void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + successMoveMessage.toString());
+        virtualView.updateServer(successMoveMessage);
+    }
+
+    @Override
+    public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + updateTurnMessage.toString());
+        virtualView.updateServer(updateTurnMessage);
     }
 
     public void notifyClient(Message message){
@@ -132,12 +206,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
                 e.printStackTrace();
             }
         }
-
-
-
     }
-
-
 
     @Override
     public String getUsername() {

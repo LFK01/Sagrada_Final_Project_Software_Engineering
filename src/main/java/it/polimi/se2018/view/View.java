@@ -1,6 +1,9 @@
 package it.polimi.se2018.view;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.utils.ProjectObservable;
+import it.polimi.se2018.utils.ProjectObserver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -15,16 +18,24 @@ import java.util.Scanner;
 /**
  * @author giovanni
  */
-public class View extends Observable implements Observer{
+public class View extends ProjectObservable implements ProjectObserver, Runnable{
 
     protected String username;
     private boolean isPlayerTurn;
-    private Scanner scanner;
+
     boolean windowCreated = true;
+
+    /**
+     * input variables
+     */
+    private Scanner scanner;
     private int choice = 0;
+    private String input;
+    private InputManager inputManager;
+
     private String[] schemaName = new String[4];
 
-
+    private Thread inputThread;
 
 
     /**
@@ -150,71 +161,6 @@ public class View extends Observable implements Observer{
             frameDemandConnection.dispose();
             return 2;
         }
-    }
-
-    @Override
-    public void update(Observable o, Object message){
-        try{
-            Method updateView = this.getClass().getDeclaredMethod("updateView", message.getClass());
-            updateView.invoke(this, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username)){
-            System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
-        }
-    }
-
-    private void updateView(ErrorMessage errorMessage){
-        if(errorMessage.getRecipient().equals(username)){
-            if(errorMessage.toString().equals("NotValidUsername")){
-                System.out.println("Username not available!");
-                this.createPlayer();
-            }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                //TODO waiting lobby
-                System.out.print("Impossibile connettersi");
-            }
-            if(errorMessage.toString().equals("NotEnoughPlayer")){
-                System.out.println("Minimum players number not reached.");
-            }
-            if(errorMessage.toString().equals("UsernameNotFound")){
-
-            }
-        }
-    }
-    private void updateView(ChooseSchemaMessage message){
-
-        for(int i=0;i<4;i++) {
-            System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
-            System.out.println(message.getSchemaCards(i));
-            schemaName[i]= new String(message.getSchemaCards(i).split("\n")[0]);
-        }
-           /* scanner = new Scanner(System.in);
-            choice = scanner.nextInt();
-
-            setChanged();
-            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
-        */
-    }
-    private void updateView(DemandSchemaCardMessage message){
-        System.out.println("Sto per scegliere");
-        scanner = new Scanner(System.in);
-        choice = scanner.nextInt();
-        setChanged();
-        notifyObservers(new SelectedSchemaMessage(username,"server",schemaName[choice -1]));
-
-    }
-
-
-    private void updateView(ShowPrivateObjectiveCardsMessage message){
-        if(username.equals(message.getRecipient())){
-            showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
-        }
-
     }
 
     public void playerNumberExceededDialog() {
@@ -629,18 +575,136 @@ public class View extends Observable implements Observer{
     }
 
 
+
     //metodo che serve solo per i test
-
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public void showPrivateObjectiveCard(String description){
         System.out.println("Il tuo obiettivo privato è " + description);
     }
 
 
+    @Override
+    public void update(Message message) {
+        System.out.println(message.toString());
+    }
+
+    @Override
+    public void update(ChooseSchemaMessage chooseSchemaMessage) {
+        for(int i=0;i<4;i++) {
+            System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
+            System.out.println(chooseSchemaMessage.getSchemaCards(i));
+            schemaName[i]= new String(chooseSchemaMessage.getSchemaCards(i).split("\n")[0]);
+        }
+           /* scanner = new Scanner(System.in);
+            choice = scanner.nextInt();
+
+            setChanged();
+            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
+        */
+    }
+
+    @Override
+    public void update(ComebackSocketMessage comebackSocketMessage) {
+
+    }
+
+    @Override
+    public void update(CreatePlayerMessage createPlayerMessage) {
+
+    }
+
+    @Override
+    public void update(DemandSchemaCardMessage message) {
+        inputManager = InputManager.INPUT_SCHEMA_CARD;
+        System.out.println("Sto per scegliere");
+        System.out.println("thread thrown");
+        new Thread(this).start();
+    }
+
+    @Override
+    public void update(ErrorMessage errorMessage) {
+        if(errorMessage.getRecipient().equals(username)){
+            if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("Username not available!");
+                this.createPlayer();
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                //TODO waiting lobby
+                System.out.print("Impossibile connettersi");
+            }
+            if(errorMessage.toString().equals("NotEnoughPlayer")){
+                System.out.println("Minimum players number not reached.");
+            }
+            if(errorMessage.toString().equals("UsernameNotFound")){
+
+            }
+        }
+    }
+
+    @Override
+    public void update(NewRoundMessage newRoundMessage) {
+
+    }
+
+    @Override
+    public void update(SelectedSchemaMessage selectedSchemaMessage) {
+
+    }
+
+    @Override
+    public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
+        if(username.equals(showPrivateObjectiveCardsMessage.getRecipient())){
+            showPrivateObjectiveCard(showPrivateObjectiveCardsMessage.getPrivateObjectiveCardColor());
+        }
+    }
+
+    @Override
+    public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
+        }
+    }
+
+    @Override
+    public void update(SuccessMoveMessage successMoveMessage) {
+
+    }
+
+    @Override
+    public void update(UpdateTurnMessage updateTurnMessage) {
+
+    }
+
+    @Override
+    public void run() {
+        System.out.println("thread started...");
+        switch(inputManager){
+            case INPUT_SCHEMA_CARD:{
+                boolean wrongInput = true;
+                while(wrongInput){
+                    try{
+                        System.out.println("ask input");
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        System.out.println("choice = " + choice);
+                        if(choice<1||choice>4){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                    }
+                }
+                setChanged();
+                notifyObservers(new SelectedSchemaMessage(username,"server", schemaName[choice -1]));
+            }
+        }
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }
 
 

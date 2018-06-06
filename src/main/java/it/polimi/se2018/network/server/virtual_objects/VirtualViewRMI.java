@@ -5,6 +5,7 @@ import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
+import it.polimi.se2018.utils.ProjectObservable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +14,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.Observable;
 
-public class VirtualViewRMI extends Observable implements VirtualViewInterface {
+public class VirtualViewRMI extends ProjectObservable implements VirtualViewInterface {
 
     private VirtualClientRMI virtualClientRMI;
 
@@ -45,19 +46,8 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         }
     }
 
-    @Override
-    public void update(Observable o, Object message) {
-        System.out.println("VirtualViewRMI -> Client");
-        try{
-            Method notifyClient = virtualClientRMI.getClass().getMethod("notifyClient", message.getClass());
-            notifyClient.invoke(virtualClientRMI, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void updateServer(Message message){
-        System.out.println("VirtualViewRMI -> Controller: " + message.toString());
+        System.out.println("VirtualViewRMI -> Server: " + message.toString());
         setChanged();
         notifyObservers(message);
     }
@@ -68,7 +58,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
             for(VirtualViewInterface client: virtualClientRMI.getServer().getPlayers()){
                 if(client!=this){
                     if(client.getUsername().equals(message.getPlayerName())){
-                        update(this, new ErrorMessage("server", message.getPlayerName(), "NotValidUsername"));
+                        update(new ErrorMessage("server", message.getPlayerName(), "NotValidUsername"));
                         correctUsername = false;
                     }
                 }
@@ -93,6 +83,66 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         notifyObservers(selectedSchemaMessage);
     }
 
+
+    @Override
+    public void update(Message message) {
+        virtualClientRMI.notifyClient(message);
+    }
+
+    @Override
+    public void update(ChooseSchemaMessage chooseSchemaMessage) {
+        virtualClientRMI.notifyClient(chooseSchemaMessage);
+    }
+
+    @Override
+    public void update(ComebackSocketMessage comebackSocketMessage) {
+        virtualClientRMI.notifyClient(comebackSocketMessage);
+    }
+
+    @Override
+    public void update(CreatePlayerMessage createPlayerMessage) {
+        virtualClientRMI.notifyClient(createPlayerMessage);
+    }
+
+    @Override
+    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
+        virtualClientRMI.notifyClient(demandSchemaCardMessage);
+    }
+
+    @Override
+    public void update(ErrorMessage errorMessage) {
+        virtualClientRMI.notifyClient(errorMessage);
+    }
+
+    @Override
+    public void update(NewRoundMessage newRoundMessage) {
+        virtualClientRMI.notifyClient(newRoundMessage);
+    }
+
+    @Override
+    public void update(SelectedSchemaMessage selectedSchemaMessage) {
+        virtualClientRMI.notifyClient(selectedSchemaMessage);
+    }
+
+    @Override
+    public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
+        virtualClientRMI.notifyClient(showPrivateObjectiveCardsMessage);
+    }
+
+    @Override
+    public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
+        virtualClientRMI.notifyClient(successCreatePlayerMessage);
+    }
+
+    @Override
+    public void update(SuccessMoveMessage successMoveMessage) {
+        virtualClientRMI.notifyClient(successMoveMessage);
+    }
+
+    @Override
+    public void update(UpdateTurnMessage updateTurnMessage) {
+        virtualClientRMI.notifyClient(updateTurnMessage);
+    }
 
     @Override
     public String getUsername() {

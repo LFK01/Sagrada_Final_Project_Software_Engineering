@@ -25,7 +25,6 @@ JFrame frame = new JFrame("GameBoard");
 
         //aggiunge immagine a frame
         /*try {
-            frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\ImmagineTestGameboard.jpg")))));
         } catch (IOException e) {
             e.printStackTrace();
         }*/

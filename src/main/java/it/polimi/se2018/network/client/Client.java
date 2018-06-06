@@ -85,7 +85,8 @@ public class Client {
                 System.out.print("Type 1 to choose RMI connection\nType 2 to choose Socket connection\nchoice: ");
             }
             try{
-                choice = scanner.nextInt();
+                String dump = scanner.nextLine();
+                choice = Integer.parseInt(dump);
                 correctInput = true;
             } catch (InputMismatchException e){
                 System.out.println("Wrong input!");
@@ -161,7 +162,6 @@ public class Client {
                     }
 
                     case 3: {
-                        String empty = scanner.nextLine();
                         correctChoice = false;
                         correctInput = false;
                         System.out.print("Old match username: ");

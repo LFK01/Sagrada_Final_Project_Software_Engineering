@@ -2,6 +2,8 @@ package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.server.ServerRMIInterface;
+import it.polimi.se2018.utils.ProjectObservable;
+import it.polimi.se2018.utils.ProjectObserver;
 import sun.dc.pr.PRError;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,28 +12,13 @@ import java.rmi.RemoteException;
 import java.util.Observable;
 import java.util.Observer;
 
-public class RemoteViewRMI extends Observable implements ClientRMIInterface, Observer {
+public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface,  ProjectObserver {
 
     private ServerRMIInterface server;
     private String username;
     private boolean serverIsUp;
 
     public RemoteViewRMI() throws RemoteException{
-    }
-
-    /**
-     * Override of Observer update method
-     * @param o sender
-     * @param message notified object
-     */
-    @Override
-    public void update(Observable o, Object message) {
-        try{
-            Method sendToServer = getClass().getDeclaredMethod("sendToServer", message.getClass());
-            sendToServer.invoke(this, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -50,7 +37,6 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
             notifyObservers(message);
         }
     }
-    /*useless*/
 
     public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
@@ -79,20 +65,62 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
     }
 
     private void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
-        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
+        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username) || showPrivateObjectiveCardsMessage.getRecipient().equals("all")){
             setChanged();
             notifyObservers(showPrivateObjectiveCardsMessage);
         }
     }
 
     private void notifyView(DemandSchemaCardMessage demandSchemaCardMessage){
-        setChanged();
-        notifyObservers(demandSchemaCardMessage);
+        if(demandSchemaCardMessage.getRecipient().equals(username) || demandSchemaCardMessage.getRecipient().equals("all")){
+            setChanged();
+            notifyObservers(demandSchemaCardMessage);
         }
+    }
 
+    public void setServer(ServerRMIInterface server) {
+        this.server = server;
+        serverIsUp = true;
+    }
 
+    @Override
+    public void update(Message message) {
+        if(serverIsUp){
+            try{
+                server.sendToServer(message);
+            } catch (RemoteException e){
+                e.printStackTrace();
+                serverIsUp = false;
+            }
+        }
+    }
 
-    private void sendToServer(CreatePlayerMessage createPlayerMessage){
+    @Override
+    public void update(ChooseSchemaMessage chooseSchemaMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + chooseSchemaMessage.toString());
+                server.sendToServer(chooseSchemaMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(ComebackSocketMessage comebackSocketMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + comebackSocketMessage.toString());
+                server.sendToServer(comebackSocketMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(CreatePlayerMessage createPlayerMessage) {
         username = createPlayerMessage.getPlayerName();
         if(serverIsUp){
             try{
@@ -104,7 +132,44 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         }
     }
 
-    private void sendToServer(SelectedSchemaMessage selectedSchemaMessage){
+    @Override
+    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + demandSchemaCardMessage.toString());
+                server.sendToServer(demandSchemaCardMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(ErrorMessage errorMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + errorMessage.toString());
+                server.sendToServer(errorMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(NewRoundMessage newRoundMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + newRoundMessage.toString());
+                server.sendToServer(newRoundMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(SelectedSchemaMessage selectedSchemaMessage) {
         if(serverIsUp){
             try{
                 System.out.println("RemoteVRMI -> Server: " + selectedSchemaMessage.toString());
@@ -115,12 +180,51 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         }
     }
 
-
-
-
-    public void setServer(ServerRMIInterface server) {
-        this.server = server;
-        serverIsUp = true;
+    @Override
+    public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + showPrivateObjectiveCardsMessage.toString());
+                server.sendToServer(showPrivateObjectiveCardsMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
     }
 
+    @Override
+    public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + successCreatePlayerMessage.toString());
+                server.sendToServer(successCreatePlayerMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(SuccessMoveMessage successMoveMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + successMoveMessage.toString());
+                server.sendToServer(successMoveMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+    @Override
+    public void update(UpdateTurnMessage updateTurnMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + updateTurnMessage.toString());
+                server.sendToServer(updateTurnMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
 }

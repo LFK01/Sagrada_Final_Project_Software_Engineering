@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.client.socket;
 
-import it.polimi.se2018.model.events.messages.ComebackMessage;
 import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
 import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.server.ServerSocketInterface;
@@ -11,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
-import java.net.SocketAddress;
 
 /**
  * @author Luciano
@@ -21,7 +19,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
-    private RemoteViewSocket client;
+    private RemoteViewSocket remoteViewSocket;
     private boolean serverIsUp;
 
     public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket) {
@@ -68,7 +66,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             socket = new Socket(localhost, port);
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
-            this.client = remoteViewSocket;
+            this.remoteViewSocket = remoteViewSocket;
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -85,8 +83,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                         loop=false;
                     }else {
                         try{
-                            Method updateClient = client.getClass().getMethod("notifyView", message.getClass());
-                            updateClient.invoke(client, message);
+                            Method notifyView = remoteViewSocket.getClass().getMethod("notifyView", message.getClass());
+                            notifyView.invoke(remoteViewSocket, message);
                         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                             e.printStackTrace();
                         }

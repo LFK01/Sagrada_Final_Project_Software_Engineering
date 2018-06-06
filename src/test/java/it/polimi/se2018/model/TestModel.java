@@ -108,9 +108,13 @@ public class TestModel {
         controller.getModel().addPlayer("lucio");
         controller.getModel().addPlayer("luca");
         controller.getModel().addPlayer("ciao");
+        //controller.getModel().extractToolCards();
+        controller.getModel().extractPublicObjectiveCards();
+        //controller.getModel().extractToolCards();
+        controller.getModel().sendInitializationMessage();
 
-        controller.getModel().sendSchemaCard();
-        //controller.getModel().extractRoundTrack();
+        //controller.getModel().sendSchemaCard();
+        controller.getModel().extractRoundTrack();
     }
 
 

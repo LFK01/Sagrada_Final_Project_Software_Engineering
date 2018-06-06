@@ -32,7 +32,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     private void notifyView(Message message){
-        if(message.getRecipient().equals(username)){
+        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
             setChanged();
             notifyObservers(message);
         }
@@ -72,10 +72,18 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     private void notifyView(DemandSchemaCardMessage demandSchemaCardMessage){
-        if(demandSchemaCardMessage.getRecipient().equals(username) || demandSchemaCardMessage.getRecipient().equals("all")){
+        if(demandSchemaCardMessage.getRecipient().equals(username) || demandSchemaCardMessage.getRecipient().equals("@all")){
             setChanged();
             notifyObservers(demandSchemaCardMessage);
         }
+    }
+
+    private void notifyView(GameInitializationMessage gameInitializationMessage){
+        if(gameInitializationMessage.getRecipient().equals(username) || gameInitializationMessage.getRecipient().equals("@all")){
+            setChanged();
+            notifyObservers(gameInitializationMessage);
+        }
+
     }
 
     public void setServer(ServerRMIInterface server) {

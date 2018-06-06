@@ -41,7 +41,7 @@ public class TestRoundDice {
     @Test
     public void validExtractionTest() {
 
-        DiceBag diceBag = new DiceBag();
+      /*  DiceBag diceBag = new DiceBag();
         RoundDice roundDice = new RoundDice(3, diceBag, 7);
         int n = 0;
 
@@ -53,6 +53,7 @@ public class TestRoundDice {
             n++;
         }
 
+    */
     }
 
 }

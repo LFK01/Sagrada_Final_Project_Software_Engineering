@@ -11,7 +11,9 @@ public class ControllerTest {
         Controller  controller = new Controller();
         controller.getModel().extractToolCards();
         controller.getModel().extractPublicObjectiveCards();
-
+        controller.getModel().addPlayer("lucio");
+        controller.getModel().addPlayer("ciao");
+        controller.getModel().setSchemacardPlayer(0,"Kaleidoscopic/Dream");
 
 
     }

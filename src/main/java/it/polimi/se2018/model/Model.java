@@ -33,6 +33,7 @@ import java.util.*;
 
 public class Model extends ProjectObservable implements Runnable{
 
+    private int roundNumber;
     private static final int SCHEMA_CARD_EXTRACT_NUMBER = 2;
     private static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
@@ -56,6 +57,7 @@ public class Model extends ProjectObservable implements Runnable{
         turnOfTheRound = 0;
         firstDraftOfDice = true;
         participants = new ArrayList<>();
+        this.roundNumber =0;
     }
 
     /**
@@ -119,7 +121,7 @@ public class Model extends ProjectObservable implements Runnable{
     private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
-        //TODO notifyObservers(new Message)
+        notifyObservers();
     }
 
     /**
@@ -150,7 +152,7 @@ public class Model extends ProjectObservable implements Runnable{
     private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col);
-        //TODO notifyObservers
+        notifyObservers();
     }
 
     /**
@@ -173,7 +175,7 @@ public class Model extends ProjectObservable implements Runnable{
             /*second run of turns to choose a die*/
                 turnOfTheRound--;
         }
-        //TODO notifyObservers
+        notifyObservers();
     }
 
     /**
@@ -209,7 +211,8 @@ public class Model extends ProjectObservable implements Runnable{
         else {
             participants.get(playerPosition).decreaseFavorTokens(true);
         }
-        //TODO notifyObservers
+        setChanged();
+        notifyObservers();
     }
 
     public void extractToolCards() {
@@ -277,7 +280,8 @@ public class Model extends ProjectObservable implements Runnable{
             }
 
         }
-        //TODO notifyObservers
+        setChanged();
+        notifyObservers();
     }
 
     public void extractPublicObjectiveCards() {
@@ -335,7 +339,8 @@ public class Model extends ProjectObservable implements Runnable{
 
             }
         }
-        //TODO notifyObservers
+        notifyObservers();
+
     }
         //metodo per estrarre dadi dalla dicebag e metterli nella roundtrack
     public void extractRoundTrack(){
@@ -372,18 +377,14 @@ public class Model extends ProjectObservable implements Runnable{
             notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards));
         }
 
-        memorizeMessage(new DemandSchemaCardMessage("model","all"));
+        memorizeMessage(new DemandSchemaCardMessage("model","@all"));
         new Thread(this).start();
 
     }
 
 
-
-
-
-
-    public void setSchemacardPlayer(int platerPos,int schemaPos){
-        SchemaCard schema = new SchemaCard(schemaPos);
+    public void setSchemacardPlayer(int platerPos,String schemaName){
+        SchemaCard schema = new SchemaCard(schemaName);
         participants.get(platerPos).setSchemaCard(schema);
     }
 
@@ -410,6 +411,35 @@ public class Model extends ProjectObservable implements Runnable{
         }
         //alla fine di tutto distribuisce le carte schema
         sendSchemaCard();
+    }
+
+    public void sendInitializationMessage(){
+        String[] publicObjectiveCardsDescription = new String[4];
+        String[] toolCardDescription = new String[4];
+        for(int j=0; j<3;j++){
+            publicObjectiveCardsDescription[j] = gameBoard.getPublicObjectiveCardDescription(j);
+            //toolCardDescription[j] = gameBoard.getToolCardDescription(j);
+        }
+        for(int i = 0; i<participants.size(); i++){
+           setChanged();
+           notifyObservers(new GameInitializationMessage("model","@all",publicObjectiveCardsDescription,toolCardDescription,gameBoard.getRoundTrack().getRoundDice().toString()));
+        }
+
+    }
+
+    /**
+     * a method to send updated schema cards and playerTurn to the view
+     */
+    public void sendSchemaAndTurn(){
+        if(participants.size()==2){
+            setChanged();  //so che è sbagliato
+            notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),participants.get(turnOfTheRound).getSchemaCard().toString(),participants.get(turnOfTheRound+1).getSchemaCard().toString()));
+        }
+
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
     }
 
     @Override

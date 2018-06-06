@@ -25,9 +25,9 @@ public class TestDice {
 
         Dice dice = null;
 
-        try{
+        try {
             dice = new Dice(Color.BLUE, 6);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             fail();
         }
 
@@ -58,14 +58,12 @@ public class TestDice {
     }
 
     @Test
-    public void colorTest(){
+    public void colorTest() {
         //String redString =  PaintingTool.ANSI_RED.escape() + "Hello" + PaintingTool.ANSI_BLUE.escape() + "World" + PaintingTool.RESET;
         //System.out.println(redString)
-        DiceBag  diceBag = new DiceBag();
+       /* DiceBag  diceBag = new DiceBag();
         for(int i=0;i < diceBag.getDiceBag().size();i++){
             System.out.println(diceBag.getDiceBag().get(i).toString());
-        }
-
+        }*/
     }
-
 }

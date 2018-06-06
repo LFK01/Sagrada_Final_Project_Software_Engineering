@@ -30,14 +30,14 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     public void notifyView(Message message){
-        if(message.getRecipient().equals(username)){
+        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
             setChanged();
             notifyObservers(message);
         }
     }
 
     public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username)){
+        if(successCreatePlayerMessage.getRecipient().equals(username) || successCreatePlayerMessage.getRecipient().equals("@all")){
             System.out.println("RemoteWSocket -> Server: success create message");
             setChanged();
             notifyObservers(successCreatePlayerMessage);
@@ -45,7 +45,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     public void notifyView(SuccessMessage successMessage){
-        if(successMessage.getRecipient().equals(username)){
+        if(successMessage.getRecipient().equals(username)|| successMessage.getRecipient().equals("@all")){
             System.out.println("RemoteWSocket -> Client: success message");
             setChanged();
             notifyObservers(successMessage);
@@ -53,7 +53,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
-        if(chooseSchemaMessage.getRecipient().equals(username)){
+        if(chooseSchemaMessage.getRecipient().equals(username) || chooseSchemaMessage.getRecipient().equals("@all")){
             System.out.println("RemoteWSocket -> Client: success message");
             setChanged();
             notifyObservers(chooseSchemaMessage);

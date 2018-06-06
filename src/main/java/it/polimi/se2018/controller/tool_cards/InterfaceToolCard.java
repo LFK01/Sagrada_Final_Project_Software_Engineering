@@ -9,4 +9,5 @@ public interface InterfaceToolCard {
 
     public void activateCard(Player player);
 
+
 }

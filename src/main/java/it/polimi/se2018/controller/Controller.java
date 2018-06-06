@@ -28,6 +28,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     private boolean timerStarted;
     private Timer t;
     private boolean enoughPlayers;
+    int allCardsAssigned =0 ;
 
     /**
      * Class constructor
@@ -175,11 +176,10 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         System.out.println("calls the wrong method");
     }
 
-    public void update(CreatePlayerMessage createPlayerMessage){
-        System.out.println("controller received create player message");
+    public void update(CreatePlayerMessage message){
         if(!timerStarted){
             timerStarted = true;
-            System.out.println("timer initialized");
+            System.out.println("timer inizializzato");
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -191,14 +191,14 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         }
                         else {
                             /*Not enough player*/
-                            System.out.println("Time's up, minimum player number not reached!");
+                            System.out.println("Time's up, minimun player number not reached!");
                             notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
                         }
                     }
                 }
             }, 1000*time);
         }
-        model.addPlayer(createPlayerMessage.getPlayerName());
+        model.addPlayer(message.getPlayerName());
         if(model.getParticipants().size()==4){
             System.out.println("Maximum player number reached");
             enoughPlayers = true;
@@ -231,15 +231,17 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
     }
 
-    public void update(SelectedSchemaMessage message){
-        for(int playerPos =0;playerPos< model.getParticipants().size();playerPos++){
-            if(model.getParticipants().get(playerPos).getName().equals(message.getSender())){
-                //model.setSchemacardPlayer(playerPos,message);
+    public void update(SelectedSchemaMessage message) {
+        for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
+            if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
+                model.setSchemacardPlayer(playerPos, message.getSchemaCardName());
+                allCardsAssigned++;
             }
         }
         //estrae le toolcard e le manda
         model.extractPublicObjectiveCards();
         model.extractToolCards();
+        model.sendInitializationMessage();
     }
 
     @Override
@@ -274,10 +276,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         this.time = time;
     }
 
-    public void manageRound() {
-        model.extractPublicObjectiveCards();
-        model.extractToolCards();
-        model.getGameBoard().getRoundDice();
+    public void roundManager() {
+
+
     }
 
 

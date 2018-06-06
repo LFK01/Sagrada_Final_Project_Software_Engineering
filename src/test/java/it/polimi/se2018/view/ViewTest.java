@@ -9,10 +9,10 @@ public class ViewTest {
 
     @Test
     public void createPlayerTest(){
-        JFrame parent = new JFrame();
+       /* JFrame parent = new JFrame();
         Object[] options = {"OK"};
         JOptionPane.showOptionDialog(parent, "Registration successfully completed!", "Success!", JOptionPane.DEFAULT_OPTION , JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-
+        */
     }
 
     @Test
@@ -48,7 +48,7 @@ public class ViewTest {
         controller.getModel().addPlayer("fabio");
         controller.getModel().addPlayer("biccu");
 
-        controller.getModel().sendPrivateObjectiveCard();
+        //controller.getModel().sendPrivateObjectiveCard();
 
     }
 

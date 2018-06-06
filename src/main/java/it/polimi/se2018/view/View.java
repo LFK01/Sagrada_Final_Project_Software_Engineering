@@ -29,6 +29,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
      * input variables
      */
     private Scanner scanner;
+    //private boolean windowCreated = true;
     private int choice = 0;
     private String input;
     private InputManager inputManager;
@@ -36,6 +37,10 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     private String[] schemaName = new String[4];
 
     private Thread inputThread;
+    private String[] publicObjectiveCardsDescription = new String[3];
+    private String[] toolCardDescription = new String[3];
+    private String privateObjectiveCardsDescription;
+
 
 
     /**
@@ -163,6 +168,79 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }
     }
 
+
+    public void update(Observable o, Object message){
+        try{
+            Method updateView = this.getClass().getDeclaredMethod("updateView", message.getClass());
+            updateView.invoke(this, message);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
+        }
+    }
+
+    private void updateView(ErrorMessage errorMessage){
+        if(errorMessage.getRecipient().equals(username)){
+            if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("Username not available!");
+                this.createPlayer();
+            }
+            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+                //TODO waiting lobby
+                System.out.print("Impossibile connettersi");
+            }
+            if(errorMessage.toString().equals("NotEnoughPlayer")){
+                System.out.println("Minimum players number not reached.");
+            }
+            if(errorMessage.toString().equals("UsernameNotFound")){
+
+            }
+        }
+    }
+    private void updateView(ChooseSchemaMessage message){
+
+        for(int i=0;i<4;i++) {
+            System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
+            System.out.println(message.getSchemaCards(i));
+            schemaName[i]= new String(message.getSchemaCards(i).split("\n")[0]);
+        }
+           /* scanner = new Scanner(System.in);
+            choice = scanner.nextInt();
+
+            setChanged();
+            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
+        */
+    }
+    private void updateView(DemandSchemaCardMessage message){
+        System.out.println("Sto per scegliere");
+        scanner = new Scanner(System.in);
+        choice = scanner.nextInt();
+        setChanged();
+        notifyObservers(new SelectedSchemaMessage(username,"server",schemaName[choice -1]));
+
+    }
+
+
+    private void updateView(ShowPrivateObjectiveCardsMessage message){
+        if(username.equals(message.getRecipient())){
+            showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
+        }
+
+    }
+
+    private void updateView(GameInitializationMessage message){
+        for(int i=0;i<3;i++){
+            publicObjectiveCardsDescription[i] = message.getPublicObjectiveCardsDescription(i);
+            toolCardDescription[i] = message.getToolCardsDescription(i);
+        }
+        showGameboard();
+    }
+
     public void playerNumberExceededDialog() {
         JFrame framePlayerNumberExceeded = new JFrame();
         Object[] options = {"OK"};
@@ -227,7 +305,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 frame.setSize(550, 750);
                 frame.setResizable(false);
                 frame.setVisible(true);
-                windowCreated = false;
+
 
             }
         return choice;
@@ -580,7 +658,21 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     public void showPrivateObjectiveCard(String description){
         System.out.println("Il tuo obiettivo privato è " + description);
+        privateObjectiveCardsDescription = new String(description);
     }
+
+    public void showGameboard(){
+        for(int i =0; i<3; i++){
+            System.out.println("Objective numeber"+ " " +(i+1)+ " " + publicObjectiveCardsDescription[i]);
+        }
+        for(int j =0; j<3; j++){
+            System.out.println("ToolCard numeber"+ " " +(j+1)+ " " + toolCardDescription[j]);
+        }
+        notifyObservers(new StartGameMessage(username,"server"));
+
+    }
+
+
 
 
     @Override

@@ -1,5 +1,8 @@
 package it.polimi.se2018.model.events.messages;
 
+/**
+ * @author giovanni
+ */
 
 //messaggio che dal model va a tutte le view
 public class ChooseSchemaMessage extends Message{

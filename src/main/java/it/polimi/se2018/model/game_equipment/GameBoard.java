@@ -17,7 +17,7 @@ public class GameBoard {
     private AbstractObjectiveCard publicObjectiveCards[] = new AbstractObjectiveCard[3];
     private ArrayList<AbstractObjectiveCard> privateObjectiveCards = new ArrayList<>();
     private AbstractToolCard toolCards[] = new AbstractToolCard[3];
-    private RoundTrack roundTrack;
+    private RoundTrack roundTrack = new RoundTrack();  //creo il roundtrack all'inizio
     private PointTrack pointTrack;
 
     public GameBoard() {

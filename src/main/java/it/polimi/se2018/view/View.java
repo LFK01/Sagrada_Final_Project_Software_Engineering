@@ -22,6 +22,10 @@ public class View extends Observable implements Observer{
     private Scanner scanner;
     boolean windowCreated = true;
     private int choice = 0;
+    private String[] schemaName = new String[4];
+
+
+
 
     /**
      * Initializes view
@@ -183,19 +187,34 @@ public class View extends Observable implements Observer{
         }
     }
     private void updateView(ChooseSchemaMessage message){
-        for (int i=0; i<4;i++){
-            System.out.println("type"+ (i+1) + "to choose this schema");
-            message.getSchemaCards(i).toString();
+
+        for(int i=0;i<4;i++) {
+            System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
+            System.out.println(message.getSchemaCards(i));
+            schemaName[i]= new String(message.getSchemaCards(i).split("\n")[0]);
         }
+           /* scanner = new Scanner(System.in);
+            choice = scanner.nextInt();
+
+            setChanged();
+            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
+        */
+    }
+    private void updateView(DemandSchemaCardMessage message){
+        System.out.println("Sto per scegliere");
         scanner = new Scanner(System.in);
         choice = scanner.nextInt();
-        notifyObservers(new SelectedSchemaMessage(username,"server",choice));
+        setChanged();
+        notifyObservers(new SelectedSchemaMessage(username,"server",schemaName[choice -1]));
+
     }
+
 
     private void updateView(ShowPrivateObjectiveCardsMessage message){
         if(username.equals(message.getRecipient())){
             showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
         }
+
     }
 
     public void playerNumberExceededDialog() {
@@ -605,8 +624,8 @@ public class View extends Observable implements Observer{
         frame.setResizable(true);
         frame.setVisible(true);
 */
-        setChanged();
-        notifyObservers(new SelectedSchemaMessage(username,"server",1));
+        //setChanged();
+        //notifyObservers(new SelectedSchemaMessage(username,"server",1));
     }
 
 

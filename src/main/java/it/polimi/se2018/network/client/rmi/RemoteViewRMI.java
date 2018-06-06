@@ -85,6 +85,11 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
         }
     }
 
+    private void notifyView(DemandSchemaCardMessage demandSchemaCardMessage){
+        setChanged();
+        notifyObservers(demandSchemaCardMessage);
+        }
+
 
 
     private void sendToServer(CreatePlayerMessage createPlayerMessage){
@@ -109,6 +114,9 @@ public class RemoteViewRMI extends Observable implements ClientRMIInterface, Obs
             }
         }
     }
+
+
+
 
     public void setServer(ServerRMIInterface server) {
         this.server = server;

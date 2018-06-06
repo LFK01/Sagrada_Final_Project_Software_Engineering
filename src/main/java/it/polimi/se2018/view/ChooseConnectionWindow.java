@@ -17,9 +17,9 @@ public class ChooseConnectionWindow implements Runnable{
     private JFrame frame = new JFrame("Quale connessione vuoi scegliere ?");
     private Container container = new Container();
 
-    private ImageIcon iconRMI = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaRMI.PNG");
-    private ImageIcon iconSocket = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaSocket.PNG");
-    private ImageIcon iconComeBack = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\comeBack2.jpg");
+    private ImageIcon iconRMI = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\various_images\\CatturaRMI.PNG");
+    private ImageIcon iconSocket = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\various_images\\CatturaSocket.PNG");
+    private ImageIcon iconComeBack = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\various_images\\comeBack2.jpg");
     private  JButton buttonRMI = new JButton(iconRMI);
     private JButton buttonComeBack =new JButton(iconComeBack);
     private JButton buttonSocket= new JButton(iconSocket);

@@ -31,9 +31,10 @@ public class RoundDice {
 
         this.participantsNumber = participants;
 
-        for(int i = (currentRound-1)*(participantsNumber*2+1) ; i < (currentRound*(participantsNumber*2+1)); i++)
-                diceList.add(diceBag.getDice(i));
-
+        for(int i = 0 ; i < (participantsNumber*2+1); i++) {
+            diceList.add(diceBag.getDice(0));  //prendo e rimuovo sempre
+            diceBag.getDiceBag().remove(0); //rimuovo il dado dalla dicebag
+        }
         this.round = currentRound;
 
     }

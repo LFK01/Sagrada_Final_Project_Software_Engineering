@@ -93,6 +93,7 @@ public class VirtualViewRMI extends Observable implements VirtualViewInterface {
         notifyObservers(selectedSchemaMessage);
     }
 
+
     @Override
     public String getUsername() {
         return virtualClientRMI.getUsername();

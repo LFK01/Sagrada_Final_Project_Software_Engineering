@@ -122,6 +122,23 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
+    public void notifyClient(DemandSchemaCardMessage demandSchemaCardMessage){
+        if(isConnected){
+            try{
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + demandSchemaCardMessage.toString());
+                remoteView.updateClient(demandSchemaCardMessage);
+            } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+
+
+
+    }
+
+
+
     @Override
     public String getUsername() {
         return username;

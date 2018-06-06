@@ -219,13 +219,17 @@ public class Controller extends Observable implements Observer {
 
     public void update(SelectedSchemaMessage message){
         for(int playerPos =0;playerPos< model.getParticipants().size();playerPos++){
-            if(model.getParticipants().get(playerPos).getName() == message.getSender()){
-                model.setSchemacardPlayer(playerPos,message.getSchemaSelected());
+            if(model.getParticipants().get(playerPos).getName().equals(message.getSender())){
+                //model.setSchemacardPlayer(playerPos,message);
             }
         }
         //estrae le toolcard e le manda
         model.extractPublicObjectiveCards();
         model.extractToolCards();
+
+
+
+
     }
 
     public void sendSchemaCardController(){
@@ -239,4 +243,13 @@ public class Controller extends Observable implements Observer {
     public void setTimer(int time){
         this.time = time;
     }
+
+    public void roundManager() {
+        model.extractPublicObjectiveCards();
+        model.extractToolCards();
+        model.getGameBoard().getRoundDice();
+
+    }
+
+
 }

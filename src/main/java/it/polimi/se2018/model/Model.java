@@ -7,15 +7,10 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.game_equipment.Dice;
-import it.polimi.se2018.model.game_equipment.GameBoard;
+import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
-import it.polimi.se2018.model.exceptions.SinglePlayerException;
-import it.polimi.se2018.model.game_equipment.Player;
-import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
 
@@ -34,9 +29,8 @@ import java.util.*;
  */
 
 public class Model extends Observable {
-
-    private static final int schemaCardExtractNumber = 2;
-    private static final int schemaCardNumber = 24;
+    private static final int SCHEMA_CARD_EXTRACT_NUMBER = 2;
+    private static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -48,6 +42,7 @@ public class Model extends Observable {
     private boolean firstDraftOfDice;
     /*local variable to memorize if every player has been given the option to choose
         his/her first die*/
+
 
     /**
      * Constructor method initializing turnOfTheRound and the participant list
@@ -210,6 +205,7 @@ public class Model extends Observable {
         else {
             participants.get(playerPosition).decreaseFavorTokens(true);
         }
+        setChanged();
         notifyObservers();
     }
 
@@ -278,7 +274,7 @@ public class Model extends Observable {
             }
 
         }
-
+        setChanged();
         notifyObservers();
     }
 
@@ -338,22 +334,35 @@ public class Model extends Observable {
             }
         }
         notifyObservers();
+
     }
+        //metodo per estrarre dadi dalla dicebag e metterli nella roundtrack
+    public void extractRoundTrack(){
+        getGameBoard().getRoundTrack().getRoundDice()[turnOfTheRound] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
+
+
+        for(int i =0; i < participants.size();i++ ){
+            //getGameBoard().getGameBoard().getDiceBag().getDiceBag().get(1);
+
+        }
+
+
+    }
+
 
 
     public void sendSchemaCard(){
         System.out.println("Dealing SchemaCards to players ");
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<Integer>();
-        for(int i=1; i<=schemaCardNumber/2; i++){
+        for(int i = 1; i<= 24; i++){
             randomValues.add(i);
-            i++;
         }
         Collections.shuffle(randomValues);
         for(int t=0; t < participants.size(); t++) {
-            SchemaCard[] extractedSchemaCards = new SchemaCard[schemaCardExtractNumber*2];
-            String[] schemaCards = new String[schemaCardExtractNumber*2];
-            for(int i=0; i<schemaCardExtractNumber*2; i++){
+            SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARD_EXTRACT_NUMBER *2];
+            String[] schemaCards = new String[SCHEMA_CARD_EXTRACT_NUMBER *2];
+            for(int i = 0; i< SCHEMA_CARD_EXTRACT_NUMBER *2; i++){
                 extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
                 extractedCardIndex++;
@@ -361,7 +370,16 @@ public class Model extends Observable {
             setChanged();
             notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards));
         }
+        setChanged();
+        notifyObservers(new DemandSchemaCardMessage("model","all"));
+
+
     }
+
+
+
+
+
 
     public void setSchemacardPlayer(int platerPos,int schemaPos){
         SchemaCard schema = new SchemaCard(schemaPos);

@@ -17,7 +17,7 @@ public class TestSchemaCard {
 
     @Test
     public void initializationTest(){
-        for(int i=0; i<24; i++){
+        for(int i=2; i<3; i++){
             SchemaCard schemaCard = new SchemaCard(i+1);
             System.out.println(schemaCard.toString());
         }

@@ -4,8 +4,10 @@ package it.polimi.se2018.model;
  * edited Luciano
  */
 
+import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.game_equipment.GameBoard;
 import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.view.View;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -89,7 +91,27 @@ public class TestModel {
         catch(NullPointerException e){
             fail();
         }
-
     }
+
+    @Test
+    public  void sendSchemaTest(){
+        Controller controller = new Controller();
+        View view1 = new View();
+        View view2 = new View();
+
+        view1.setUsername("lucio");
+        view2.setUsername("luca");
+        view1.addObserver(controller);
+        view2.addObserver(controller);
+        controller.getModel().addObserver(view1);
+        controller.getModel().addObserver(view2);
+        controller.getModel().addPlayer("lucio");
+        controller.getModel().addPlayer("luca");
+        controller.getModel().addPlayer("ciao");
+
+        controller.getModel().sendSchemaCard();
+        //controller.getModel().extractRoundTrack();
+    }
+
 
 }

@@ -33,22 +33,25 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     //private boolean windowCreated = true;
     private int choice = 0;
     private String input;
+
     private InputManager inputManager;
 
     private String[] schemaName = new String[4];
 
     private Thread inputThread;
+
     private String[] publicObjectiveCardsDescription = new String[3];
     private String[] toolCardDescription = new String[3];
     private String privateObjectiveCardsDescription;
-
+    private boolean matchIsOn;
 
 
     /**
      * Initializes view
      */
     public View(){
-
+        inputManager = InputManager.INPUT_DISABLED;
+        matchIsOn = true;
     }
 
     public boolean IsPlayerTurn(){
@@ -790,6 +793,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     public void run() {
         scanner = new Scanner(new InputStreamReader(System.in));
         switch(inputManager){
+            case INPUT_DISABLED:{
+                input = scanner.nextLine();
+                if(input!= ""){
+                    System.out.println("Invalid input, wait for further instruction.");
+                }
+                break;
+            }
             case INPUT_PLAYER_NAME:{
                 boolean wrongInput = true;
                 while(wrongInput){
@@ -810,7 +820,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 boolean wrongInput = true;
                 while(wrongInput){
                     try{
-                        System.out.println("ask input");
                         input = scanner.nextLine();
                         choice = Integer.parseInt(input);
                         System.out.println("choice = " + choice);
@@ -828,10 +837,15 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
         }
+
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setInputManager(InputManager inputManager) {
+        this.inputManager = inputManager;
     }
 }
 

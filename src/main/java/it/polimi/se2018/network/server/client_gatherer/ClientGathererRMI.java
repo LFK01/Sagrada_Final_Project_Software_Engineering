@@ -72,11 +72,6 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(DemandSchemaCardMessage demandSchemaCardMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
     public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }

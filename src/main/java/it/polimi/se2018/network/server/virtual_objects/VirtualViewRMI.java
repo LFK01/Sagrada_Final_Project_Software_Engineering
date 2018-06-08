@@ -52,25 +52,25 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         notifyObservers(message);
     }
 
-    public void updateServer(CreatePlayerMessage message) {
+    public void updateServer(CreatePlayerMessage createPlayerMessage) {
         boolean correctUsername = true;
         if(virtualClientRMI.getServer().getPlayers().size()>1){
             for(VirtualViewInterface client: virtualClientRMI.getServer().getPlayers()){
                 if(client!=this){
-                    if(client.getUsername().equals(message.getPlayerName())){
-                        update(new ErrorMessage("server", message.getPlayerName(), "NotValidUsername"));
+                    if(client.getUsername().equals(createPlayerMessage.getPlayerName())){
+                        update(new ErrorMessage("server", createPlayerMessage.getPlayerName(), "NotValidUsername"));
                         correctUsername = false;
                     }
                 }
             }
         } else {
-            correctUsername = true;
+                correctUsername = true;
         }
         if(correctUsername){
-            virtualClientRMI.setUsername(message.getPlayerName());
-            System.out.println("VirtualViewRMI -> Controller: " + message.toString());
+            virtualClientRMI.setUsername(createPlayerMessage.getPlayerName());
+            System.out.println("VirtualViewRMI -> Controller: " + createPlayerMessage.toString());
             setChanged();
-            notifyObservers(message);
+            notifyObservers(createPlayerMessage);
         }
     }
 
@@ -105,13 +105,13 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
-        virtualClientRMI.notifyClient(demandSchemaCardMessage);
+    public void update(ErrorMessage errorMessage) {
+        virtualClientRMI.notifyClient(errorMessage);
     }
 
     @Override
-    public void update(ErrorMessage errorMessage) {
-        virtualClientRMI.notifyClient(errorMessage);
+    public void update(GameInitializationMessage gameInitializationMessage) {
+        virtualClientRMI.notifyClient(gameInitializationMessage);
     }
 
     @Override
@@ -139,10 +139,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         virtualClientRMI.notifyClient(successMoveMessage);
     }
 
-    @Override
-    public void update(GameInitializationMessage gameInitializationMessage){
-        virtualClientRMI.notifyClient(gameInitializationMessage);
-    }
     @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         virtualClientRMI.notifyClient(updateTurnMessage);

@@ -43,6 +43,16 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         server.getController().getModel().addObserver(virtualViewSocket);
     }
 
+    public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{
+        for (VirtualViewInterface client: server.getPlayers()) {
+            if(client.getUsername().equals((message).getUsername())){
+                server.getPlayers().remove(client);
+                server.addClient(this.virtualViewSocket);
+            }
+        }
+        throw new PlayerNotFoundException();
+    }
+
     @Override
     public void run(){
         Message message = null;
@@ -61,8 +71,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                 if(message == null){
                     this.isConnected = false;
                 }else {
-                    /*
-                    virtualViewSocket.updateServer(message);*/
                     System.out.println("VCSocket -> VWSocket: " + message.toString());
                     try {
                         Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
@@ -90,12 +98,11 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        System.out.println("VirtualClientSocket -> Client: " + successCreatePlayerMessage.toString());
+    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
+        System.out.println("VirtualClientSocket -> Client: " + chooseSchemaMessage.toString());
         if(isConnected){
             try{
-                System.out.println("VirtualClientSocket sends message");
-                writer.writeObject(successCreatePlayerMessage);
+                writer.writeObject(chooseSchemaMessage);
             } catch (IOException e) {
                 isConnected = false;
                 System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
@@ -115,14 +122,14 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
-        System.out.println("VirtualClientSocket -> Client: " + chooseSchemaMessage.toString());
+    public void notifyClient(GameInitializationMessage gameInitializationMessage){
+        System.out.println("VirtualClientSocket -> Client: " + gameInitializationMessage.toString());
         if(isConnected){
             try{
-                writer.writeObject(chooseSchemaMessage);
+                writer.writeObject(gameInitializationMessage);
             } catch (IOException e) {
-                isConnected = false;
                 System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
+                isConnected = false;
             }
         }
     }
@@ -139,15 +146,17 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-
-    public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{
-        for (VirtualViewInterface client: server.getPlayers()) {
-            if(client.getUsername().equals((message).getUsername())){
-                server.getPlayers().remove(client);
-                server.addClient(this.virtualViewSocket);
+    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        System.out.println("VirtualClientSocket -> Client: " + successCreatePlayerMessage.toString());
+        if(isConnected){
+            try{
+                System.out.println("VirtualClientSocket sends message");
+                writer.writeObject(successCreatePlayerMessage);
+            } catch (IOException e) {
+                isConnected = false;
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
             }
         }
-        throw new PlayerNotFoundException();
     }
 
     public VirtualViewSocket getVirtualViewSocket() {

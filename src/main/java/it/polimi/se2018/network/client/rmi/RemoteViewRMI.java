@@ -13,10 +13,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface, ProjectObserver {
-    @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-
-    }
 
     private ServerRMIInterface server;
     private String username;
@@ -36,7 +32,8 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     private void notifyView(Message message){
-        if(message.getRecipient().equals(username) || message.getRecipient().equals("@all")){
+        if(message.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + message.toString());
             setChanged();
             notifyObservers(message);
         }
@@ -44,6 +41,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + successCreatePlayerMessage.toString());
             setChanged();
             notifyObservers(successCreatePlayerMessage);
         }
@@ -52,17 +50,24 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     private void notifyView(ErrorMessage errorMessage){
         if(errorMessage.getRecipient().equals(username)){
             if(errorMessage.toString().equals("NotValidUsername")){
+                System.out.println("RemoteVRMI -> View: " + errorMessage.toString());
                 setChanged();
                 notifyObservers(errorMessage);
             }
             if(errorMessage.toString().equals("PlayerNumberExceeded")){
                 /*should never be called here for RMI connection*/
             }
+            if(errorMessage.toString().equals("NotEnoughPlayer")){
+                System.out.println("RemoteVRMI -> View: " + errorMessage.toString());
+                setChanged();
+                notifyObservers(errorMessage);
+            }
         }
     }
 
     private void notifyView(ChooseSchemaMessage chooseSchemaMessage){
         if(chooseSchemaMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + chooseSchemaMessage.toString());
             setChanged();
             notifyObservers(chooseSchemaMessage);
         }
@@ -75,18 +80,12 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(DemandSchemaCardMessage demandSchemaCardMessage){
-        if(demandSchemaCardMessage.getRecipient().equals(username) || demandSchemaCardMessage.getRecipient().equals("@all")){
-            setChanged();
-            notifyObservers(demandSchemaCardMessage);
-        }
-    }
-
     private void notifyView(GameInitializationMessage gameInitializationMessage){
-        //if(gameInitializationMessage.getRecipient().equals(username) || gameInitializationMessage.getRecipient().equals("@all")){
+        if(gameInitializationMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + gameInitializationMessage.toString());
             setChanged();
             notifyObservers(gameInitializationMessage);
-        //}
+        }
 
     }
 
@@ -145,11 +144,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
+    public void update(ErrorMessage errorMessage) {
         if(serverIsUp){
             try{
-                System.out.println("RemoteVRMI -> Server: " + demandSchemaCardMessage.toString());
-                server.sendToServer(demandSchemaCardMessage);
+                System.out.println("RemoteVRMI -> Server: " + errorMessage.toString());
+                server.sendToServer(errorMessage);
             } catch (RemoteException e){
                 serverIsUp = false;
             }
@@ -158,11 +157,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
 
     @Override
-    public void update(ErrorMessage errorMessage) {
+    public void update(GameInitializationMessage gameInitializationMessage) {
         if(serverIsUp){
             try{
-                System.out.println("RemoteVRMI -> Server: " + errorMessage.toString());
-                server.sendToServer(errorMessage);
+                System.out.println("RemoteVRMI -> Server: " + gameInitializationMessage.toString());
+                server.sendToServer(gameInitializationMessage);
             } catch (RemoteException e){
                 serverIsUp = false;
             }

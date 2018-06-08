@@ -12,16 +12,22 @@ import java.util.ArrayList;
 
 public class GameBoard {
 
+    private static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
+    private static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     private String matchId;
     private DiceBag diceBag;
-    private AbstractObjectiveCard publicObjectiveCards[] = new AbstractObjectiveCard[3];
-    private ArrayList<AbstractObjectiveCard> privateObjectiveCards = new ArrayList<>();
-    private AbstractToolCard toolCards[] = new AbstractToolCard[3];
-    private RoundTrack roundTrack = new RoundTrack();  //creo il roundtrack all'inizio
+    private AbstractObjectiveCard publicObjectiveCards[];
+    private ArrayList<AbstractObjectiveCard> privateObjectiveCards;
+    private AbstractToolCard toolCards[];
+    private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
     public GameBoard() {
         this.diceBag = new DiceBag();
+        this.publicObjectiveCards = new AbstractObjectiveCard[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
+        this.privateObjectiveCards = new ArrayList<>();
+        this.toolCards = new AbstractToolCard[TOOL_CARDS_EXTRACT_NUMBER];
+        this.roundTrack = new RoundTrack();
     }
 
     public RoundDice[] getRoundDice() {

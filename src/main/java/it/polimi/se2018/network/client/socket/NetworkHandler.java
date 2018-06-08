@@ -102,7 +102,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     public void sendToServer(Message message) {
         try {
             System.out.println("NetworkHandler -> Server");
-            outputStream.writeObject((Object) message);
+            outputStream.writeObject(message);
         } catch (IOException e){
             serverIsUp = false;
             e.printStackTrace();

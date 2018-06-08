@@ -22,8 +22,6 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException;
 
-    void sendToServer(DemandSchemaCardMessage demandSchemaCardMessage) throws RemoteException;
-
     void sendToServer(ErrorMessage errorMessage) throws RemoteException;
 
     void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException;

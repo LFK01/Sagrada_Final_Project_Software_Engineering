@@ -561,6 +561,7 @@ public class SchemaCard {
     public String toString(){
         StringBuilder schema = new StringBuilder();
         schema.append(name + "\n");
+        schema.append("difficulty level: " + difficultyLevel + "\n");
         for(int row=0; row<cells.length; row++){
             for(int col=0; col<cells[row].length; col++){
                 if(cells[row][col].isFull()){

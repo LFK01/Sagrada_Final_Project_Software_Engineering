@@ -4,6 +4,7 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -19,10 +20,6 @@ import java.util.Scanner;
  * @author giovanni
  */
 public class View extends ProjectObservable implements ProjectObserver, Runnable{
-    @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-
-    }
 
     protected String username;
     private boolean isPlayerTurn;
@@ -51,7 +48,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
      * Initializes view
      */
     public View(){
-        scanner = new Scanner(new InputStreamReader(System.in));
+
     }
 
     public boolean IsPlayerTurn(){
@@ -153,10 +150,8 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         containerCreatePlayer.add(confirmButton);
 
         frameCreatePlayer.setVisible(true);*/
-        System.out.print("New username: ");
-        username = scanner.nextLine();
-        setChanged();
-        notifyObservers(new CreatePlayerMessage(username, "server", username));
+        inputManager = InputManager.INPUT_PLAYER_NAME;
+        new Thread(this).start();
     }
 
     public int demandConnectionType() {
@@ -206,6 +201,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             }
         }
     }
+
     private void updateView(ChooseSchemaMessage message){
 
         for(int i=0;i<4;i++) {
@@ -220,26 +216,22 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
         */
     }
-    private void updateView(DemandSchemaCardMessage message){
-        setChanged();
-        notifyObservers(new SelectedSchemaMessage(username,"server",schemaName[choice -1]));
-
-    }
-
 
     private void updateView(ShowPrivateObjectiveCardsMessage message){
-        if(username.equals(message.getRecipient())){
-            showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
-        }
-
+        showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
     }
 
-    private void updateView(GameInitializationMessage message){
-        System.out.println("Sto per inizializzare il gioco");
-        for(int i=0;i<3;i++){
-            publicObjectiveCardsDescription[i] = message.getPublicObjectiveCardsDescription(i);
-            toolCardDescription[i] = message.getToolCardsDescription(i);
+    private void updateView(GameInitializationMessage gameInitializationMessage){
+        publicObjectiveCardsDescription = gameInitializationMessage.getPublicObjectiveCardsDescription();
+        toolCardDescription = gameInitializationMessage.getToolCardsDescription();
+        for(int i=0; i<publicObjectiveCardsDescription.length; i++){
+            System.out.print("Public Objective card #" + (i+1) + " :\n" + publicObjectiveCardsDescription[i]);
         }
+        for(int i=0; i<publicObjectiveCardsDescription.length; i++){
+            System.out.print("Public Objective card #" + (i+1) + " :\n" + publicObjectiveCardsDescription[i]);
+        }
+        System.out.println("\n");
+        System.out.println(gameInitializationMessage.getRoundTrack().toString());
         showGameboard();
     }
 
@@ -687,10 +679,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         //notifyObservers(new SelectedSchemaMessage(username,"server",1));
     }
 
-
-
-    //metodo che serve solo per i test
-
     public void showPrivateObjectiveCard(String description){
         System.out.println("Il tuo obiettivo privato è " + description);
         privateObjectiveCardsDescription = new String(description);
@@ -708,9 +696,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     }
 
-
-
-
     @Override
     public void update(Message message) {
         System.out.println(message.toString());
@@ -723,12 +708,9 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             System.out.println(chooseSchemaMessage.getSchemaCards(i));
             schemaName[i]= new String(chooseSchemaMessage.getSchemaCards(i).split("\n")[0]);
         }
-           /* scanner = new Scanner(System.in);
-            choice = scanner.nextInt();
-
-            setChanged();
-            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
-        */
+        System.out.println("Schema card number: ");
+        inputManager = InputManager.INPUT_SCHEMA_CARD;
+        new Thread(this).start();
     }
 
     @Override
@@ -739,14 +721,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     @Override
     public void update(CreatePlayerMessage createPlayerMessage) {
 
-    }
-
-    @Override
-    public void update(DemandSchemaCardMessage message) {
-        inputManager = InputManager.INPUT_SCHEMA_CARD;
-        System.out.println("Sto per scegliere");
-        System.out.println("thread thrown");
-        new Thread(this).start();
     }
 
     @Override
@@ -767,6 +741,15 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
             }
         }
+    }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+        System.out.println("GameInitializationMessage received");
+        /*for(int i=0; i<gameInitializationMessage.getPublicObjectiveCardsDescription().length; i++){
+            System.out.println("Public Objective Card #" + (i+1) +" :\n" +
+                    "");
+        }*/
     }
 
     @Override
@@ -805,8 +788,24 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void run() {
-        System.out.println("thread started...");
+        scanner = new Scanner(new InputStreamReader(System.in));
         switch(inputManager){
+            case INPUT_PLAYER_NAME:{
+                boolean wrongInput = true;
+                while(wrongInput){
+                    System.out.print("New Username: ");
+                    username = scanner.nextLine();
+                    if(username.equals("") || username.equals("\n")){
+                        System.out.println("Not valid username!");
+                        wrongInput = true;
+                    } else {
+                        wrongInput = false;
+                    }
+                }
+                setChanged();
+                notifyObservers(new CreatePlayerMessage(username, "server", username));
+                break;
+            }
             case INPUT_SCHEMA_CARD:{
                 boolean wrongInput = true;
                 while(wrongInput){
@@ -826,6 +825,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 }
                 setChanged();
                 notifyObservers(new SelectedSchemaMessage(username,"server", schemaName[choice -1]));
+                break;
             }
         }
     }

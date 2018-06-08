@@ -5,11 +5,12 @@ import it.polimi.se2018.model.events.messages.Message;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
 
 public class ProjectObservable {
 
     private ArrayList<ProjectObserver> observers;
-    private Message showPrivateObjectiveCardMessage;
+    private Message memorizedMessage;
 
     private boolean changed;
     public ProjectObservable(){
@@ -30,7 +31,7 @@ public class ProjectObservable {
     }
 
     public void memorizeMessage(Message message){
-        this.showPrivateObjectiveCardMessage = message;
+        this.memorizedMessage = message;
     }
 
     public void setChanged(){
@@ -40,7 +41,8 @@ public class ProjectObservable {
     }
 
     public void notifyObservers(Message message){
-        System.out.println("notifying " + observers.size() + " observers");
+        System.out.println("notifying " + observers.size() + " observers w/: " + message.toString() +
+                            "\n Recipient: " + message.getRecipient());
         synchronized (observers){
             if(changed){
                 for(ProjectObserver observer: observers){
@@ -58,12 +60,14 @@ public class ProjectObservable {
     }
 
     public void notifyObservers(){
+        System.out.println("notifying " + observers.size() + " observers w/: " + memorizedMessage.toString() +
+                "\n Recipient: " + memorizedMessage.getRecipient());
         synchronized (observers){
             if(changed){
                 System.out.println("notifying " + observers.size() + " observers");
                 for(ProjectObserver observer: observers){
                     System.out.println("observer: " + observer.toString());
-                    observer.update(showPrivateObjectiveCardMessage);
+                    observer.update(memorizedMessage);
                 }
                 changed = false;
             }

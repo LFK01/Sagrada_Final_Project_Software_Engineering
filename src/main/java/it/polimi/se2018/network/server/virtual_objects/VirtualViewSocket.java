@@ -23,13 +23,13 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         notifyObservers(message);
     }
 
-    public void updateServer(CreatePlayerMessage message){
+    public void updateServer(CreatePlayerMessage createPlayerMessage){
         boolean correctUsername = true;
         if(virtualClientSocket.getServer().getPlayers().size()>1){
             for(VirtualViewInterface client: virtualClientSocket.getServer().getPlayers()){
                 if(client!=this){
-                    if(client.getUsername().equals(message.getPlayerName()) || message.getPlayerName().equals("")){
-                        update(new ErrorMessage(virtualClientSocket.getServer().toString(), message.getPlayerName(), "NotValidUsername"));
+                    if(client.getUsername().equals(createPlayerMessage.getPlayerName())){
+                        update(new ErrorMessage(virtualClientSocket.getServer().toString(), createPlayerMessage.getPlayerName(), "NotValidUsername"));
                         correctUsername = false;
                     }
                 }
@@ -38,10 +38,10 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
             correctUsername = true;
         }
         if(correctUsername){
-            virtualClientSocket.setUsername(message.getPlayerName());
-            System.out.println("(createPlayer) VWSocket -> Controller :" + message.toString());
+            virtualClientSocket.setUsername(createPlayerMessage.getPlayerName());
+            System.out.println("(createPlayer) VWSocket -> Controller :" + createPlayerMessage.toString());
             setChanged();
-            notifyObservers(message);
+            notifyObservers(createPlayerMessage);
         }
     }
 
@@ -59,24 +59,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
         setChanged();
         notifyObservers(selectedSchemaMessage);
-    }
-
-    @Override
-    public String getUsername() {
-        return virtualClientSocket.getUsername();
-    }
-
-    @Override
-    public void setClientConnection(Socket clientConnection) {
-        virtualClientSocket.setClientConnection(clientConnection);
-    }
-
-    public VirtualClientSocket getClientSocket() {
-        return virtualClientSocket;
-    }
-
-    public void setClientSocket(VirtualClientSocket clientSocket) {
-        this.virtualClientSocket = clientSocket;
     }
 
     @Override
@@ -104,15 +86,15 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
-        System.out.println("VWSocket -> VCSocket: " + demandSchemaCardMessage.toString());
-        virtualClientSocket.notifyClient(demandSchemaCardMessage);
-    }
-
-    @Override
     public void update(ErrorMessage errorMessage) {
         System.out.println("VWSocket -> VCSocket: " + errorMessage.toString());
         virtualClientSocket.notifyClient(errorMessage);
+    }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+        System.out.println("VWSocket -> VCSocket: " + gameInitializationMessage.toString());
+        virtualClientSocket.notifyClient(gameInitializationMessage);
     }
 
     @Override
@@ -152,7 +134,20 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
+    public String getUsername() {
+        return virtualClientSocket.getUsername();
+    }
 
+    @Override
+    public void setClientConnection(Socket clientConnection) {
+        virtualClientSocket.setClientConnection(clientConnection);
+    }
+
+    public VirtualClientSocket getClientSocket() {
+        return virtualClientSocket;
+    }
+
+    public void setClientSocket(VirtualClientSocket clientSocket) {
+        this.virtualClientSocket = clientSocket;
     }
 }

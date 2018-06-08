@@ -18,6 +18,8 @@ import it.polimi.se2018.model.tool_cards.*;
 import it.polimi.se2018.utils.ProjectObservable;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is supposed to contain all the data about a game and all the
@@ -34,7 +36,9 @@ import java.util.*;
 public class Model extends ProjectObservable implements Runnable{
 
     private int roundNumber;
-    private static final int SCHEMA_CARD_EXTRACT_NUMBER = 2;
+    private static final int SCHEMA_CARDS_EXTRACT_NUMBER = 2;
+    private static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
+    private static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     private static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
@@ -278,130 +282,112 @@ public class Model extends ProjectObservable implements Runnable{
                     break;
 
             }
-
         }
-        setChanged();
-        notifyObservers();
     }
 
     public void extractPublicObjectiveCards() {
-
         ArrayList<Integer> cardIndex = new ArrayList<>(12);
 
-        for(int i = 1; i <= 10; i++)
+        for(int i = 1; i <= 10; i++){
             cardIndex.add(i);
-
+        }
         Collections.shuffle(cardIndex);
-
         for(int i = 0; i < 3; i++) {
-
             switch (cardIndex.get(i)) {
-
-                case 1:
+                case 1:{
                     gameBoard.setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
                     break;
-
-                case 2:
+                }
+                case 2: {
                     gameBoard.setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
                     break;
-
-                case 3:
+                }
+                case 3: {
                     gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
-
-                case 4:
+                }
+                case 4: {
                     gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
-
-                case 5:
+                }
+                case 5: {
                     gameBoard.setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
                     break;
-
-                case 6:
+                }
+                case 6: {
                     gameBoard.setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
                     break;
-
-                case 7:
+                }
+                case 7: {
                     gameBoard.setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
                     break;
-
-                case 8:
+                }
+                case 8: {
                     gameBoard.setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
                     break;
-
-                case 9:
+                }
+                case 9: {
                     gameBoard.setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
                     break;
-
-                case 10:
+                }
+                case 10: {
                     gameBoard.setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
                     break;
-
+                }
             }
         }
-        notifyObservers();
-
     }
-        //metodo per estrarre dadi dalla dicebag e metterli nella roundtrack
+
+    /**
+     * Extracts Dice from DiceBag and puts them on the RoundTrack
+     */
     public void extractRoundTrack(){
         getGameBoard().getRoundTrack().getRoundDice()[turnOfTheRound] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
-
-
-        for(int i =0; i < participants.size();i++ ){
-            //getGameBoard().getGameBoard().getDiceBag().getDiceBag().get(1);
-
-        }
-
-
     }
-
-
 
     public void sendSchemaCard(){
         System.out.println("Dealing SchemaCards to players ");
+        Object synchronizationObject = new Object();
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<Integer>();
-        for(int i = 1; i<= 24; i++){
+        for(int i=0; i<participants.size(); i++){
+            System.out.println("Participant: " + participants.get(i).getName());
+        }
+        for(int i = 1; i<= SCHEMA_CARD_NUMBER; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
         for(int t=0; t < participants.size(); t++) {
-            SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARD_EXTRACT_NUMBER *2];
-            String[] schemaCards = new String[SCHEMA_CARD_EXTRACT_NUMBER *2];
-            for(int i = 0; i< SCHEMA_CARD_EXTRACT_NUMBER *2; i++){
+            SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER *2];
+            String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER *2];
+            for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i+=2){
                 extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
+                extractedSchemaCards[i+1] = new SchemaCard((SCHEMA_CARD_NUMBER+1)-randomValues.get(extractedCardIndex));
+                schemaCards[i+1] = extractedSchemaCards[i+1].toString();
                 extractedCardIndex++;
             }
-            setChanged();
-            notifyObservers(new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards));
+            synchronized (synchronizationObject){
+                Message sentMessage = new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards);
+                memorizeMessage(sentMessage);
+                new Thread(this).start();
+            }
         }
-
-        memorizeMessage(new DemandSchemaCardMessage("model","@all"));
-        new Thread(this).start();
-
     }
 
-
-    public void setSchemacardPlayer(int platerPos,String schemaName){
+    public void setSchemaCardPlayer(int playerPos, String schemaName){
         SchemaCard schema = new SchemaCard(schemaName);
-        participants.get(platerPos).setSchemaCard(schema);
+        participants.get(playerPos).setSchemaCard(schema);
     }
 
     public void sendPrivateObjectiveCard(){
         ArrayList<AbstractObjectiveCard> privateCards = new ArrayList<AbstractObjectiveCard>();
-        SfumatureBlu sfumatureBlu = SfumatureBlu.getThisInstance();
-        SfumatureGialle sfumatureGialle = SfumatureGialle.getThisInstance();
-        SfumatureRosse sfumatureRosse = SfumatureRosse.getThisInstance();
-        SfumatureVerdi sfumatureVerdi = SfumatureVerdi.getThisInstance();
-        SfumatureViola sfumatureViola = SfumatureViola.getThisInstance();
-        privateCards.add(sfumatureBlu);
-        privateCards.add(sfumatureGialle);
-        privateCards.add(sfumatureVerdi);
-        privateCards.add(sfumatureRosse);
-        privateCards.add(sfumatureViola);
+        privateCards.add(SfumatureBlu.getThisInstance());
+        privateCards.add(SfumatureGialle.getThisInstance());
+        privateCards.add(SfumatureVerdi.getThisInstance());
+        privateCards.add(SfumatureRosse.getThisInstance());
+        privateCards.add(SfumatureViola.getThisInstance());
         Collections.shuffle(privateCards);
-        //notifica a tutti delle schemacard
         int s =0;
         for(int i=0; i < participants.size(); i++) {
             String colorString = privateCards.get(i).getDescription();
@@ -409,22 +395,38 @@ public class Model extends ProjectObservable implements Runnable{
             notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString));
             s = s+1;
         }
-        //alla fine di tutto distribuisce le carte schema
         sendSchemaCard();
     }
 
     public void sendInitializationMessage(){
-        String[] publicObjectiveCardsDescription = new String[4];
-        String[] toolCardDescription = new String[4];
-        for(int j=0; j<3;j++){
-            publicObjectiveCardsDescription[j] = gameBoard.getPublicObjectiveCardDescription(j);
-            //toolCardDescription[j] = gameBoard.getToolCardDescription(j);
+        System.out.println("Sending initialization messages");
+        String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
+        String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
+        String roundTrack = null;
+        Object synchronizationObject = new Object();
+        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
+            StringBuilder builderPublicObjectiveCards = new StringBuilder();
+            builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
+            builderPublicObjectiveCards.append("Description: " + gameBoard.getPublicObjectiveCardDescription(i) + "\n");
+            publicObjectiveCardsDescription[i] = builderPublicObjectiveCards.toString();
         }
-        for(int i =0;i<participants.size();i++) {
-
-            setChanged();
-            notifyObservers(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, gameBoard.getRoundTrack().getRoundDice().toString()));
-
+        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
+            StringBuilder builderToolCards = new StringBuilder();
+            builderToolCards.append("Name: " + gameBoard.getToolCardName(i) + "\n");
+            builderToolCards.append("Description: " + gameBoard.getToolCardDescription(i) + "\n");
+            toolCardDescription[i] = builderToolCards.toString();
+        }
+        /*StringBuilder builderRoundTrack = new StringBuilder();
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
+        List<Dice> currentDiceList = currentRoundDice.getDiceList();
+        for(int i=0; i<getGameBoard().getRoundTrack().getRoundDice().length; i++){
+            builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
+        }
+        builderRoundTrack.append("\n");
+        //roundTrack = builderRoundTrack.toString();*/
+        for(int i = 0; i<participants.size(); i++){
+           setChanged();
+           notifyObservers(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack));
         }
     }
 

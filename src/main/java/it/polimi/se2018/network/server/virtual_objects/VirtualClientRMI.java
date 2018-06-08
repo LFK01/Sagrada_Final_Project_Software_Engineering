@@ -82,12 +82,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(DemandSchemaCardMessage demandSchemaCardMessage) throws RemoteException {
-        System.out.println("VirtualClientRMI -> Server: " + demandSchemaCardMessage.toString());
-        virtualView.updateServer(demandSchemaCardMessage);
-    }
-
-    @Override
     public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + errorMessage.toString());
         virtualView.updateServer(errorMessage);
@@ -151,12 +145,25 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
+    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
         if(isConnected){
             try{
-                System.out.println("VirtualClientRMI -> RemoteVRMI: " + successCreatePlayerMessage.toString());
-                remoteView.updateClient(successCreatePlayerMessage);
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + chooseSchemaMessage.toString());
+                remoteView.updateClient(chooseSchemaMessage);
             } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void notifyClient(GameInitializationMessage gameInitializationMessage){
+        if(isConnected){
+            try{
+                System.out.println("VCRMI -> RemoteVRMI: " + gameInitializationMessage.toString());
+                remoteView.updateClient(gameInitializationMessage);
+            } catch (RemoteException e) {
+                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
                 isConnected = false;
                 e.printStackTrace();
             }
@@ -176,18 +183,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
-        if(isConnected){
-            try{
-                System.out.println("VirtualClientRMI -> RemoteVRMI: " + chooseSchemaMessage.toString());
-                remoteView.updateClient(chooseSchemaMessage);
-            } catch (RemoteException e) {
-                isConnected = false;
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void notifyClient(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
         if(isConnected){
             try{
@@ -200,29 +195,17 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(DemandSchemaCardMessage demandSchemaCardMessage){
+    public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(isConnected){
             try{
-                System.out.println("VirtualClientRMI -> RemoteVRMI: " + demandSchemaCardMessage.toString());
-                remoteView.updateClient(demandSchemaCardMessage);
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + successCreatePlayerMessage.toString());
+                remoteView.updateClient(successCreatePlayerMessage);
             } catch (RemoteException e) {
                 isConnected = false;
                 e.printStackTrace();
             }
         }
     }
-    public void notifyClient(GameInitializationMessage gameInitializationMessage){
-        if(isConnected){
-            try{
-                System.out.println("VirtualClientRMI -> RemoteVRMI: " + gameInitializationMessage.toString());
-                remoteView.updateClient(gameInitializationMessage);
-            } catch (RemoteException e) {
-                isConnected = false;
-                e.printStackTrace();
-            }
-        }
-    }
-
 
     @Override
     public String getUsername() {

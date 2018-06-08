@@ -36,35 +36,11 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
 
-    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username) || successCreatePlayerMessage.getRecipient().equals("@all")){
-            System.out.println("RemoteWSocket -> Server: success create message");
-            setChanged();
-            notifyObservers(successCreatePlayerMessage);
-        }
-    }
-
-    public void notifyView(SuccessMessage successMessage){
-        if(successMessage.getRecipient().equals(username)|| successMessage.getRecipient().equals("@all")){
-            System.out.println("RemoteWSocket -> Client: success message");
-            setChanged();
-            notifyObservers(successMessage);
-        }
-    }
-
     public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
         if(chooseSchemaMessage.getRecipient().equals(username) || chooseSchemaMessage.getRecipient().equals("@all")){
             System.out.println("RemoteWSocket -> Client: success message");
             setChanged();
             notifyObservers(chooseSchemaMessage);
-        }
-    }
-
-    public void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
-        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
-            System.out.println("RemoteWSocket -> Client: success message");
-            setChanged();
-            notifyObservers(showPrivateObjectiveCardsMessage);
         }
     }
 
@@ -89,6 +65,13 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
 
+    public void notifyView(GameInitializationMessage gameInitializationMessage){
+        if(gameInitializationMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(gameInitializationMessage);
+        }
+    }
+
     public void notifyView(SelectedSchemaMessage selectedSchemaMessage){
         if(selectedSchemaMessage.getRecipient().equals(username)){
             setChanged();
@@ -96,12 +79,27 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
 
-    public void notifyView(DemandSchemaCardMessage demandSchemaCardMessage){
-        System.out.println("RemoteViewSocket -> View: " + demandSchemaCardMessage.toString());
-        if(demandSchemaCardMessage.getRecipient().equals(username) || demandSchemaCardMessage.getRecipient().equals("all")){
-            System.out.println();
+    public void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
+        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Client: success message");
             setChanged();
-            notifyObservers(demandSchemaCardMessage);
+            notifyObservers(showPrivateObjectiveCardsMessage);
+        }
+    }
+
+    public void notifyView(SuccessMessage successMessage){
+        if(successMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Client: success message");
+            setChanged();
+            notifyObservers(successMessage);
+        }
+    }
+
+    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Server: success create message");
+            setChanged();
+            notifyObservers(successCreatePlayerMessage);
         }
     }
 
@@ -131,15 +129,15 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(DemandSchemaCardMessage demandSchemaCardMessage) {
-        System.out.println("RemoteWSocket -> Server: " + demandSchemaCardMessage.toString());
-        server.sendToServer(demandSchemaCardMessage);
-    }
-
-    @Override
     public void update(ErrorMessage errorMessage) {
         System.out.println("RemoteWSocket -> Server: " + errorMessage.toString());
         server.sendToServer(errorMessage);
+    }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+        System.out.println("RemoteWSocket -> Server: " + gameInitializationMessage.toString());
+        server.sendToServer(gameInitializationMessage);
     }
 
     @Override
@@ -176,10 +174,5 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     public void update(UpdateTurnMessage updateTurnMessage) {
         System.out.println("RemoteWSocket -> Server: " + updateTurnMessage.toString());
         server.sendToServer(updateTurnMessage);
-    }
-
-    @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-
     }
 }

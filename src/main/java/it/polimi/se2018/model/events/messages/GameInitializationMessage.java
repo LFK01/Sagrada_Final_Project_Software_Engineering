@@ -5,8 +5,8 @@ package it.polimi.se2018.model.events.messages;
  */
 
 public class GameInitializationMessage extends Message {
-    private String[] publicObjectiveCardsDescription=null;
-    private String[] toolCardsDescription =null;
+    private String[] publicObjectiveCardsDescription;
+    private String[] toolCardsDescription;
     private String roundTrack;
 
     public GameInitializationMessage(String sender, String recipient, String[] publicObjectiveCardsDescription, String[] toolCardsDescription,String roundTrack) {
@@ -14,15 +14,14 @@ public class GameInitializationMessage extends Message {
         this.publicObjectiveCardsDescription = publicObjectiveCardsDescription;
         this.toolCardsDescription = toolCardsDescription;
         this.roundTrack = roundTrack;
-
-
-    }
-    public String getPublicObjectiveCardsDescription(int index) {
-        return publicObjectiveCardsDescription[index];
     }
 
-    public String getToolCardsDescription(int index) {
-        return toolCardsDescription[index];
+    public String[] getPublicObjectiveCardsDescription() {
+        return publicObjectiveCardsDescription;
+    }
+
+    public String[] getToolCardsDescription() {
+        return toolCardsDescription;
     }
 
 

@@ -7,13 +7,13 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
+import it.polimi.se2018.model.game_equipment.Player;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
+import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -28,9 +28,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     private boolean timerStarted;
     private Timer t;
     private boolean enoughPlayers;
-    private int allCardsAssigned =0 ;
+    private int playerNumberDoneSelecting = 0;
     private int allPlayersReady =0;
-    private boolean occultCycle = true;
 
     /**
      * Class constructor
@@ -185,6 +184,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             t.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    timerStarted = false;
                     if(!enoughPlayers) {
                         if(model.getParticipants().size()>=2) {
                             /*enough player to start a match*/
@@ -194,7 +194,10 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         else {
                             /*Not enough player*/
                             System.out.println("Time's up, minimun player number not reached!");
-                            notifyObservers(new ErrorMessage("model","all","NotEnoughPlayer"));
+                            for(Player player: model.getParticipants()){
+                                setChanged();
+                                notifyObservers(new ErrorMessage("model", player.getName(),"NotEnoughPlayer"));
+                            }
                         }
                     }
                 }
@@ -209,12 +212,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
-    public void update(DemandSchemaCardMessage message) {
+    public void update(ErrorMessage errorMessage) {
 
     }
 
     @Override
-    public void update(ErrorMessage errorMessage) {
+    public void update(GameInitializationMessage gameInitializationMessage) {
 
     }
 
@@ -234,37 +237,32 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     public void update(SelectedSchemaMessage message) {
-        System.out.println("nel controller sto assegnando gli schemaCard");
-        while(occultCycle) {
-            occultCycle = false;
-            for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
-                if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
-                    System.out.println("Sono entrato nel ciclo e sto mettendo nel model gli schemi");
-                    model.setSchemacardPlayer(0, message.getSchemaCardName());
-                    allCardsAssigned++;
-                }
+        for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
+            if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
+                model.setSchemaCardPlayer(playerPos, message.getSchemaCardName());
+                playerNumberDoneSelecting++;
             }
         }
-        occultCycle = true;
-        //estrae le toolcard e le manda
-        if(allCardsAssigned==model.getParticipants().size()) {
+        /*  extracts public objective cards
+            extracts tool cards
+            sends initialization message
+        */
+        System.out.println("Number of players that has selected a schemaCard: " + playerNumberDoneSelecting);
+        System.out.println("Number of participants in the match: " + model.getParticipantsNumber());
+        if(playerNumberDoneSelecting == model.getParticipantsNumber()){
             model.extractPublicObjectiveCards();
             model.extractToolCards();
+            model.extractRoundTrack();
             model.sendInitializationMessage();
         }
     }
+
     public void update(StartGameMessage startGameMessage){
         allPlayersReady = allPlayersReady + 1;
         if(allPlayersReady==4){
             model.sendSchemaAndTurn();
         }
     }
-
-
-
-
-
-
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
@@ -285,12 +283,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public void update(UpdateTurnMessage updateTurnMessage) {
 
     }
-
-    @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-
-    }
-
 
     public void sendSchemaCardController(){
         model.sendSchemaCard();

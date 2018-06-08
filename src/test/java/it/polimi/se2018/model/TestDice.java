@@ -61,9 +61,15 @@ public class TestDice {
     public void colorTest() {
         //String redString =  PaintingTool.ANSI_RED.escape() + "Hello" + PaintingTool.ANSI_BLUE.escape() + "World" + PaintingTool.RESET;
         //System.out.println(redString)
-       /* DiceBag  diceBag = new DiceBag();
+        DiceBag  diceBag = new DiceBag();
+        int j=0;
         for(int i=0;i < diceBag.getDiceBag().size();i++){
-            System.out.println(diceBag.getDiceBag().get(i).toString());
-        }*/
+            System.out.print(diceBag.getDiceBag().get(i).toString());
+            j++;
+            if(j==9){
+                System.out.print("\n");
+                j=0;
+            }
+        }
     }
 }

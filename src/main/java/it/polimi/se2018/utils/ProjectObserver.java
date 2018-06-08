@@ -12,9 +12,9 @@ public interface ProjectObserver {
 
     void update(CreatePlayerMessage createPlayerMessage);
 
-    void update(DemandSchemaCardMessage message);
-
     void update(ErrorMessage errorMessage);
+
+    void update(GameInitializationMessage gameInitializationMessage);
 
     void update(NewRoundMessage newRoundMessage);
 
@@ -27,7 +27,5 @@ public interface ProjectObserver {
     void update(SuccessMoveMessage successMoveMessage);
 
     void update(UpdateTurnMessage updateTurnMessage);
-
-    void update(GameInitializationMessage gameInitializationMessage);
 
 }

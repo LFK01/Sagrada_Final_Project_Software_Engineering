@@ -19,6 +19,10 @@ import java.util.Scanner;
  * @author giovanni
  */
 public class View extends ProjectObservable implements ProjectObserver, Runnable{
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+
+    }
 
     protected String username;
     private boolean isPlayerTurn;
@@ -217,9 +221,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         */
     }
     private void updateView(DemandSchemaCardMessage message){
-        System.out.println("Sto per scegliere");
-        scanner = new Scanner(System.in);
-        choice = scanner.nextInt();
         setChanged();
         notifyObservers(new SelectedSchemaMessage(username,"server",schemaName[choice -1]));
 
@@ -234,11 +235,45 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     }
 
     private void updateView(GameInitializationMessage message){
+        System.out.println("Sto per inizializzare il gioco");
         for(int i=0;i<3;i++){
             publicObjectiveCardsDescription[i] = message.getPublicObjectiveCardsDescription(i);
             toolCardDescription[i] = message.getToolCardsDescription(i);
         }
         showGameboard();
+    }
+
+    private void updateView(SendSchemaAndTurn message){
+        for(int i =0;i < message.getschemaInGame().length-1; i++) {  //sarà nuemro di giocatori invece di 4
+            if(message.getRecipient().equals(username)){
+                System.out.println("Questo è il tuo SchemaCard");
+            }
+            //to string che fa vedere tutti gli schemi
+        }
+        if(message.getRecipient().equals(username)){
+            System.out.println("type 1 to set a die");
+            System.out.println("type 2 to use a toolCard");
+            System.out.println("Type 3 to pass the turn");
+
+            if(choice ==1){
+                setChanged();
+                //notifyObservers(new ); lancio del dado
+            }
+            if(choice ==2){
+                setChanged();
+                notifyObservers();
+            }
+            if(choice ==3){
+                setChanged();
+                notifyObservers();
+            }
+
+
+        }
+        else {          //un loop per richiedere input
+            System.out.println("non è il tuo turno");
+        }
+
     }
 
     public void playerNumberExceededDialog() {
@@ -661,12 +696,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         privateObjectiveCardsDescription = new String(description);
     }
 
+
     public void showGameboard(){
         for(int i =0; i<3; i++){
-            System.out.println("Objective numeber"+ " " +(i+1)+ " " + publicObjectiveCardsDescription[i]);
+            System.out.println("Objective number"+ " " +(i+1)+ " " + publicObjectiveCardsDescription[i]);
         }
         for(int j =0; j<3; j++){
-            System.out.println("ToolCard numeber"+ " " +(j+1)+ " " + toolCardDescription[j]);
+            System.out.println("ToolCard number"+ " " +(j+1)+ " " + toolCardDescription[j]);
         }
         notifyObservers(new StartGameMessage(username,"server"));
 

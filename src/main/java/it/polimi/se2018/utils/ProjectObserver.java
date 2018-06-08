@@ -28,4 +28,6 @@ public interface ProjectObserver {
 
     void update(UpdateTurnMessage updateTurnMessage);
 
+    void update(GameInitializationMessage gameInitializationMessage);
+
 }

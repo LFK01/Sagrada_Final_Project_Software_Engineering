@@ -117,6 +117,11 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
+    public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException {
+
+    }
+
+    @Override
     public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
         boolean playerFound = false;
         ServerRMIInterface remoteRef = null;

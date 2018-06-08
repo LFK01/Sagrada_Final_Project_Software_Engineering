@@ -177,4 +177,9 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         System.out.println("RemoteWSocket -> Server: " + updateTurnMessage.toString());
         server.sendToServer(updateTurnMessage);
     }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+
+    }
 }

@@ -8,10 +8,6 @@ public class GameInitializationMessage extends Message {
     private String[] publicObjectiveCardsDescription=null;
     private String[] toolCardsDescription =null;
     private String roundTrack;
-    private String schemaCards1 =null;
-    private String schemaCards2 = null;
-    private String schemaCards3 = null;
-    private String schemaCards4 = null;
 
     public GameInitializationMessage(String sender, String recipient, String[] publicObjectiveCardsDescription, String[] toolCardsDescription,String roundTrack) {
         super(sender, recipient);

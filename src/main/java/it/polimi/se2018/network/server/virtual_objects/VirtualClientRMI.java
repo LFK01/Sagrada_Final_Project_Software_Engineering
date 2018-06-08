@@ -99,11 +99,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         virtualView.updateServer(newRoundMessage);
     }
 
-    @Override
-    public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
-        System.out.println("VirtualClientRMI -> Server: " + selectedSchemaMessage.toString());
-        virtualView.updateServer(selectedSchemaMessage);
-    }
 
     @Override
     public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
@@ -130,9 +125,18 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
+    public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + selectedSchemaMessage.toString());
+        virtualView.updateServer(selectedSchemaMessage);
+    }
+
+    @Override
     public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + updateTurnMessage.toString());
         virtualView.updateServer(updateTurnMessage);
+    }
+    @Override
+    public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException{
     }
 
     public void notifyClient(Message message){
@@ -207,6 +211,18 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
             }
         }
     }
+    public void notifyClient(GameInitializationMessage gameInitializationMessage){
+        if(isConnected){
+            try{
+                System.out.println("VirtualClientRMI -> RemoteVRMI: " + gameInitializationMessage.toString());
+                remoteView.updateClient(gameInitializationMessage);
+            } catch (RemoteException e) {
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     public String getUsername() {

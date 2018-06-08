@@ -361,7 +361,7 @@ public class Model extends ProjectObservable implements Runnable{
         System.out.println("Dealing SchemaCards to players ");
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<Integer>();
-        for(int i = 1; i<= SCHEMA_CARD_NUMBER /2; i++){
+        for(int i = 1; i<= 24; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
@@ -420,21 +420,26 @@ public class Model extends ProjectObservable implements Runnable{
             publicObjectiveCardsDescription[j] = gameBoard.getPublicObjectiveCardDescription(j);
             //toolCardDescription[j] = gameBoard.getToolCardDescription(j);
         }
-        for(int i = 0; i<participants.size(); i++){
-           setChanged();
-           notifyObservers(new GameInitializationMessage("model","@all",publicObjectiveCardsDescription,toolCardDescription,gameBoard.getRoundTrack().getRoundDice().toString()));
-        }
+        for(int i =0;i<participants.size();i++) {
 
+            setChanged();
+            notifyObservers(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, gameBoard.getRoundTrack().getRoundDice().toString()));
+
+        }
     }
 
     /**
      * a method to send updated schema cards and playerTurn to the view
      */
     public void sendSchemaAndTurn(){
-        if(participants.size()==2){
-            setChanged();  //so che è sbagliato
-            notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),participants.get(turnOfTheRound).getSchemaCard().toString(),participants.get(turnOfTheRound+1).getSchemaCard().toString()));
+        String[] schemaInGame = new String [participants.size()];
+        for (int i =0; i<schemaInGame.length-1;i++){
+            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
         }
+        schemaInGame[schemaInGame.length] = new String(participants.get(turnOfTheRound).toString());
+
+        setChanged();
+        notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));
 
     }
 

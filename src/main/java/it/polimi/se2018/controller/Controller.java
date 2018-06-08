@@ -28,7 +28,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     private boolean timerStarted;
     private Timer t;
     private boolean enoughPlayers;
-    int allCardsAssigned =0 ;
+    private int allCardsAssigned =0 ;
+    private int allPlayersReady =0;
+    private boolean occultCycle = true;
 
     /**
      * Class constructor
@@ -232,17 +234,37 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     public void update(SelectedSchemaMessage message) {
-        for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
-            if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
-                model.setSchemacardPlayer(playerPos, message.getSchemaCardName());
-                allCardsAssigned++;
+        System.out.println("nel controller sto assegnando gli schemaCard");
+        while(occultCycle) {
+            occultCycle = false;
+            for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
+                if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
+                    System.out.println("Sono entrato nel ciclo e sto mettendo nel model gli schemi");
+                    model.setSchemacardPlayer(0, message.getSchemaCardName());
+                    allCardsAssigned++;
+                }
             }
         }
+        occultCycle = true;
         //estrae le toolcard e le manda
-        model.extractPublicObjectiveCards();
-        model.extractToolCards();
-        model.sendInitializationMessage();
+        if(allCardsAssigned==model.getParticipants().size()) {
+            model.extractPublicObjectiveCards();
+            model.extractToolCards();
+            model.sendInitializationMessage();
+        }
     }
+    public void update(StartGameMessage startGameMessage){
+        allPlayersReady = allPlayersReady + 1;
+        if(allPlayersReady==4){
+            model.sendSchemaAndTurn();
+        }
+    }
+
+
+
+
+
+
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
@@ -263,6 +285,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public void update(UpdateTurnMessage updateTurnMessage) {
 
     }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+
+    }
+
 
     public void sendSchemaCardController(){
         model.sendSchemaCard();

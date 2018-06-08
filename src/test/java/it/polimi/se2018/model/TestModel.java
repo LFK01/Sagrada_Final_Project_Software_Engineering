@@ -114,7 +114,7 @@ public class TestModel {
         controller.getModel().sendInitializationMessage();
 
         //controller.getModel().sendSchemaCard();
-        controller.getModel().extractRoundTrack();
+        //controller.getModel().extractRoundTrack();
     }
 
 

@@ -12,7 +12,11 @@ import java.rmi.RemoteException;
 import java.util.Observable;
 import java.util.Observer;
 
-public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface,  ProjectObserver {
+public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface, ProjectObserver {
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+
+    }
 
     private ServerRMIInterface server;
     private String username;
@@ -79,10 +83,10 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     private void notifyView(GameInitializationMessage gameInitializationMessage){
-        if(gameInitializationMessage.getRecipient().equals(username) || gameInitializationMessage.getRecipient().equals("@all")){
+        //if(gameInitializationMessage.getRecipient().equals(username) || gameInitializationMessage.getRecipient().equals("@all")){
             setChanged();
             notifyObservers(gameInitializationMessage);
-        }
+        //}
 
     }
 
@@ -151,6 +155,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             }
         }
     }
+
 
     @Override
     public void update(ErrorMessage errorMessage) {

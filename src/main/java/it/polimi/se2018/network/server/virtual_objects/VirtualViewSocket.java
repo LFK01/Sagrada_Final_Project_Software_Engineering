@@ -150,4 +150,9 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         System.out.println("VWSocket -> VCSocket: " + updateTurnMessage.toString());
         virtualClientSocket.notifyClient(updateTurnMessage);
     }
+
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage) {
+
+    }
 }

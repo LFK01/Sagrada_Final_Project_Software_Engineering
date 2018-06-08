@@ -121,13 +121,13 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
-        virtualClientRMI.notifyClient(selectedSchemaMessage);
     }
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
         virtualClientRMI.notifyClient(showPrivateObjectiveCardsMessage);
     }
+
 
     @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
@@ -139,6 +139,10 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         virtualClientRMI.notifyClient(successMoveMessage);
     }
 
+    @Override
+    public void update(GameInitializationMessage gameInitializationMessage){
+        virtualClientRMI.notifyClient(gameInitializationMessage);
+    }
     @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         virtualClientRMI.notifyClient(updateTurnMessage);

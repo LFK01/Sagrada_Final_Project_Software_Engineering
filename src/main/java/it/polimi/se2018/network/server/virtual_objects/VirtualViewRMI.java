@@ -79,6 +79,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
+        System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(selectedSchemaMessage);
     }

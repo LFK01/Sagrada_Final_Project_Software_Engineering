@@ -1,4 +1,4 @@
 ServerIP: localhost
 PortRMI: 1099
 PortSocket: 1111
-Timer: 45
+Timer: 20

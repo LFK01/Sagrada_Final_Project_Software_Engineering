@@ -4,6 +4,7 @@ public enum InputManager {
 
     INPUT_DISABLED,
     INPUT_PLAYER_NAME,
-    INPUT_SCHEMA_CARD
+    INPUT_SCHEMA_CARD,
+    INPUT_MOVE
 
 }

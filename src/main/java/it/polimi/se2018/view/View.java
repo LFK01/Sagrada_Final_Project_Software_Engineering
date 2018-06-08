@@ -212,30 +212,31 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             System.out.println(message.getSchemaCards(i));
             schemaName[i]= new String(message.getSchemaCards(i).split("\n")[0]);
         }
-           /* scanner = new Scanner(System.in);
-            choice = scanner.nextInt();
 
-            setChanged();
-            notifyObservers(new SelectedSchemaMessage(username,"server",message.getSchemaCards(choice-1).split("\n")[0]));
-        */
     }
 
     private void updateView(ShowPrivateObjectiveCardsMessage message){
         showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
     }
 
-    private void updateView(GameInitializationMessage gameInitializationMessage){
-        publicObjectiveCardsDescription = gameInitializationMessage.getPublicObjectiveCardsDescription();
-        toolCardDescription = gameInitializationMessage.getToolCardsDescription();
-        for(int i=0; i<publicObjectiveCardsDescription.length; i++){
-            System.out.print("Public Objective card #" + (i+1) + " :\n" + publicObjectiveCardsDescription[i]);
+    private void updateView(GameInitializationMessage message) {
+        /*publicObjectiveCardsDescription = message.getPublicObjectiveCardsDescription();
+        toolCardDescription = message.getToolCardsDescription();
+        for (int i = 0; i < publicObjectiveCardsDescription.length; i++) {
+            System.out.print("Public Objective card #" + (i + 1) + " :\n" + publicObjectiveCardsDescription[i]);
         }
-        for(int i=0; i<publicObjectiveCardsDescription.length; i++){
-            System.out.print("Public Objective card #" + (i+1) + " :\n" + publicObjectiveCardsDescription[i]);
+        for (int i = 0; i < publicObjectiveCardsDescription.length; i++) {
+            System.out.print("Public Objective card #" + (i + 1) + " :\n" + publicObjectiveCardsDescription[i]);
         }
         System.out.println("\n");
-        System.out.println(gameInitializationMessage.getRoundTrack().toString());
-        showGameboard();
+        System.out.println(message.getRoundTrack().toString());
+        System.out.println("\n");
+
+        /*for (int i = 0; i < message.getSchemaCardInGame().length ; i++) {  //sarà nuemro di giocatori invece di 4
+            System.out.println("Schema:");
+            System.out.println(message.getSchemaCardInGame()[i]);
+            //showGameboard();
+        }*/
     }
 
     private void updateView(SendSchemaAndTurn message){
@@ -243,7 +244,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             if(message.getRecipient().equals(username)){
                 System.out.println("Questo è il tuo SchemaCard");
             }
-            //to string che fa vedere tutti gli schemi
+
         }
         if(message.getRecipient().equals(username)){
             System.out.println("type 1 to set a die");
@@ -695,7 +696,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         for(int j =0; j<3; j++){
             System.out.println("ToolCard number"+ " " +(j+1)+ " " + toolCardDescription[j]);
         }
-        notifyObservers(new StartGameMessage(username,"server"));
+        //notifyObservers(new StartGameMessage(username,"server"));
 
     }
 
@@ -748,11 +749,27 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(GameInitializationMessage gameInitializationMessage) {
-        System.out.println("GameInitializationMessage received");
-        /*for(int i=0; i<gameInitializationMessage.getPublicObjectiveCardsDescription().length; i++){
-            System.out.println("Public Objective Card #" + (i+1) +" :\n" +
-                    "");
-        }*/
+        for(int i=0; i<gameInitializationMessage.getPublicObjectiveCardsDescription().length; i++){
+            System.out.println("Public Objective Card #" + (i+1) +" :\n" + gameInitializationMessage.getPublicObjectiveCardsDescription()[i]);
+        }
+        for(int j=0; j<gameInitializationMessage.getToolCardsDescription().length; j++){
+            System.out.println("Tool Card #" + (j+1) +" :\n" + gameInitializationMessage.getToolCardsDescription()[j]);
+        }
+        System.out.println("roundTrack"+ ":\n"+ gameInitializationMessage.getRoundTrack().toString());
+
+        for(int z=0;z<gameInitializationMessage.getSchemaInGame().length;z++){
+            System.out.println(gameInitializationMessage.getSchemaInGame()[z]);
+        }
+        if(gameInitializationMessage.getPlayingPlayer().equals(username)){
+            System.out.println("It's your Turn! Type the number of your choice:" +
+                                "\n1 Place a die" +
+                                "\n2 Use a ToolCard" +
+                                "\n3 Do nothing");
+        }else{
+            System.out.println("It's not your turn!");
+        }
+        inputManager = InputManager.INPUT_MOVE;
+        new Thread(this).start();
     }
 
     @Override
@@ -834,6 +851,12 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 }
                 setChanged();
                 notifyObservers(new SelectedSchemaMessage(username,"server", schemaName[choice -1]));
+                break;
+            }
+            case INPUT_MOVE:{
+                //TODO read input choose move
+                //setChanged();
+                //notifyObservers();
                 break;
             }
         }

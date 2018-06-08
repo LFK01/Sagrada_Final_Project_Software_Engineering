@@ -355,7 +355,7 @@ public class Model extends ProjectObservable implements Runnable{
         for(int i=0; i<participants.size(); i++){
             System.out.println("Participant: " + participants.get(i).getName());
         }
-        for(int i = 1; i<= SCHEMA_CARD_NUMBER; i++){
+        for(int i = 1; i<= SCHEMA_CARD_NUMBER/2; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
@@ -378,11 +378,6 @@ public class Model extends ProjectObservable implements Runnable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            /*synchronized (sentMessage){
-                memorizeMessage(sentMessage);
-                System.out.println("saved message.");
-                new Thread(this).start();
-            }*/
         }
         removeSemaphore();
     }
@@ -429,31 +424,37 @@ public class Model extends ProjectObservable implements Runnable{
             toolCardDescription[i] = builderToolCards.toString();
         }
         StringBuilder builderRoundTrack = new StringBuilder();
-        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[turnOfTheRound];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(int i=0; i<getGameBoard().getRoundTrack().getRoundDice().length; i++){
+        for(int i=0; i<currentDiceList.size(); i++){
             builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
         }
         builderRoundTrack.append("\n");
         roundTrack = builderRoundTrack.toString();
-        for(int i = 0; i<participants.size(); i++){
-           setChanged();
-           notifyObservers(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack));
+        String[] schemaInGame = new String [participants.size()];
+        for (int i =0; i<schemaInGame.length;i++){
+            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
         }
+        Semaphore available = new Semaphore(1);
+        addSemaphore(available);
+        for(int i = 0; i<participants.size(); i++){
+            try{
+                available.acquire();
+                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack,schemaInGame,participants.get(turnOfTheRound).getName()));
+                new Thread(this).start();
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        removeSemaphore();
     }
 
     /**
      * a method to send updated schema cards and playerTurn to the view
      */
     public void sendSchemaAndTurn(){
-        String[] schemaInGame = new String [participants.size()];
-        for (int i =0; i<schemaInGame.length-1;i++){
-            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
-        }
-        schemaInGame[schemaInGame.length] = new String(participants.get(turnOfTheRound).toString());
-
         setChanged();
-        notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));
+        //notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));
 
     }
 

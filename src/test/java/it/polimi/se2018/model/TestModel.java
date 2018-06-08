@@ -117,5 +117,28 @@ public class TestModel {
         //controller.getModel().extractRoundTrack();
     }
 
+    @Test
+    public void roundTracktest(){
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.extractRoundTrack();
+        model.sendInitializationMessage();
+
+    }
+
+    @Test
+    public void schemaIngameMessage(){
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("P2");
+        model.extractRoundTrack();
+        model.extractToolCards();
+        model.extractPublicObjectiveCards();
+        model.setSchemaCardPlayer(0,"Battlo");
+        model.setSchemaCardPlayer(1,"Battlo");
+        model.sendInitializationMessage();
+    }
+
 
 }

@@ -38,7 +38,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
         if(chooseSchemaMessage.getRecipient().equals(username) || chooseSchemaMessage.getRecipient().equals("@all")){
-            System.out.println("RemoteWSocket -> Client: success message");
+            System.out.println("RemoteWSocket -> Client: " + chooseSchemaMessage.toString());
             setChanged();
             notifyObservers(chooseSchemaMessage);
         }

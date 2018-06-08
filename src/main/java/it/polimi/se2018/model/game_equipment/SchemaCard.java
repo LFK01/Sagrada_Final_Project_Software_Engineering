@@ -157,7 +157,7 @@ public class SchemaCard {
                     int i = 0;
                     while(i<words.length && !completedRows){
                         if(words[i].trim().equals("name:")){
-                            if(schemaName.equals(words[i+1])){
+                            if(schemaName.replace(' ', '/').equals(words[i+1])){
                                 cardFound = true;
                                 name = words[i+1].replace('/', ' ');
                                 i++;
@@ -564,65 +564,70 @@ public class SchemaCard {
         schema.append("difficulty level: " + difficultyLevel + "\n");
         for(int row=0; row<cells.length; row++){
             for(int col=0; col<cells[row].length; col++){
-                if(cells[row][col].isFull()){
-                    schema.append(cells[row][col].getAssignedDice().toString());
-                }
-                else {
-                    try{
-                        switch (cells[row][col].getCellColor()){
-                            case BLUE:{
-                                schema.append(PaintingTool.ANSI_BLUE.escape() + "[ ]" + PaintingTool.RESET);
-                                break;
+                System.out.println("row: " + row + " col: " + col + "\n");
+                try{
+                    if(cells[row][col].isFull()){
+                        schema.append(cells[row][col].getAssignedDice().toString());
+                    }
+                    else {
+                        try{
+                            switch (cells[row][col].getCellColor()){
+                                case BLUE:{
+                                    schema.append(PaintingTool.ANSI_BLUE.escape() + "[ ]" + PaintingTool.RESET);
+                                    break;
+                                }
+                                case GREEN:{
+                                    schema.append(PaintingTool.ANSI_GREEN.escape() + "[ ]" + PaintingTool.RESET);
+                                    break;
+                                }
+                                case PURPLE:{
+                                    schema.append(PaintingTool.ANSI_PURPLE.escape() + "[ ]" + PaintingTool.RESET);
+                                    break;
+                                }
+                                case RED:{
+                                    schema.append(PaintingTool.ANSI_RED.escape() + "[ ]" + PaintingTool.RESET);
+                                    break;
+                                }
+                                case YELLOW:{
+                                    schema.append(PaintingTool.ANSI_YELLOW.escape() + "[ ]" + PaintingTool.RESET);
+                                    break;
+                                }
                             }
-                            case GREEN:{
-                                schema.append(PaintingTool.ANSI_GREEN.escape() + "[ ]" + PaintingTool.RESET);
-                                break;
-                            }
-                            case PURPLE:{
-                                schema.append(PaintingTool.ANSI_PURPLE.escape() + "[ ]" + PaintingTool.RESET);
-                                break;
-                            }
-                            case RED:{
-                                schema.append(PaintingTool.ANSI_RED.escape() + "[ ]" + PaintingTool.RESET);
-                                break;
-                            }
-                            case YELLOW:{
-                                schema.append(PaintingTool.ANSI_YELLOW.escape() + "[ ]" + PaintingTool.RESET);
-                                break;
-                            }
-                        }
-                    } catch (NoColorException e){
-                        switch (cells[row][col].getValue()){
-                            case 0:{
-                                schema.append("[ ]");
-                                break;
-                            }
-                            case 1:{
-                                schema.append("[1]");
-                                break;
-                            }
-                            case 2:{
-                                schema.append("[2]");
-                                break;
-                            }
-                            case 3:{
-                                schema.append("[3]");
-                                break;
-                            }
-                            case 4:{
-                                schema.append("[4]");
-                                break;
-                            }
-                            case 5:{
-                                schema.append("[5]");
-                                break;
-                            }
-                            case 6:{
-                                schema.append("[6]");
-                                break;
+                        } catch (NoColorException e){
+                            switch (cells[row][col].getValue()){
+                                case 0:{
+                                    schema.append("[ ]");
+                                    break;
+                                }
+                                case 1:{
+                                    schema.append("[1]");
+                                    break;
+                                }
+                                case 2:{
+                                    schema.append("[2]");
+                                    break;
+                                }
+                                case 3:{
+                                    schema.append("[3]");
+                                    break;
+                                }
+                                case 4:{
+                                    schema.append("[4]");
+                                    break;
+                                }
+                                case 5:{
+                                    schema.append("[5]");
+                                    break;
+                                }
+                                case 6:{
+                                    schema.append("[6]");
+                                    break;
+                                }
                             }
                         }
                     }
+                } catch (NullPointerException e){
+                    System.out.println("Exception on row: " + row + " col: " + col + "\n");
                 }
             }
             schema.append("\n");

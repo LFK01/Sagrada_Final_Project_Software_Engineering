@@ -57,6 +57,7 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
+        System.out.println("VirualViewSocket -> Controller");
         setChanged();
         notifyObservers(selectedSchemaMessage);
     }

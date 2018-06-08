@@ -120,7 +120,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     @Override
     public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
-        System.out.println("VirtualClientRMI -> Server: " + selectedSchemaMessage.toString());
         virtualView.updateServer(selectedSchemaMessage);
     }
 

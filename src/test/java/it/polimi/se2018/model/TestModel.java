@@ -5,8 +5,10 @@ package it.polimi.se2018.model;
  */
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.model.game_equipment.GameBoard;
-import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.view.View;
 import org.junit.Test;
 
@@ -35,7 +37,56 @@ public class TestModel {
 
 
     @Test
-    public void doDiceMove(){
+    public void doDiceMoveTest() throws RestrictionsNotRespectedException, FullCellException {
+        Model model  = new Model();
+        model.addPlayer("luca");
+        model.addPlayer("giacomo");
+        model.extractPublicObjectiveCards();
+        model.extractToolCards();
+        model.setSchemaCardPlayer(0,"Kaleidoscopic Dream");
+        Dice dice1 = new Dice(Color.YELLOW,4);
+        Dice dice2 = new Dice(Color.GREEN,5);
+        Dice dice3 = new Dice(Color.RED,1);
+        Dice dice4 = new Dice(Color.BLUE,2);
+
+        model.getGameBoard().getRoundDice()[0] = new RoundDice(2,model.getGameBoard().getDiceBag(),0);
+        model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice1);
+        model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice2);
+        model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice3);
+        model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice4);
+
+        SchemaCard schemaCard = new SchemaCard(1);
+        ChooseDiceMove chooseDiceMove = new ChooseDiceMove("luca","model",1,1,1);
+        //model.doDiceMove(chooseDiceMove);
+        //model.placeDie(schemaCard,5,0,0);
+        //model.placeDie(schemaCard,6,0,0);
+        model.placeDie(schemaCard,5,1,4);
+        model.placeDie(schemaCard,6,2,4);
+        model.placeDie(schemaCard,7,1,3);
+
+        try{
+            model.placeDie(schemaCard,8,0,1);
+        }catch(RestrictionsNotRespectedException e){
+            fail();
+        }
+
+
+        /*try {
+            model.placeDie(schemaCard, 5, 3, 4);
+        }
+        catch(RestrictionsNotRespectedException e){
+            fail();
+        }*/
+
+        System.out.println(schemaCard.toString());
+
+        assertEquals(Color.YELLOW,schemaCard.getCell(0,0).getAssignedDice().getDiceColor());
+        //assertEquals(Color.BLUE,schemaCard.getCell(0,1).getAssignedDice().getDiceColor());
+        //assertNotEquals(Color.RED,schemaCard.getCell(2,3).getAssignedDice().getDiceColor());
+
+
+
+
 
     }
 

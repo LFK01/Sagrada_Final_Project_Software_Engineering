@@ -1,6 +1,7 @@
 package it.polimi.se2018.view;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
@@ -202,6 +203,10 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             if(errorMessage.toString().equals("UsernameNotFound")){
 
             }
+            if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
+                inputManager = InputManager.INPUT_MOVE;
+                new Thread(this).start();
+            }
         }
     }
 
@@ -240,36 +245,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     }
 
     private void updateView(SendSchemaAndTurn message){
-        for(int i =0;i < message.getschemaInGame().length-1; i++) {  //sarà nuemro di giocatori invece di 4
-            if(message.getRecipient().equals(username)){
-                System.out.println("Questo è il tuo SchemaCard");
-            }
-
-        }
-        if(message.getRecipient().equals(username)){
-            System.out.println("type 1 to set a die");
-            System.out.println("type 2 to use a toolCard");
-            System.out.println("Type 3 to pass the turn");
-
-            if(choice ==1){
-                setChanged();
-                //notifyObservers(new ); lancio del dado
-            }
-            if(choice ==2){
-                setChanged();
-                notifyObservers();
-            }
-            if(choice ==3){
-                setChanged();
-                notifyObservers();
-            }
-
-
-        }
-        else {          //un loop per richiedere input
-            System.out.println("non è il tuo turno");
-        }
-
+        //deprecata
     }
 
     public void playerNumberExceededDialog() {
@@ -351,336 +327,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
 
     public void chooseSchemaWindow(int schema1,int schema2) {
-        /*JFrame frame = new JFrame("Scegli una delle carte schema");
-        Container container = new Container();
-        container.setLayout(new GridLayout(2,2));
-        JButton buttonSchema1 = null;
-        JButton buttonSchema2 = null;
-        JButton buttonSchema3 = null;
-        JButton buttonSchema4 = null;
-        ImageIcon schemaIcon1;
-        ImageIcon schemaIcon2;
-        ImageIcon schemaIcon3;
-        ImageIcon schemaIcon4;
 
-        int selected1 = 0;
-        int selected2 = 0;
-        int selected3 = 0;
-        int selected4 = 0;
-
-         switch(schema1) {
-
-            case 1:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Kaleidoscopic Dream.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Firmitas.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-
-                break;
-            case 2:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Fractal Drops.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Ripples Of Light.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 1;
-                break;
-            case 3:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Lux Mundi.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Lux Astram.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1=1;
-                selected2 =2;
-                break;
-            case 4:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Gravitas.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Water Of Life.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 5:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Sun Catcher.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Shadow Thief.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 6:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Aurorae Mangnificus.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Aurora Sagradis.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 7:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Symphony of Light.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Virtus.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 8:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Firelight.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Sun's Glory.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 9:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Battlo.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Bellesguard.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                break;
-            case 10:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Fulgor del Cielo.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Luz Celestial.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-            case 11:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Chromatic Splendor.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Comitas.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                break;
-            case 12:
-                schemaIcon1 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Via Lux.jpg");
-                schemaIcon2 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Industria.jpg");
-                buttonSchema1 = new JButton(schemaIcon1);
-                buttonSchema2 = new JButton(schemaIcon2);
-                selected1 = 1;
-                selected2 = 2;
-                break;
-        }
-
-        switch(schema2){
-            case 1:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Kaleidoscopic Dream.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Firmitas.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-
-
-                break;
-            case 2:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Fractal Drops.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Ripples Of Light.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 3:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Lux Mundi.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Lux Astram.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 4:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Gravitas.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Water Of Life.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 5:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Sun Catcher.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Shadow Thief.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 6:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Aurorae Mangnificus.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Aurora Sagradis.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 7:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Symphony of Light.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Virtus.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 8:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Firelight.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Sun's Glory.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 9:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Battlo.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Bellesguard.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 10:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Fulgor del Cielo.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Luz Celestial.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 11:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Chromatic Splendor.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Comitas.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-            case 12:
-                schemaIcon3 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Via Lux.jpg");
-                schemaIcon4 = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\SchemaCardWindow\\Industria.jpg");
-                buttonSchema3 = new JButton(schemaIcon3);
-                buttonSchema4 = new JButton(schemaIcon4);
-                break;
-
-
-        }
-
-        int finalSelected1 = selected1;
-        int finalSelected2 = selected2;
-        int finalSelected3 = selected3;
-        int finalSelected4 = selected4;
-
-
-        buttonSchema1.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("ho premuto il tasto");
-                boolean notSelected = false;
-                setChanged();
-                notifyObservers(new SelectedSchemaMessage("username","controller",finalSelected1));
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-
-        buttonSchema2.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                notifyObservers(new SelectedSchemaMessage("username","controller",finalSelected2));
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        buttonSchema3.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                notifyObservers(new SelectedSchemaMessage("username","controller",finalSelected3));
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        buttonSchema4.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                setChanged();
-                notifyObservers(new SelectedSchemaMessage("username","controller",finalSelected4));
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        container.setLayout(new GridLayout(2,2));
-        container.add(buttonSchema1);
-        container.add(buttonSchema2);
-        container.add(buttonSchema3);
-        container.add(buttonSchema4);
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.setLocation(dim.width/2-frame.getSize().width/2, dim.height/2-frame.getSize().height/2);
-        frame.add(container);
-        frame.setSize(550,750);
-        frame.setResizable(true);
-        frame.setVisible(true);
-*/
-        //setChanged();
-        //notifyObservers(new SelectedSchemaMessage(username,"server",1));
     }
 
     public void showPrivateObjectiveCard(String description){
@@ -796,6 +443,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }
     }
 
+
     @Override
     public void update(SuccessMoveMessage successMoveMessage) {
 
@@ -805,6 +453,14 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     public void update(UpdateTurnMessage updateTurnMessage) {
 
     }
+
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove) {
+
+    }
+
+
+
 
     @Override
     public void run() {
@@ -854,12 +510,53 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_MOVE:{
-                //TODO read input choose move
+                boolean wrongInput = true;
+                while(wrongInput){
+                    try{
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        System.out.println("choice = " + choice);
+                        if(choice<1 || choice>4){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                            }
+                        } catch (NumberFormatException e){
+                            wrongInput = true;
+                        }
+                    }
+                    if(choice == 1){
+                    Scanner in = new Scanner(System.in);
+                    int diceOnRoundTrack,row,col;
+                    System.out.println("Take a die from the roundTrack");
+                    diceOnRoundTrack = in.nextInt()-1;
+                    System.out.println("choose a row ");
+                    row = in.nextInt()-1;
+                    System.out.println("choose a column");
+                    col = in.nextInt()-1;
+                    System.out.println("ho i valori da inviare" + diceOnRoundTrack + row+ col);
+                    setChanged();
+                    notifyObservers(new ChooseDiceMove(username,"server",diceOnRoundTrack,row,col));
+                }
+
+                if(choice == 2){
+
+                }
+                if (choice ==3){
+                    System.out.println("Ho deciso di passare il turno");
+                    setChanged();
+                    notifyObservers(new NoActionMove(username,"server"));
+
+                }
                 //setChanged();
                 //notifyObservers();
                 break;
             }
         }
+
+    }
+    @Override
+    public void update(NoActionMove noActionMove) {
 
     }
 

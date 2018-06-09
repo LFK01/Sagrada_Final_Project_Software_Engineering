@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -112,7 +114,17 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
+    public void sendToServer(NoActionMove noActionMove) {
+
+    }
+
+    @Override
     public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException {
+
+    }
+
+    @Override
+    public void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException {
 
     }
 

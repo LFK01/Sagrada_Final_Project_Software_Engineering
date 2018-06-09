@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.utils.ProjectObservable;
 
@@ -60,6 +62,16 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         System.out.println("VirualViewSocket -> Controller");
         setChanged();
         notifyObservers(selectedSchemaMessage);
+    }
+    public void updateServer(ChooseDiceMove chooseDiceMove){
+        System.out.println("VirualViewSocket -> Controller");
+        setChanged();
+        notifyObservers(chooseDiceMove);
+    }
+    public void updateServer(NoActionMove noActionMove){
+        System.out.println("VirualViewSocket -> Controller");
+        setChanged();
+        notifyObservers(noActionMove);
     }
 
     @Override
@@ -133,6 +145,12 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         System.out.println("VWSocket -> VCSocket: " + updateTurnMessage.toString());
         virtualClientSocket.notifyClient(updateTurnMessage);
     }
+
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove) {}
+
+    @Override
+    public void update(NoActionMove noActionMove){}
 
     @Override
     public String getUsername() {

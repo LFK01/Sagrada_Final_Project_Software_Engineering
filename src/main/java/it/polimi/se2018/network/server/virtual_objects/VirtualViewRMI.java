@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
@@ -83,6 +85,17 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         setChanged();
         notifyObservers(selectedSchemaMessage);
     }
+    public void updateServer(ChooseDiceMove chooseDiceMove){
+        System.out.println("VirtualView -> Controller");
+        setChanged();
+        notifyObservers(chooseDiceMove);
+    }
+    public void updateServer(NoActionMove noActionMove){
+        System.out.println("VirtualView -> Controller");
+        setChanged();
+        notifyObservers(noActionMove);
+    }
+
 
 
     @Override
@@ -115,6 +128,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         virtualClientRMI.notifyClient(gameInitializationMessage);
     }
 
+
     @Override
     public void update(NewRoundMessage newRoundMessage) {
         virtualClientRMI.notifyClient(newRoundMessage);
@@ -140,10 +154,19 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         virtualClientRMI.notifyClient(successMoveMessage);
     }
 
+
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove){
+    }
+
     @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         virtualClientRMI.notifyClient(updateTurnMessage);
     }
+
+    @Override
+    public void update(NoActionMove noActionMove){}
+
 
     @Override
     public String getUsername() {

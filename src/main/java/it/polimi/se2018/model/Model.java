@@ -108,25 +108,27 @@ public class Model extends ProjectObservable implements Runnable{
 
     /**
      * method to check if a player can place a die in a position on his/her schema card
-     * @param move data structure containing all the information about the player move
+     * @param message data structure containing all the information about the player move
      */
-    public void doDiceMove(ChooseDiceMove move) {
-        /*try{
-            placeDie(move.getPlayer().getSchemaCard(), move.getCol(), move.getRow(), move.getDraftPoolPos());
-            removeDieFromDrafPool(move.getDraftPoolPos());
+    public void doDiceMove(ChooseDiceMove message) {
+        try{
+            placeDie(participants.get(turnOfTheRound).getSchemaCard(), message.getDraftPoolPos(), message.getRow(), message.getCol());
+            removeDieFromDrafPool(message.getDraftPoolPos());
         }
         catch(FullCellException e){
-            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione &eacute; gi&aacute; occupata"));
+            setChanged();
+            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"La posizione &eacute; gi&aacute; occupata"));
         }
         catch(RestrictionsNotRespectedException e){
-            notifyObservers(new ErrorMessage(move.getPlayer(), "La posizione del dado non &eacute; valida"));
-        }*/
+            setChanged();
+            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(), "La posizione del dado non &eacute; valida"));
+        }
     }
 
     private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
-        notifyObservers();
+        updateGameboard();
     }
 
     /**
@@ -154,10 +156,10 @@ public class Model extends ProjectObservable implements Runnable{
         return participants.indexOf(player) == turnOfTheRound;
     }
 
-    private void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
+    //è public solo per il test
+    public void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col);
-        notifyObservers();
     }
 
     /**
@@ -180,7 +182,6 @@ public class Model extends ProjectObservable implements Runnable{
             /*second run of turns to choose a die*/
                 turnOfTheRound--;
         }
-        notifyObservers();
     }
 
     /**
@@ -449,6 +450,50 @@ public class Model extends ProjectObservable implements Runnable{
         removeSemaphore();
     }
 
+    public void updateGameboard(){   //momentaneamente facoltativo
+        String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
+        String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
+        String roundTrack = null;
+        Object synchronizationObject = new Object();
+        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
+            StringBuilder builderPublicObjectiveCards = new StringBuilder();
+            builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
+            builderPublicObjectiveCards.append("Description: " + gameBoard.getPublicObjectiveCardDescription(i) + "\n");
+            publicObjectiveCardsDescription[i] = builderPublicObjectiveCards.toString();
+        }
+        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
+            StringBuilder builderToolCards = new StringBuilder();
+            builderToolCards.append("Name: " + gameBoard.getToolCardName(i) + "\n");
+            builderToolCards.append("Description: " + gameBoard.getToolCardDescription(i) + "\n");
+            toolCardDescription[i] = builderToolCards.toString();
+        }
+        StringBuilder builderRoundTrack = new StringBuilder();
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[turnOfTheRound];
+        List<Dice> currentDiceList = currentRoundDice.getDiceList();
+        for(int i=0; i<currentDiceList.size(); i++){
+            builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
+        }
+        builderRoundTrack.append("\n");
+        roundTrack = builderRoundTrack.toString();
+        String[] schemaInGame = new String [participants.size()];
+        for (int i =0; i<schemaInGame.length;i++){
+            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
+        }
+        Semaphore available = new Semaphore(1);
+        addSemaphore(available);
+        for(int i = 0; i<participants.size(); i++){
+            try{
+                available.acquire();
+                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack,schemaInGame,participants.get(turnOfTheRound).getName()));
+                new Thread(this).start();
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        removeSemaphore();
+    }
+
+
     /**
      * a method to send updated schema cards and playerTurn to the view
      */
@@ -456,6 +501,10 @@ public class Model extends ProjectObservable implements Runnable{
         setChanged();
         //notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));
 
+    }
+    public void updateRound(){
+        roundNumber = roundNumber +1;
+        turnOfTheRound=0;
     }
 
     public int getRoundNumber() {

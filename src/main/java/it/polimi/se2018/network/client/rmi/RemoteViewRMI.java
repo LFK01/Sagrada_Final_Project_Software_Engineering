@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
@@ -167,6 +169,19 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             }
         }
     }
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + chooseDiceMove.toString());
+                server.sendToServer(chooseDiceMove);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+    }
+
+
 
     @Override
     public void update(NewRoundMessage newRoundMessage) {
@@ -227,6 +242,18 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             }
         }
     }
+    @Override
+    public void update(NoActionMove noActionMove){
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + noActionMove.toString());
+                server.sendToServer(noActionMove);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+
+    }
 
     @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
@@ -239,4 +266,5 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             }
         }
     }
+
 }

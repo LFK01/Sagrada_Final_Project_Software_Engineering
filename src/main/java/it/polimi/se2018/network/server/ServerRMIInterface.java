@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
@@ -38,7 +40,11 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException;
 
+    void sendToServer(NoActionMove noActionMove) throws  RemoteException;
+
     void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException;
+
+    void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException;
 
     ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException;
 }

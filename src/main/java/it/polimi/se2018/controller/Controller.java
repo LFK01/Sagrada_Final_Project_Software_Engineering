@@ -1,9 +1,11 @@
 package it.polimi.se2018.controller;
+import com.sun.xml.internal.ws.addressing.v200408.MemberSubmissionWsaServerTube;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
@@ -256,6 +258,37 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             model.sendInitializationMessage();
         }
     }
+    public void update(ChooseDiceMove message) throws InvalidCellPositionException,InvalidDraftPoolPosException{
+        /*if (message.getRow() < 0 ||
+                (message).getRow() > 3 ||
+                (message).getCol() < 0 ||
+                (message.getCol() > 4)) {
+            throw new InvalidCellPositionException();
+        }
+        if (message.getDraftPoolPos() < 0) {
+            throw new InvalidDraftPoolPosException();
+        }*/
+        System.out.println(message.getDraftPoolPos() + " " + message.getRow() + " " + message.getCol());
+        model.doDiceMove(message);
+        //gestione di altre eccezioni relative al caso
+        //scelta e piazzamento dado
+        /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
+        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.
+        model.doDiceMove((ChooseDiceMove) move);
+        move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
+        sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile*/
+    }
+    public void update(NoActionMove message){
+        System.out.println(model.getTurnOfTheRound());
+        model.updateTurnOfTheRound();
+        System.out.println(model.getTurnOfTheRound());
+        if(model.getTurnOfTheRound()<0){
+            model.updateRound();
+            model.updateGameboard();
+        }
+        else model.updateGameboard();
+    }
+
 
     public void update(StartGameMessage startGameMessage){
         allPlayersReady = allPlayersReady + 1;
@@ -283,6 +316,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public void update(UpdateTurnMessage updateTurnMessage) {
 
     }
+
 
     public void sendSchemaCardController(){
         model.sendSchemaCard();

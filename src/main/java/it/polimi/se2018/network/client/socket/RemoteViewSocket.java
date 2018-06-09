@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.client.socket;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
@@ -171,8 +173,22 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
+    public void update(NoActionMove noActionMove){
+        System.out.println("RemoteWSocket -> Server: " + noActionMove.toString());
+        server.sendToServer(noActionMove);
+    }
+
+
+    @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         System.out.println("RemoteWSocket -> Server: " + updateTurnMessage.toString());
         server.sendToServer(updateTurnMessage);
+    }
+
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove) {
+        System.out.println("RemoteWSocket -> Server: " + chooseDiceMove.toString());
+        server.sendToServer(chooseDiceMove);
+
     }
 }

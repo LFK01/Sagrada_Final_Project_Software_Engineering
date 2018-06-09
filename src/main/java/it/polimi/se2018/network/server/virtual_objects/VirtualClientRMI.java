@@ -1,6 +1,8 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -124,13 +126,26 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
+    public void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException{
+        System.out.println("VirtualClientRMI -> Server: " + chooseDiceMove.toString());
+        virtualView.updateServer(chooseDiceMove);
+    }
+
+    @Override
     public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + updateTurnMessage.toString());
         virtualView.updateServer(updateTurnMessage);
     }
     @Override
+    public void sendToServer(NoActionMove noActionMove){
+        System.out.println("VirtualClientRMI -> Server: " + noActionMove.toString());
+        virtualView.updateServer(noActionMove);
+
+    }
+    @Override
     public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException{
     }
+
 
     public void notifyClient(Message message){
         if(isConnected){

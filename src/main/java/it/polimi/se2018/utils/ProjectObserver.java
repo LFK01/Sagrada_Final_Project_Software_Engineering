@@ -1,6 +1,10 @@
 package it.polimi.se2018.utils;
 
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
+import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.events.messages.*;
+import it.polimi.se2018.model.events.moves.ChooseDiceMove;
+import it.polimi.se2018.model.events.moves.NoActionMove;
 
 public interface ProjectObserver {
 
@@ -27,5 +31,11 @@ public interface ProjectObserver {
     void update(SuccessMoveMessage successMoveMessage);
 
     void update(UpdateTurnMessage updateTurnMessage);
+
+    void update(ChooseDiceMove chooseDiceMove) throws InvalidCellPositionException,InvalidDraftPoolPosException;
+
+    void update(NoActionMove noActionMove);
+
+
 
 }

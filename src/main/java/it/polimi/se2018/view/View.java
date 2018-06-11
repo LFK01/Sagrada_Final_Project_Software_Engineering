@@ -168,86 +168,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         new Thread(this).start();
     }
 
-    public int demandConnectionType() {
-        JFrame frameDemandConnection = new JFrame("Parent Window");
-        Object[] options = {"RMI", "Socket"};
-        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Choose connection:", "Connection", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
-        if(n == JOptionPane.YES_OPTION){
-            frameDemandConnection.dispose();
-            return 1;
-        }else{
-            frameDemandConnection.dispose();
-            return 2;
-        }
-    }
-
-    private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username)){
-            System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
-        }
-    }
-
-    private void updateView(ErrorMessage errorMessage){
-        if(errorMessage.getRecipient().equals(username)){
-            if(errorMessage.toString().equals("NotValidUsername")){
-                System.out.println("Username not available!");
-                this.createPlayer();
-            }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                //TODO waiting lobby
-                System.out.print("Impossibile connettersi");
-            }
-            if(errorMessage.toString().equals("NotEnoughPlayer")){
-                System.out.println("Minimum players number not reached.");
-            }
-            if(errorMessage.toString().equals("UsernameNotFound")){
-
-            }
-            if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
-                inputManager = InputManager.INPUT_CHOOSE_MOVE;
-                new Thread(this).start();
-            }
-        }
-    }
-
-    private void updateView(ChooseSchemaMessage message){
-
-        for(int i=0;i<4;i++) {
-            System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
-            System.out.println(message.getSchemaCards(i));
-            schemaName[i]= new String(message.getSchemaCards(i).split("\n")[0]);
-        }
-
-    }
-
-    private void updateView(ShowPrivateObjectiveCardsMessage message){
-        showPrivateObjectiveCard(message.getPrivateObjectiveCardColor());
-    }
-
-    private void updateView(GameInitializationMessage message) {
-        /*publicObjectiveCardsDescription = message.getPublicObjectiveCardsDescription();
-        toolCardDescription = message.getToolCardsDescription();
-        for (int i = 0; i < publicObjectiveCardsDescription.length; i++) {
-            System.out.print("Public Objective card #" + (i + 1) + " :\n" + publicObjectiveCardsDescription[i]);
-        }
-        for (int i = 0; i < publicObjectiveCardsDescription.length; i++) {
-            System.out.print("Public Objective card #" + (i + 1) + " :\n" + publicObjectiveCardsDescription[i]);
-        }
-        System.out.println("\n");
-        System.out.println(message.getRoundTrack().toString());
-        System.out.println("\n");
-
-        /*for (int i = 0; i < message.getSchemaCardInGame().length ; i++) {  //sarà nuemro di giocatori invece di 4
-            System.out.println("Schema:");
-            System.out.println(message.getSchemaCardInGame()[i]);
-            //showGameboard();
-        }*/
-    }
-
-    private void updateView(SendSchemaAndTurn message){
-        //deprecata
-    }
-
     public void playerNumberExceededDialog() {
         JFrame framePlayerNumberExceeded = new JFrame();
         Object[] options = {"OK"};
@@ -375,6 +295,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(ErrorMessage errorMessage) {
+        System.out.println("sono entrato nell'update" + errorMessage.getRecipient());
         if(errorMessage.getRecipient().equals(username)){
             if(errorMessage.toString().equals("NotValidUsername")){
                 System.out.println("Username not available!");
@@ -390,11 +311,25 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             if(errorMessage.toString().equals("UsernameNotFound")){
 
             }
+            if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
+                System.out.println("Posizione già occupata");
+
+                inputManager =InputManager.INPUT_CHOOSE_MOVE;
+                new Thread(this).start();
+
+            }
+            if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
+                System.out.println("Posizione non valida");
+                inputManager =InputManager.INPUT_CHOOSE_MOVE;
+                new Thread(this).start();
+
+            }
         }
     }
 
     @Override
     public void update(GameInitializationMessage gameInitializationMessage) {
+        System.out.println("Il tuo obiettivo privato è " + privateObjectiveCardsDescription + " :\n");
         for(int i=0; i<gameInitializationMessage.getPublicObjectiveCardsDescription().length; i++){
             System.out.println("Public Objective Card #" + (i+1) +" :\n" + gameInitializationMessage.getPublicObjectiveCardsDescription()[i]);
         }
@@ -415,8 +350,10 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }else{
             System.out.println("It's not your turn!");
         }
-        inputManager = InputManager.INPUT_CHOOSE_MOVE;
-        new Thread(this).start();
+        if(gameInitializationMessage.getPlayingPlayer().equals(username)) {
+            inputManager = InputManager.INPUT_CHOOSE_MOVE;
+            new Thread(this).start();
+        }
     }
 
     @Override
@@ -520,10 +457,12 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         System.out.println("choice = " + choice);
                         if(choice<1||choice>4){
                             wrongInput = true;
+                            System.out.println("choose a valid number");
                         } else {
                             wrongInput = false;
                         }
                     } catch (NumberFormatException e){
+                        System.out.println("Wrong input!");
                         wrongInput = true;
                     }
                 }
@@ -533,14 +472,19 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_CHOOSE_MOVE:{
+                System.out.println("It's your Turn! Type the number of your choice:" +
+                        "\n1 Place a die" +
+                        "\n2 Use a ToolCard" +
+                        "\n3 Do nothing");
                 boolean wrongInput = true;
                 while(wrongInput){
                     try{
                         input = scanner.nextLine();
                         choice = Integer.parseInt(input);
                         System.out.println("choice = " + choice);
-                        if(choice<1 || choice>4){
+                        if(choice<1 || choice>3){
                             wrongInput = true;
+                            System.out.println("choose a valid number");
                         } else {
                             wrongInput = false;
                             if(choice == 2){
@@ -549,6 +493,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                     input = scanner.nextLine();
                                     choice = Integer.parseInt(input);
                                     if(choice<1 || choice >3){
+                                        System.out.println("Wrong input!");
                                         wrongInput = true;
                                     } else {
                                         wrongInput = false;
@@ -558,11 +503,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                         }
                                     }
                                 } catch (NumberFormatException e){
+                                    System.out.println("Wrong input!");
                                     wrongInput = true;
                                 }
                             }
                         }
                     } catch (NumberFormatException e){
+                        System.out.println("Wrong input!");
                         wrongInput = true;
                     }
                 }
@@ -686,6 +633,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 }
                 setChanged();
                 notifyObservers(new ChangeDieValueMessage(username, "server", toolCardUsageName, choice));
+                break;
             }
             case INPUT_PLACE_DIE:{
 

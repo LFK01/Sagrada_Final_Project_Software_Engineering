@@ -4,4 +4,6 @@ public class FullCellException extends Exception {
     public FullCellException(String message) {
         super(message);
     }
+
+
 }

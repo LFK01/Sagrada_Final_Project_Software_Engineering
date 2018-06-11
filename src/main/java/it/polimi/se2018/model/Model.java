@@ -110,14 +110,14 @@ public class Model extends ProjectObservable implements Runnable{
      * method to check if a player can place a die in a position on his/her schema card
      * @param message data structure containing all the information about the player move
      */
-    public void doDiceMove(ChooseDiceMove message) {
+    public void doDiceMove(ChooseDiceMove message){
         try{
             placeDie(participants.get(turnOfTheRound).getSchemaCard(), message.getDraftPoolPos(), message.getRow(), message.getCol());
             removeDieFromDrafPool(message.getDraftPoolPos());
         }
         catch(FullCellException e){
             setChanged();
-            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"La posizione &eacute; gi&aacute; occupata"));
+            notifyObservers(new ErrorMessage("model",message.getSender(),"La posizione &eacute; gi&aacute; occupata"));
         }
         catch(RestrictionsNotRespectedException e){
             setChanged();
@@ -290,46 +290,46 @@ public class Model extends ProjectObservable implements Runnable{
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
             switch (cardIndex.get(i)) {
-                case 1:{
+                case 1:
                     gameBoard.setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
                     break;
-                }
-                case 2: {
+
+                case 2:
                     gameBoard.setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
                     break;
-                }
-                case 3: {
+
+                case 3:
                     gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
-                }
-                case 4: {
+
+                case 4:
                     gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
                     break;
-                }
-                case 5: {
+
+                case 5:
                     gameBoard.setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
                     break;
-                }
-                case 6: {
+
+                case 6:
                     gameBoard.setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
                     break;
-                }
-                case 7: {
+
+                case 7:
                     gameBoard.setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
                     break;
-                }
-                case 8: {
+
+                case 8:
                     gameBoard.setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
                     break;
-                }
-                case 9: {
+
+                case 9:
                     gameBoard.setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
                     break;
-                }
-                case 10: {
+
+                case 10:
                     gameBoard.setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
                     break;
-                }
+
             }
         }
     }
@@ -338,7 +338,7 @@ public class Model extends ProjectObservable implements Runnable{
      * Extracts Dice from DiceBag and puts them on the RoundTrack
      */
     public void extractRoundTrack(){
-        getGameBoard().getRoundTrack().getRoundDice()[turnOfTheRound] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
+        getGameBoard().getRoundTrack().getRoundDice()[roundNumber] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
     }
 
     public void sendSchemaCard(){
@@ -399,7 +399,7 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void sendInitializationMessage(){
-        System.out.println("Sending initialization messages");
+        /*System.out.println("Sending initialization messages");
         String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
         String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
         String roundTrack = null;
@@ -438,6 +438,8 @@ public class Model extends ProjectObservable implements Runnable{
                 e.printStackTrace();
             }
         }
+        removeSemaphore();
+        */
     }
 
     public void updateGameboard(){   //momentaneamente facoltativo
@@ -458,7 +460,7 @@ public class Model extends ProjectObservable implements Runnable{
             toolCardDescription[i] = builderToolCards.toString();
         }
         StringBuilder builderRoundTrack = new StringBuilder();
-        RoundDice currentRoundDice = gameBoard.getRoundDice()[turnOfTheRound];
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
         for(int i=0; i<currentDiceList.size(); i++){
             builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
@@ -492,12 +494,27 @@ public class Model extends ProjectObservable implements Runnable{
     }
     public void updateRound(){
         roundNumber = roundNumber +1;
-        turnOfTheRound=0;
+        resetTurnOfTheRound();
+        resetFirstDieOfDraft();
+        changeFirstPlayer();
+        extractRoundTrack();
+    }
+    public void changeFirstPlayer(){
+        Player lastPlayer = participants.remove(0);
+        participants.add(lastPlayer);
     }
 
     public int getRoundNumber() {
         return roundNumber;
     }
+
+    public void resetTurnOfTheRound() {
+        this.turnOfTheRound = 0;
+    }
+    public void resetFirstDieOfDraft(){
+        firstDraftOfDice =true;
+    }
+
 
     @Override
     public void run() {

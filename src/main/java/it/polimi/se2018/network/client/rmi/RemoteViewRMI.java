@@ -58,11 +58,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
                 setChanged();
                 notifyObservers(errorMessage);
             }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                /*should never be called here for RMI connection*/
-            }
-            if(errorMessage.toString().equals("NotEnoughPlayer")){
-                System.out.println("RemoteVRMI -> View: " + errorMessage.toString());
+            else{
                 setChanged();
                 notifyObservers(errorMessage);
             }

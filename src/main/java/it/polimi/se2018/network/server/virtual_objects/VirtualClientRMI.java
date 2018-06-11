@@ -85,8 +85,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     @Override
     public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
-        System.out.println("VirtualClientRMI -> Server: " + errorMessage.toString());
-        virtualView.updateServer(errorMessage);
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.model.events.moves.NoActionMove;
 import org.junit.Test;
 
 public class ControllerTest {
@@ -16,4 +17,14 @@ public class ControllerTest {
 
     }
 
+    @Test
+    public void updateNoActionMoveTest(){
+        Controller controller = new Controller();
+        controller.getModel().addPlayer("p1");
+        controller.getModel().addPlayer("p2");
+        NoActionMove noActionMove = new NoActionMove("p1","server");
+        controller.update(noActionMove);
+
+
+    }
 }

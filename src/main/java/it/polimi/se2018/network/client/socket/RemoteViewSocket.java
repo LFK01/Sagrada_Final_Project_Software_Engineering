@@ -56,15 +56,9 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
                 setChanged();
                 notifyObservers(errorMessage);
             }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
-                System.out.println("RemoteWSocket -> Client: error message player number exceeded");
+            else{
                 setChanged();
                 notifyObservers(errorMessage);
-            }
-            if(errorMessage.toString().equals("UsernameNotFound")){
-                System.out.println("RemoteWSocket -> Client: error message username not found");
-                setChanged();
-                notifyObservers();
             }
         }
     }

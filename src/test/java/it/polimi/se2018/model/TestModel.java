@@ -179,6 +179,39 @@ public class TestModel {
     }
 
     @Test
+    public void updateTurnOfTheRoundTest(){
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.updateTurnOfTheRound();
+        model.updateTurnOfTheRound();
+        model.updateTurnOfTheRound();
+        assertEquals(0,model.getTurnOfTheRound());
+
+    }
+
+    @Test
+    public void changeFirstPlayerTest(){
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.addPlayer("p3");
+        model.changeFirstPlayer();
+        assertEquals("p2",model.getParticipants().get(0).getName());
+    }
+    @Test
+    public void updateRoundTest(){
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.addPlayer("p3");
+        model.extractRoundTrack();
+        model.updateRound();
+
+        assertEquals(1,model.getRoundNumber());
+    }
+
+    @Test
     public void schemaIngameMessage(){
         Model model = new Model();
         model.addPlayer("p1");

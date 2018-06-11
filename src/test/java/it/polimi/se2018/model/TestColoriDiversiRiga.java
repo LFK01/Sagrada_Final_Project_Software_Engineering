@@ -1,5 +1,16 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
+import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.game_equipment.Color;
+import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.SchemaCard;
+import it.polimi.se2018.model.objective_cards.public_objective_cards.ColoriDiversiRiga;
+import org.junit.Test;
+
+import static junit.framework.TestCase.assertEquals;
+
 /**
  * @author Giovanni
  */
@@ -9,12 +20,13 @@ public class TestColoriDiversiRiga {
      *test to check the pointcount indicated in the class name
      */
 
-   /* public void testCountsPoints(){       //per poterlo testare bisogna riempire tutto uno schemaCard
-        int n=1;
+    @Test
+    public void testCountsPoints(){       //per poterlo testare bisogna riempire tutto uno schemaCard
+       /* int n=1;
         int val=4;
         int a=0,b=0;
         int i=0,j=0;
-        Color color = RED;
+        Color color = Color.RED;
         SchemaCard schemaCard =null;
         schemaCard = new SchemaCard(n);
         ColoriDiversiRiga coloriDiversiRiga = ColoriDiversiRiga.getThisInstance();
@@ -36,15 +48,15 @@ public class TestColoriDiversiRiga {
                 schemaCard.getCell(0,2).setAssignedDice(dice3);
                 schemaCard.getCell(0,3).setAssignedDice(dice4);
                 schemaCard.getCell(0,4).setAssignedDice(dice5);
-            }
-            catch(InvalidCellPositionException e){
-            }
-            catch(FullCellException e){
+            } catch(FullCellException e){
             System.err.println(e);
+            } catch (RestrictionsNotRespectedException e) {
+                e.printStackTrace();
             }
 
         //assertEquals(4,schemaCard.getCell(a,b).getAssignedDice().getValue());
         assertEquals(0,coloriDiversiRiga.getThisInstance().countPoints(schemaCard));
+        */
 
-    }*/
+    }
 }

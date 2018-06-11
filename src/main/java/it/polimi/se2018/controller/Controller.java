@@ -7,6 +7,8 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
 import it.polimi.se2018.model.game_equipment.Player;
@@ -127,7 +129,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         if (((ChooseDiceMove) move).getDraftPoolPos() < 0) {
             throw new InvalidDraftPoolPosException();
         }
-        model.doDiceMove(move);
+        //model.doDiceMove(move);
         //gestione di altre eccezioni relative al caso
         //scelta e piazzamento dado
         /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
@@ -148,7 +150,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         //((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
     }
 
-        //TODO new update(PlayerMove message) with all the instruction below
+
         /*if (message instanceof PlayerMove) {
             if (((PlayerMove) message).isDiceMove()) {
                 try {
@@ -179,10 +181,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         System.out.println("calls the wrong method");
     }
 
-    @Override
-    public void update(ChooseDiceMove chooseDiceMove) {
-
-    }
 
     @Override
     public void update(ChangeDieValueMessage changeDieValueMessage) {
@@ -194,17 +192,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
-    @Override
-    public void update(NoActionMove message){
-        System.out.println(model.getTurnOfTheRound());
-        model.updateTurnOfTheRound();
-        System.out.println(model.getTurnOfTheRound());
-        if(model.getTurnOfTheRound()<0){
-            model.updateRound();
-            model.updateGameboard();
-        }
-        else model.updateGameboard();
-    }
+
 
     @Override
     public void update(RequestMessage requestMessage) {
@@ -326,9 +314,35 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             model.extractPublicObjectiveCards();
             model.extractToolCards();
             model.extractRoundTrack();
-            model.sendInitializationMessage();
+            model.updateGameboard();
         }
     }
+    public void update(ChooseDiceMove message) {
+        System.out.println(message.getDraftPoolPos() + " " + message.getRow() + " " + message.getCol());
+        model.doDiceMove(message);
+        //gestione di altre eccezioni relative al caso
+        //scelta e piazzamento dado
+        /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
+        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.
+        model.doDiceMove((ChooseDiceMove) move);
+        move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
+        sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile*/
+    }
+    public void update(NoActionMove message){
+        System.out.println(model.getTurnOfTheRound());
+        model.updateTurnOfTheRound();
+        System.out.println(model.getTurnOfTheRound());
+        if(model.getTurnOfTheRound()<0){
+            model.updateRound();
+            if(model.getRoundNumber()==10){
+                //model.countPoints
+            }
+            else
+            model.updateGameboard();
+        }
+        else model.updateGameboard();
+    }
+
 
     public void update(StartGameMessage startGameMessage){
         allPlayersReady = allPlayersReady + 1;
@@ -371,7 +385,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     public void roundManager() {
-
 
     }
 

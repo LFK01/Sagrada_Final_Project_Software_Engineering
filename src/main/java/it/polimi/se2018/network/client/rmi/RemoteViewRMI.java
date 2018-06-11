@@ -1,8 +1,10 @@
 package it.polimi.se2018.network.client.rmi;
 
+import it.polimi.se2018.model.events.ChangeDieValueMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
@@ -181,6 +183,10 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
+    @Override
+    public void update(ChangeDieValueMessage changeDieValueMessage) {
+
+    }
 
 
     @Override
@@ -256,6 +262,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
+    public void update(RequestMessage requestMessage) {
+
+    }
+
+    @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         if(serverIsUp){
             try{
@@ -265,6 +276,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
                 serverIsUp = false;
             }
         }
+    }
+
+    @Override
+    public void update(UseToolCardMove useToolCardMove) {
+
     }
 
 }

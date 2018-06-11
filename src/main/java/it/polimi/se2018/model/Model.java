@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.controller.tool_cards.ChangeDieValueToolCard;
 import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.*;
@@ -15,12 +16,11 @@ import it.polimi.se2018.model.game_equipment.Player;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.model.tool_cards.*;
+import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This class is supposed to contain all the data about a game and all the
@@ -211,7 +211,7 @@ public class Model extends ProjectObservable implements Runnable{
      * @param playerPosition integer number to get the player reference
      */
     public  void  updateFavorTokens(int toolCardIndex, int playerPosition){
-        if(gameBoard.getToolCard(toolCardIndex).isFirstUsage()){
+        if(gameBoard.getToolCards()[toolCardIndex].isFirstUsage()){
             participants.get(playerPosition).decreaseFavorTokens(false);
         }
         else {
@@ -222,23 +222,17 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void extractToolCards() {
-
         ArrayList<Integer> cardIndex = new ArrayList<>(12);
-
-        for(int i = 1; i <= 12; i++)
+        for(int i = 1; i <= 12; i++){
             cardIndex.add(i);
-
+        }
         Collections.shuffle(cardIndex);
-
         for(int i = 0; i < 3; i++) {
-
             switch (cardIndex.get(i)) {
-
-                case 1:
-
+                case 1:{
                     gameBoard.setToolCards(PinzaSgrossatrice.getThisInstance(), i);
                     break;
-
+                }
                 case 2:
                     gameBoard.setToolCards(PennelloPerEglomise.getThisInstance(), i);
                     break;
@@ -256,7 +250,7 @@ public class Model extends ProjectObservable implements Runnable{
                     break;
 
                 case 6:
-                    gameBoard.setToolCards(PennelloPerPastaSalda.getThisInstance(), i);
+                    gameBoard.setToolCards(new ChangeDieValueToolCard(6), i);
                     break;
 
                 case 7:
@@ -272,7 +266,7 @@ public class Model extends ProjectObservable implements Runnable{
                     break;
 
                 case 10:
-                    gameBoard.setToolCards(TamponeDiamantato.getThisInstance(), i);
+                    gameBoard.setToolCards(new ChangeDieValueToolCard(10), i);
                     break;
 
                 case 11:
@@ -349,8 +343,7 @@ public class Model extends ProjectObservable implements Runnable{
 
     public void sendSchemaCard(){
         System.out.println("Dealing SchemaCards to players ");
-        Semaphore available = new Semaphore(1);
-        addSemaphore(available);
+        Thread sendingMessageThread;
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<Integer>();
         for(int i=0; i<participants.size(); i++){
@@ -361,7 +354,6 @@ public class Model extends ProjectObservable implements Runnable{
         }
         Collections.shuffle(randomValues);
         for(int t=0; t < participants.size(); t++) {
-            System.out.println("preparing message for #" + t + " client");
             SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER *2];
             String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER *2];
             for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i+=2){
@@ -372,15 +364,15 @@ public class Model extends ProjectObservable implements Runnable{
                 extractedCardIndex++;
             }
             try{
-                available.acquire();
                 Message sentMessage = new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards);
                 memorizeMessage(sentMessage);
-                new Thread(this).start();
+                sendingMessageThread = new Thread(this);
+                sendingMessageThread.start();
+                sendingMessageThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        removeSemaphore();
     }
 
     public void setSchemaCardPlayer(int playerPos, String schemaName){
@@ -411,7 +403,7 @@ public class Model extends ProjectObservable implements Runnable{
         String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
         String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
         String roundTrack = null;
-        Object synchronizationObject = new Object();
+        Thread sendingMessageThread;
         for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
             StringBuilder builderPublicObjectiveCards = new StringBuilder();
             builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
@@ -436,25 +428,23 @@ public class Model extends ProjectObservable implements Runnable{
         for (int i =0; i<schemaInGame.length;i++){
             schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
         }
-        Semaphore available = new Semaphore(1);
-        addSemaphore(available);
         for(int i = 0; i<participants.size(); i++){
             try{
-                available.acquire();
-                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack,schemaInGame,participants.get(turnOfTheRound).getName()));
-                new Thread(this).start();
+                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, schemaInGame, roundTrack, participants.get(turnOfTheRound).getName()));
+                sendingMessageThread = new Thread(this);
+                sendingMessageThread.start();
+                sendingMessageThread.join();
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
         }
-        removeSemaphore();
     }
 
     public void updateGameboard(){   //momentaneamente facoltativo
         String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
         String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
         String roundTrack = null;
-        Object synchronizationObject = new Object();
+        Thread sendingMessageThread;
         for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
             StringBuilder builderPublicObjectiveCards = new StringBuilder();
             builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
@@ -479,24 +469,22 @@ public class Model extends ProjectObservable implements Runnable{
         for (int i =0; i<schemaInGame.length;i++){
             schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
         }
-        Semaphore available = new Semaphore(1);
-        addSemaphore(available);
         for(int i = 0; i<participants.size(); i++){
             try{
-                available.acquire();
-                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, roundTrack,schemaInGame,participants.get(turnOfTheRound).getName()));
-                new Thread(this).start();
+                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, schemaInGame, roundTrack, participants.get(turnOfTheRound).getName()));
+                sendingMessageThread = new Thread(this);
+                sendingMessageThread.start();
+                sendingMessageThread.join();
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
         }
-        removeSemaphore();
     }
 
 
     /**
-     * a method to send updated schema cards and playerTurn to the view
-     */
+    * a method to send updated schema cards and playerTurn to the view
+    */
     public void sendSchemaAndTurn(){
         setChanged();
         //notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));

@@ -1,8 +1,8 @@
 package it.polimi.se2018.controller;
-import com.sun.xml.internal.ws.addressing.v200408.MemberSubmissionWsaServerTube;
 import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.model.*;
+import it.polimi.se2018.model.events.ChangeDieValueMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -12,7 +12,7 @@ import it.polimi.se2018.model.game_equipment.DiceBag;
 import it.polimi.se2018.model.game_equipment.Player;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
+import it.polimi.se2018.model.tool_cards.AbstractToolCard;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
@@ -179,6 +179,77 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         System.out.println("calls the wrong method");
     }
 
+    @Override
+    public void update(ChooseDiceMove chooseDiceMove) {
+
+    }
+
+    @Override
+    public void update(ChangeDieValueMessage changeDieValueMessage) {
+        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(toolCard.getName().equals(changeDieValueMessage.getToolCardName())){
+                String values = "" + changeDieValueMessage.getPosition();
+                toolCard.activateToolCard(changeDieValueMessage.getSender(), changeDieValueMessage.getToolCardName(), values, model);
+            }
+        }
+    }
+
+    @Override
+    public void update(NoActionMove message){
+        System.out.println(model.getTurnOfTheRound());
+        model.updateTurnOfTheRound();
+        System.out.println(model.getTurnOfTheRound());
+        if(model.getTurnOfTheRound()<0){
+            model.updateRound();
+            model.updateGameboard();
+        }
+        else model.updateGameboard();
+    }
+
+    @Override
+    public void update(RequestMessage requestMessage) {
+
+    }
+
+    @Override
+    public void update(UseToolCardMove useToolCardMove) {
+        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(useToolCardMove.getToolCardName().equals(toolCard.getName())){
+                if(toolCard.isFirstUsage()){
+                    for(Player player: model.getParticipants()){
+                        if(player.getName().equals(useToolCardMove.getSender())){
+                            if(player.getFavorTokens()>=1){
+                                player.decreaseFavorTokens(false);
+                                setChanged();
+                                String name = useToolCardMove.getToolCardName();
+                                notifyObservers(new RequestMessage("server", useToolCardMove.getSender(), name, toolCard.getInputManager(name)));
+                            }
+                            else{
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
+                            }
+                        }
+                    }
+                } else {
+                    for(Player player: model.getParticipants()){
+                        if(player.getName().equals(useToolCardMove.getSender())){
+                            if(player.getFavorTokens()>=2){
+                                player.decreaseFavorTokens(true);
+                                setChanged();
+                                String name = useToolCardMove.getToolCardName();
+                                notifyObservers(new RequestMessage("server", useToolCardMove.getSender(), name, toolCard.getInputManager(name)));
+                            }
+                            else{
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void update(CreatePlayerMessage message){
         if(!timerStarted){
             timerStarted = true;
@@ -258,37 +329,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             model.sendInitializationMessage();
         }
     }
-    public void update(ChooseDiceMove message) throws InvalidCellPositionException,InvalidDraftPoolPosException{
-        /*if (message.getRow() < 0 ||
-                (message).getRow() > 3 ||
-                (message).getCol() < 0 ||
-                (message.getCol() > 4)) {
-            throw new InvalidCellPositionException();
-        }
-        if (message.getDraftPoolPos() < 0) {
-            throw new InvalidDraftPoolPosException();
-        }*/
-        System.out.println(message.getDraftPoolPos() + " " + message.getRow() + " " + message.getCol());
-        model.doDiceMove(message);
-        //gestione di altre eccezioni relative al caso
-        //scelta e piazzamento dado
-        /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
-        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.
-        model.doDiceMove((ChooseDiceMove) move);
-        move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
-        sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile*/
-    }
-    public void update(NoActionMove message){
-        System.out.println(model.getTurnOfTheRound());
-        model.updateTurnOfTheRound();
-        System.out.println(model.getTurnOfTheRound());
-        if(model.getTurnOfTheRound()<0){
-            model.updateRound();
-            model.updateGameboard();
-        }
-        else model.updateGameboard();
-    }
-
 
     public void update(StartGameMessage startGameMessage){
         allPlayersReady = allPlayersReady + 1;

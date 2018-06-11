@@ -14,7 +14,7 @@ public class ProjectObservable {
     private ArrayList<ProjectObserver> observers;
     private Message memorizedMessage;
     private Semaphore available;
-    private boolean settedSemaphore;
+    //private boolean settedSemaphore;
 
     private boolean changed;
     public ProjectObservable(){
@@ -44,14 +44,14 @@ public class ProjectObservable {
         }
     }
 
-    public void addSemaphore(Semaphore available){
+    /*public void addSemaphore(Semaphore available){
         this.available = available;
         settedSemaphore = true;
-    }
+    }*/
 
-    public void removeSemaphore(){
+    /*public void removeSemaphore(){
         settedSemaphore = false;
-    }
+    }*/
 
     public void notifyObservers(Message message){
         System.out.println("notifying " + observers.size() + " observers w/: " + message.toString() +
@@ -67,9 +67,9 @@ public class ProjectObservable {
                     }
                 }
                 changed = false;
-                if(settedSemaphore){
+                /*if(settedSemaphore){
                     available.release();
-                }
+                }*/
             }
         }
     }
@@ -84,9 +84,9 @@ public class ProjectObservable {
                     observer.update(memorizedMessage);
                 }
                 changed = false;
-                if(settedSemaphore){
+                /*if(settedSemaphore){
                     available.release();
-                }
+                }*/
             }
         }
     }

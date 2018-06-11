@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.tool_cards;
 
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.view.comand_line.InputManager;
+
 /**
  * @author Luciano
  */
@@ -9,7 +13,7 @@ public class TamponeDiamantato extends AbstractToolCard {
     private static TamponeDiamantato thisInstance;
 
     private TamponeDiamantato() {
-        super("Tampone Diamantato", "Dopo aver scelto un dado, giralo sulla faccia opposta 6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.", true);
+        super(11);
     }
 
     public static synchronized TamponeDiamantato getThisInstance(){
@@ -19,4 +23,13 @@ public class TamponeDiamantato extends AbstractToolCard {
         return thisInstance;
     }
 
+    @Override
+    public void activateToolCard(String username, String name, String values, Model model) {
+
+    }
+
+    @Override
+    public InputManager getInputManager(String name) {
+        return null;
+    }
 }

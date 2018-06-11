@@ -138,7 +138,34 @@ public class Dice {
         this.face = faces[index];
     }
 
-
+    public void turnDieFace(){
+        switch (this.face){
+            case "\u2680":{
+                face = "\u2685";
+                break;
+            }
+            case "\u2681":{
+                face = "\u2684";
+                break;
+            }
+            case "\u2682":{
+                face = "\u2683";
+                break;
+            }
+            case "\u2683":{
+                face = "\u2682";
+                break;
+            }
+            case "\u2684":{
+                face = "\u2682";
+                break;
+            }
+            case "\u2685":{
+                face = "\u2680";
+                break;
+            }
+        }
+    }
 
 
 

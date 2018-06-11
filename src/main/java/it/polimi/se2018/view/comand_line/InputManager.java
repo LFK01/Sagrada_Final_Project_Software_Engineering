@@ -1,0 +1,13 @@
+package it.polimi.se2018.view.comand_line;
+
+public enum InputManager {
+
+    INPUT_DISABLED,
+    INPUT_PLAYER_NAME,
+    INPUT_SCHEMA_CARD,
+    INPUT_CHOOSE_MOVE,
+    INPUT_PLACE_DIE,
+    INPUT_TOOL_CARD_MOVE_DICE_POSITIONS,
+    INPUT_TOOL_CARD_CHANGE_DICE_VALUE_POSITIONS
+
+}

@@ -5,33 +5,20 @@ import it.polimi.se2018.model.game_equipment.Player;
 import it.polimi.se2018.model.events.messages.Message;
 
 /**
- * @author giorgia
+ * @author Luciano
  */
 
 public class UseToolCardMove extends Message {
 
-    private InterfaceToolCard toolCard;
+    private String toolCardName;
 
-
-    public UseToolCardMove(InterfaceToolCard toolCard, Player player) {
-        super("prova", "prova");
-        this.toolCard = toolCard;
+    public UseToolCardMove(String sender, String recipient, String toolCardName) {
+        super(sender, recipient);
+        this.toolCardName = toolCardName;
     }
 
-    public InterfaceToolCard getToolCard() {
-        return toolCard;
-    }
-
-
-
-
-    public boolean isDiceMove() {
-        return false;
-    }
-
-
-    public boolean isNoActionMove() {
-        return false;
+    public String getToolCardName() {
+        return toolCardName;
     }
 
 }

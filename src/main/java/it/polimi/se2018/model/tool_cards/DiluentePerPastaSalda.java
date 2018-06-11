@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.tool_cards;
 
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.view.comand_line.InputManager;
+
 /**
  * @author Luciano
  */
@@ -9,7 +13,7 @@ public class DiluentePerPastaSalda extends AbstractToolCard {
     private static DiluentePerPastaSalda thisInstance;
 
     private DiluentePerPastaSalda() {
-        super("Diluente per Pasta Salda", "Dopo aver scelto un dado, riponilo nel Sacchetto, poi pescane uno dal Sacchetto. Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento", true);
+        super(2);
     }
 
     public static synchronized DiluentePerPastaSalda getThisInstance(){
@@ -19,4 +23,13 @@ public class DiluentePerPastaSalda extends AbstractToolCard {
         return thisInstance;
     }
 
+    @Override
+    public void activateToolCard(String username, String name, String values, Model model) {
+
+    }
+
+    @Override
+    public InputManager getInputManager(String name) {
+        return null;
+    }
 }

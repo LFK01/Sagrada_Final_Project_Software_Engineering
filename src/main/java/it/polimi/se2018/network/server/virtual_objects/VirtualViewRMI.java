@@ -1,8 +1,10 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
+import it.polimi.se2018.model.events.ChangeDieValueMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
@@ -160,12 +162,27 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
+    public void update(ChangeDieValueMessage changeDieValueMessage) {
+
+    }
+
+    @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
         virtualClientRMI.notifyClient(updateTurnMessage);
     }
 
     @Override
+    public void update(UseToolCardMove useToolCardMove) {
+
+    }
+
+    @Override
     public void update(NoActionMove noActionMove){}
+
+    @Override
+    public void update(RequestMessage requestMessage) {
+
+    }
 
 
     @Override

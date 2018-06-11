@@ -8,16 +8,18 @@ public class GameInitializationMessage extends Message {
     private String[] publicObjectiveCardsDescription;
     private String[] toolCardsDescription;
     private String roundTrack;
-    private String playingPlayer;
+    private String playingPlayerName;
     private String[] schemaInGame;
 
-    public GameInitializationMessage(String sender, String recipient, String[] publicObjectiveCardsDescription, String[] toolCardsDescription,String roundTrack,String[] schemaInGame,String playingPlayer) {
+    public GameInitializationMessage(String sender, String recipient, String[] publicObjectiveCardsDescription,
+                                     String[] toolCardsDescription, String[] schemaCardInGame,
+                                     String roundTrack, String playingPlayerName) {
         super(sender, recipient);
         this.publicObjectiveCardsDescription = publicObjectiveCardsDescription;
         this.toolCardsDescription = toolCardsDescription;
         this.roundTrack = roundTrack;
-        this.schemaInGame = schemaInGame;
-        this.playingPlayer = playingPlayer;
+        this.playingPlayerName = playingPlayerName;
+        this.schemaInGame = schemaCardInGame;
     }
 
     public String[] getPublicObjectiveCardsDescription() {
@@ -33,7 +35,7 @@ public class GameInitializationMessage extends Message {
     }
 
     public String getPlayingPlayer() {
-        return playingPlayer;
+        return playingPlayerName;
     }
 
     public String[] getSchemaInGame() {

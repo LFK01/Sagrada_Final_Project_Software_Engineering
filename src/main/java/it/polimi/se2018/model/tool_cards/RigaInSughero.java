@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.tool_cards;
 
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.view.comand_line.InputManager;
+
 /**
  * @author Luciano
  */
@@ -9,7 +13,7 @@ public class RigaInSughero extends AbstractToolCard {
     private static RigaInSughero thisInstance;
 
     private RigaInSughero() {
-        super("Riga in Sughero", "Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado. Devi rispettare tutte le restrizioni di piazzamento", true);
+        super(8);
     }
 
     public static synchronized RigaInSughero getThisInstance(){
@@ -19,4 +23,13 @@ public class RigaInSughero extends AbstractToolCard {
         return  thisInstance;
     }
 
+    @Override
+    public void activateToolCard(String username, String name, String values, Model model) {
+
+    }
+
+    @Override
+    public InputManager getInputManager(String name) {
+        return null;
+    }
 }

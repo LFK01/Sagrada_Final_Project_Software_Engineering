@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.tool_cards;
 
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.view.comand_line.InputManager;
+
 /**
  * @author Luciano
  */
@@ -9,7 +13,7 @@ public class TaglierinaManuale extends AbstractToolCard {
     private static TaglierinaManuale thisInstance;
 
     private TaglierinaManuale() {
-        super("Taglierina Manuale", "Muovi fino a due dadi dello stesso colore di un solo dado sul Tracciato dei Round. Devi rispettare tutte le restrizioni di piazzamento", true);
+        super(10);
     }
 
     public static synchronized TaglierinaManuale getThisInstance(){
@@ -19,4 +23,13 @@ public class TaglierinaManuale extends AbstractToolCard {
         return thisInstance;
     }
 
+    @Override
+    public void activateToolCard(String username, String name, String values, Model model) {
+
+    }
+
+    @Override
+    public InputManager getInputManager(String name) {
+        return null;
+    }
 }

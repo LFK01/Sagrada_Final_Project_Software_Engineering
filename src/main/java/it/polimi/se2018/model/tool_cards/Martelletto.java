@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.tool_cards;
 
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.Message;
+import it.polimi.se2018.view.comand_line.InputManager;
+
 /**
  * @author Luciano
  */
@@ -9,7 +13,7 @@ public class Martelletto extends AbstractToolCard {
     private static Martelletto thisInstance;
 
     private Martelletto() {
-        super("Martelletto", "Tira nuovamente tutti i dadi della Riserva. Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado", true);
+        super(4);
     }
 
     public static synchronized Martelletto getThisInstance(){
@@ -19,4 +23,13 @@ public class Martelletto extends AbstractToolCard {
         return thisInstance;
     }
 
+    @Override
+    public void activateToolCard(String username, String name, String values, Model model) {
+
+    }
+
+    @Override
+    public InputManager getInputManager(String name) {
+        return null;
+    }
 }

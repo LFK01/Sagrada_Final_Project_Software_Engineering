@@ -9,28 +9,8 @@ import it.polimi.se2018.model.game_equipment.Player;
 
 public class SuccessMoveMessage extends Message {
 
-    private GameBoard gameBoard;
-    private Player player;
-
-    public SuccessMoveMessage( String sender, String recipient,GameBoard gameBoard) {
+    public SuccessMoveMessage( String sender, String recipient) {
         super(sender, recipient);
-        this.gameBoard = gameBoard;
-    }
 
-    public GameBoard getGameBoard() {
-        return gameBoard;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    //forse sono inutili
-    public boolean isError() {
-        return false;
-    }
-
-    public boolean isNewRound() {
-        return false;
     }
 }

@@ -6,7 +6,6 @@ import it.polimi.se2018.network.client.socket.RemoteViewSocket;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
-import it.polimi.se2018.view.InputManager;
 import it.polimi.se2018.view.View;
 
 import java.io.FileInputStream;

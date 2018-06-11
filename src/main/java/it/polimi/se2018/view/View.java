@@ -1,9 +1,13 @@
 package it.polimi.se2018.view;
+import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.MovingDieMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
+import it.polimi.se2018.view.comand_line.InputManager;
 
 
 import javax.swing.*;
@@ -11,10 +15,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Scanner;
 
 /**
@@ -22,8 +22,15 @@ import java.util.Scanner;
  */
 public class View extends ProjectObservable implements ProjectObserver, Runnable{
 
-    protected String username;
+    private static final int TOOL_CARD_NUMBER = 3;
+    private static final int TOOL_CARD_DECK_NUMBER = 12;
+    private static final int PUBLIC_OBJECTIVE_CARD_NUMBER = 3;
+    private static final int INT_VALUES_NUMBER_TOOL_CARD_MOVE_DICE = 4;
+    private static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
+    private static final int SCHEMA_CARD_ROWS_NUMBER = 4;
+    private String username;
     private boolean isPlayerTurn;
+    private int playersNumber;
 
     boolean windowCreated = true;
 
@@ -41,10 +48,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     private Thread inputThread;
 
-    private String[] publicObjectiveCardsDescription = new String[3];
-    private String[] toolCardDescription = new String[3];
+    private String[] publicObjectiveCardsDescription;
+    private String[] toolCardDescription;
     private String privateObjectiveCardsDescription;
     private boolean matchIsOn;
+    private String toolCardUsageName;
 
 
     /**
@@ -52,6 +60,8 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
      */
     public View(){
         inputManager = InputManager.INPUT_DISABLED;
+        publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARD_NUMBER];
+        toolCardDescription = new String[TOOL_CARD_NUMBER];
         matchIsOn = true;
     }
 
@@ -171,16 +181,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }
     }
 
-
-    public void update(Observable o, Object message){
-        try{
-            Method updateView = this.getClass().getDeclaredMethod("updateView", message.getClass());
-            updateView.invoke(this, message);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void updateView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
             System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
@@ -204,7 +204,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
             }
             if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
-                inputManager = InputManager.INPUT_MOVE;
+                inputManager = InputManager.INPUT_CHOOSE_MOVE;
                 new Thread(this).start();
             }
         }
@@ -359,7 +359,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             System.out.println(chooseSchemaMessage.getSchemaCards(i));
             schemaName[i]= new String(chooseSchemaMessage.getSchemaCards(i).split("\n")[0]);
         }
-        System.out.println("Schema card number: ");
         inputManager = InputManager.INPUT_SCHEMA_CARD;
         new Thread(this).start();
     }
@@ -400,10 +399,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             System.out.println("Public Objective Card #" + (i+1) +" :\n" + gameInitializationMessage.getPublicObjectiveCardsDescription()[i]);
         }
         for(int j=0; j<gameInitializationMessage.getToolCardsDescription().length; j++){
+            toolCardDescription = gameInitializationMessage.getToolCardsDescription();
             System.out.println("Tool Card #" + (j+1) +" :\n" + gameInitializationMessage.getToolCardsDescription()[j]);
         }
         System.out.println("roundTrack"+ ":\n"+ gameInitializationMessage.getRoundTrack().toString());
-
+        playersNumber = gameInitializationMessage.getSchemaInGame().length;
         for(int z=0;z<gameInitializationMessage.getSchemaInGame().length;z++){
             System.out.println(gameInitializationMessage.getSchemaInGame()[z]);
         }
@@ -415,13 +415,25 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }else{
             System.out.println("It's not your turn!");
         }
-        inputManager = InputManager.INPUT_MOVE;
+        inputManager = InputManager.INPUT_CHOOSE_MOVE;
         new Thread(this).start();
     }
 
     @Override
     public void update(NewRoundMessage newRoundMessage) {
 
+    }
+
+    @Override
+    public void update(NoActionMove noActionMove) {
+
+    }
+
+    @Override
+    public void update(RequestMessage requestMessage) {
+        toolCardUsageName = requestMessage.getToolCardName();
+        inputManager = requestMessage.getInputManager();
+        new Thread(this).start();
     }
 
     @Override
@@ -443,14 +455,19 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         }
     }
 
-
     @Override
     public void update(SuccessMoveMessage successMoveMessage) {
 
     }
 
+
     @Override
     public void update(UpdateTurnMessage updateTurnMessage) {
+
+    }
+
+    @Override
+    public void update(UseToolCardMove useToolCardMove) {
 
     }
 
@@ -459,11 +476,15 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     }
 
+    @Override
+    public void update(ChangeDieValueMessage changeDieValueMessage) {
 
+    }
 
 
     @Override
     public void run() {
+        System.out.println("thread started");
         scanner = new Scanner(new InputStreamReader(System.in));
         switch(inputManager){
             case INPUT_DISABLED:{
@@ -493,6 +514,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 boolean wrongInput = true;
                 while(wrongInput){
                     try{
+                        System.out.println("Schema card number: ");
                         input = scanner.nextLine();
                         choice = Integer.parseInt(input);
                         System.out.println("choice = " + choice);
@@ -505,11 +527,12 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         wrongInput = true;
                     }
                 }
+                System.out.println("SelectedSchemaMessage");
                 setChanged();
                 notifyObservers(new SelectedSchemaMessage(username,"server", schemaName[choice -1]));
                 break;
             }
-            case INPUT_MOVE:{
+            case INPUT_CHOOSE_MOVE:{
                 boolean wrongInput = true;
                 while(wrongInput){
                     try{
@@ -520,14 +543,32 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             wrongInput = true;
                         } else {
                             wrongInput = false;
+                            if(choice == 2){
+                                System.out.println("Tool card number: ");
+                                try{
+                                    input = scanner.nextLine();
+                                    choice = Integer.parseInt(input);
+                                    if(choice<1 || choice >3){
+                                        wrongInput = true;
+                                    } else {
+                                        wrongInput = false;
+                                        if(toolCardDescription[choice].split(" ")[0].equals("Name:")){
+                                            setChanged();
+                                            notifyObservers(new UseToolCardMove(username, "server", toolCardDescription[choice].split(" ")[1]));
+                                        }
+                                    }
+                                } catch (NumberFormatException e){
+                                    wrongInput = true;
+                                }
                             }
-                        } catch (NumberFormatException e){
-                            wrongInput = true;
                         }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
                     }
-                    if(choice == 1){
+                }
+                if(choice == 1){
                     Scanner in = new Scanner(System.in);
-                    int diceOnRoundTrack,row,col;
+                    int diceOnRoundTrack, row, col;
                     System.out.println("Take a die from the roundTrack");
                     diceOnRoundTrack = in.nextInt()-1;
                     System.out.println("choose a row ");
@@ -537,10 +578,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     System.out.println("ho i valori da inviare" + diceOnRoundTrack + row+ col);
                     setChanged();
                     notifyObservers(new ChooseDiceMove(username,"server",diceOnRoundTrack,row,col));
-                }
-
-                if(choice == 2){
-
                 }
                 if (choice ==3){
                     System.out.println("Ho deciso di passare il turno");
@@ -552,12 +589,108 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 //notifyObservers();
                 break;
             }
+            case INPUT_TOOL_CARD_MOVE_DICE_POSITIONS:{
+                int positions[] = new int[INT_VALUES_NUMBER_TOOL_CARD_MOVE_DICE];
+                int positionIndex = 0;
+                boolean wrongInput = true;
+                System.out.println("Choose a die to move from your window:");
+                while(wrongInput){
+                    System.out.print("Row: ");
+                    try {
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>SCHEMA_CARD_ROWS_NUMBER){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                            positions[positionIndex] = choice;
+                            positionIndex++;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                    }
+                }
+                wrongInput = true;
+                while (wrongInput){
+                    System.out.print("Column: ");
+                    try {
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>SCHEMA_CARD_COLUMNS_NUMBER){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                            positions[positionIndex] = choice;
+                            positionIndex++;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                    }
+                }
+                System.out.println("Choose a new position where to place the selected die:");
+                while(wrongInput){
+                    System.out.print("Row: ");
+                    try {
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>SCHEMA_CARD_ROWS_NUMBER){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                        positions[positionIndex] = choice;
+                        positionIndex++;
+                    }
+                }
+                wrongInput = true;
+                while (wrongInput){
+                    System.out.print("Column: ");
+                    try {
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>SCHEMA_CARD_COLUMNS_NUMBER){
+                            wrongInput = true;
+                        } else {
+                            wrongInput = false;
+                            positions[positionIndex] = choice;
+                            positionIndex++;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                    }
+                }
+                setChanged();
+                notifyObservers(new MovingDieMessage(username, "server", positions, toolCardUsageName));
+                break;
+            }
+            case INPUT_TOOL_CARD_CHANGE_DICE_VALUE_POSITIONS:{
+                boolean wrongInput = true;
+                while (wrongInput){
+                    System.out.print("Choose a die from the draft pool to change its values: " +
+                            "\nDie position number: ");
+                    try{
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>playersNumber*2+1){
+                            wrongInput = true;
+                            System.out.println("Wrong input!");
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                        System.out.println("Wrong input!");
+                    }
+                }
+                setChanged();
+                notifyObservers(new ChangeDieValueMessage(username, "server", toolCardUsageName, choice));
+            }
+            case INPUT_PLACE_DIE:{
+
+            }
         }
-
-    }
-    @Override
-    public void update(NoActionMove noActionMove) {
-
     }
 
     public void setUsername(String username) {
@@ -568,9 +701,3 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         this.inputManager = inputManager;
     }
 }
-
-
-
-
-
-

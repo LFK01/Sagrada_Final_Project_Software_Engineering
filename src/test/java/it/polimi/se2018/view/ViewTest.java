@@ -1,6 +1,8 @@
 package it.polimi.se2018.view;
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.model.events.messages.RequestMessage;
+import it.polimi.se2018.view.comand_line.InputManager;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -52,6 +54,15 @@ public class ViewTest {
 
     }
 
-
-
+    @Test
+    public void toolUsageInputVisualization(){
+        View view = new View();
+        String requestDescription = "Choose a die from your schema card:\n" +
+                "choose row: \n" +
+                "choose column: \n" +
+                "Choose a new position in your schema card for the selected die:\n" +
+                "choose row: \n" +
+                "choose column:";
+        view.update(new RequestMessage("a", "b", "Alesatore Lamina di Rame", InputManager.INPUT_CHOOSE_MOVE));
+    }
 }

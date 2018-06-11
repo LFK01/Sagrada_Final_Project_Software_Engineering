@@ -80,4 +80,13 @@ public class RoundDice {
         Dice dieToRemove = diceList.get(index);
         diceList.remove(dieToRemove);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for(Dice die: diceList){
+            builder.append(die.toString() + "");
+        }
+        return builder.toString();
+    }
 }

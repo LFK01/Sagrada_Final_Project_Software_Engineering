@@ -9,6 +9,7 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.*;
+import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.View;
 import org.junit.Test;
 

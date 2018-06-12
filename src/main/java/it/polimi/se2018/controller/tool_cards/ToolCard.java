@@ -1,26 +1,30 @@
-package it.polimi.se2018.model.tool_cards;
+package it.polimi.se2018.controller.tool_cards;
 
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
  * @author Luciano
  */
-public abstract class AbstractToolCard {
+public class ToolCard {
 
     private String name;
     private String description;
+    private InputManager inputManager;
+    private ArrayList<EffectInterface> effectsList = new ArrayList<>();
+    private EffectsFactory effectsFactory = new EffectsFactory();
     private boolean firstUsage;
 
-    public AbstractToolCard(int toolCardNumber){
+    public ToolCard(int toolCardNumber){
         Scanner inputFile = null;
         try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\ToolCards.txt"));
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -33,22 +37,31 @@ public abstract class AbstractToolCard {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("Number:")){
+                    if(words[i].trim().equalsIgnoreCase("number:")){
                         if(toolCardNumber == Integer.parseInt(words[i+1])){
-                            //System.out.println("found card");
                             cardFound = true;
                             i++;
                         }
                     }
                     if(cardFound){
-                        if(words[i].trim().equals("Name:")){
+                        if(words[i].trim().equalsIgnoreCase("name:")){
                             //System.out.println("new name");
                             name = words[i+1].replace('/', ' ');
                             i++;
                         }
-                        if(words[i].trim().equals("description:")){
+                        if(words[i].trim().equalsIgnoreCase("description:")){
                             //System.out.println("new description");
                             description = words[i+1].replace('/', ' ');
+                            i++;
+                        }
+                        if(words[i].trim().equalsIgnoreCase("effects:")){
+                            String[] effectsNamesList = words[i+1].split("/");
+                            for(String effectName: effectsNamesList){
+                                effectsList.add(effectsFactory.getThisEffect(effectName));
+                            }
+                        }
+                        if(words[i].trim().equalsIgnoreCase("inputManager: ")){
+                            inputManager = InputManager.valueOf(words[i+1]);
                             i++;
                             hasNextLine = false;
                         }
@@ -90,8 +103,16 @@ public abstract class AbstractToolCard {
         }
     }
 
-    public abstract void activateToolCard(String username, String name, String values, Model model);
+    public void activateToolCard(String username, String toolCardName, String values, Model model){
+        for(EffectInterface effect: effectsList){
+            if(!effect.isDone()){
+                effect.doYourJob(username, toolCardName, values, model);
+            }
+        }
+    }
 
-    public abstract InputManager getInputManager(String name);
+    public InputManager getInputManager(String name){
+        return inputManager;
+    }
 
 }

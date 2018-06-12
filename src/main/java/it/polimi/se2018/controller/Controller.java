@@ -1,18 +1,16 @@
 package it.polimi.se2018.controller;
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
-import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
+import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.*;
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
-import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.model.tool_cards.AbstractToolCard;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
@@ -111,69 +109,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         model.getGameBoard().getRoundTrack().setRoundDice(roundDice, round);
     }
 
-    /**
-     * Method that validates the input when the player chooses a dice to place it on his schema and calls the model methods.
-     * @param move the object representing the player move
-     * @throws InvalidCellPositionException in case the player gave an invalid input while choosing the cell
-     * @throws InvalidDraftPoolPosException in case the player gave an invalid input while choosing the dice
-     */
-    private void performDiceMove(ChooseDiceMove move) throws InvalidCellPositionException, InvalidDraftPoolPosException {
-        if (((ChooseDiceMove) move).getRow() < 0 ||
-                ((ChooseDiceMove) move).getRow() > 3 ||
-                ((ChooseDiceMove) move).getCol() < 0 ||
-                ((ChooseDiceMove) move).getCol() > 4) {
-            throw new InvalidCellPositionException();
-        }
-        if (((ChooseDiceMove) move).getDraftPoolPos() < 0) {
-            throw new InvalidDraftPoolPosException();
-        }
-        model.doDiceMove(move);
-        //gestione di altre eccezioni relative al caso
-        //scelta e piazzamento dado
-        /*Ci sarà una chiamata del tipo model.performDiceMove((ChooseDiceMove) move), e all'interno di questa verranno effettuati sia i controlli
-        per verificare che la mossa sia lecita sia l'esecuzione stessa della mossa.
-        model.doDiceMove((ChooseDiceMove) move);
-        move.getPlayer().getSchemaCard().getCell(((ChooseDiceMove) move).getRow(), ((ChooseDiceMove) move).getCol()).setAssignedDice(model.getGameBoard().getRoundDice()[model.getTurnOfTheRound()].getDice(((ChooseDiceMove) move).getDraftPoolPos()));
-        sistemata, eventualmente da rivedere per semplificare la riga di codice e renderla più leggibile*/
-    }
-
-    /**
-     * Method that validates the input when the player chooses a tool card
-     * @param move the object representing the move
-     * @throws NullPointerException in case the tool card is null
-     */
-    private void performToolCardMove(UseToolCardMove move){
-        //attivazione tool card
-        //Idem di sopra, ci sarà una chiamata del tipo model.performToolCardMove((UseToolCardMove) move).
-        //((UseToolCardMove) move).getToolCard().activateCard(move.getPlayer());
-    }
-
-        //TODO new update(PlayerMove message) with all the instruction below
-        /*if (message instanceof PlayerMove) {
-            if (((PlayerMove) message).isDiceMove()) {
-                try {
-                    performDiceMove((ChooseDiceMove) message);
-                } catch (InvalidCellPositionException e) {
-                    notifyObservers(/*Insert errore message here);
-                } catch (InvalidDraftPoolPosException e) {
-                    notifyObservers(/*Insert errore message here);
-                }
-            } else {
-                if (!((PlayerMove) message).isDiceMove()) {
-                    if (((PlayerMove) message).isNoActionMove()) {
-                        model.updateTurnOfTheRound();
-                    } else {
-                        try {
-                            performToolCardMove((UseToolCardMove) message);
-                        } catch (NullPointerException e) {
-                            setChanged();
-                            notifyObservers(inserire messaggio di errore);
-                        }
-                    }
-                }
-            }
-    }*/
-
     @Override
     public void update(Message message) {
         System.out.println("calls the wrong method");
@@ -185,13 +120,33 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
-        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getName().equals(changeDieValueMessage.getToolCardName())){
-                String values = "" + changeDieValueMessage.getPosition();
-                toolCard.activateToolCard(changeDieValueMessage.getSender(), changeDieValueMessage.getToolCardName(), values, model);
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName())){
+                for (Player player: model.getParticipants()) {
+                    if(player.getName().equals(toolCardActivationMessage.getSender())){
+                        if(toolCard.isFirstUsage()){
+                            if(player.getFavorTokens()>=1){
+                                String values = toolCardActivationMessage.getValues();
+                                toolCard.activateToolCard(toolCardActivationMessage.getSender(), toolCardActivationMessage.getToolCardName(), values, model);
+                            } else {
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
+                            }
+                        } else {
+                            if(player.getFavorTokens()>=2){
+
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
+
     }
 
     @Override
@@ -213,7 +168,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
             if(useToolCardMove.getToolCardName().equals(toolCard.getName())){
                 if(toolCard.isFirstUsage()){
                     for(Player player: model.getParticipants()){
@@ -343,6 +298,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+
+    }
+
+    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
 
     }
@@ -371,9 +331,5 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     public void roundManager() {
-
-
     }
-
-
 }

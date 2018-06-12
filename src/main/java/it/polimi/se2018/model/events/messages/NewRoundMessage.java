@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.events.messages;
 
-import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.player.Player;
 
 public class NewRoundMessage extends Message {
 

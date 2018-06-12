@@ -1,7 +1,8 @@
 package it.polimi.se2018.model.game_equipment;
 
+import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
-import it.polimi.se2018.model.tool_cards.*;
+
 import java.util.ArrayList;
 
 /**
@@ -18,7 +19,7 @@ public class GameBoard {
     private DiceBag diceBag;
     private AbstractObjectiveCard publicObjectiveCards[];
     private ArrayList<AbstractObjectiveCard> privateObjectiveCards;
-    private AbstractToolCard toolCards[];
+    private ToolCard toolCards[];
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
@@ -26,7 +27,7 @@ public class GameBoard {
         this.diceBag = new DiceBag();
         this.publicObjectiveCards = new AbstractObjectiveCard[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
         this.privateObjectiveCards = new ArrayList<>();
-        this.toolCards = new AbstractToolCard[TOOL_CARDS_EXTRACT_NUMBER];
+        this.toolCards = new ToolCard[TOOL_CARDS_EXTRACT_NUMBER];
         this.roundTrack = new RoundTrack();
     }
 
@@ -62,12 +63,12 @@ public class GameBoard {
         return toolCards[index].getDescription();
     }
 
-    public AbstractToolCard[] getToolCards(){
+    public ToolCard[] getToolCards(){
         return toolCards;
     }
 
-    public AbstractToolCard getToolCard(String toolCardName) {
-        for(AbstractToolCard toolCard: toolCards){
+    public ToolCard getToolCard(String toolCardName) {
+        for(ToolCard toolCard: toolCards){
             if(toolCard.getName().equals(toolCardName)){
                 return toolCard;
             }
@@ -95,7 +96,7 @@ public class GameBoard {
         this.publicObjectiveCards[index] = publicObjectiveCards;
     }
 
-    public void setToolCards(AbstractToolCard toolCard, int index) {
+    public void setToolCards(ToolCard toolCard, int index) {
         this.toolCards[index] = toolCard;
     }
 }

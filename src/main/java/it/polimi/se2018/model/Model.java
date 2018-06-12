@@ -1,6 +1,6 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.tool_cards.ChangeDieValueToolCard;
+import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.*;
@@ -12,15 +12,12 @@ import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
-import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
-import it.polimi.se2018.model.tool_cards.*;
-import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 /**
  * This class is supposed to contain all the data about a game and all the
@@ -228,56 +225,7 @@ public class Model extends ProjectObservable implements Runnable{
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
-            switch (cardIndex.get(i)) {
-                case 1:{
-                    gameBoard.setToolCards(PinzaSgrossatrice.getThisInstance(), i);
-                    break;
-                }
-                case 2:
-                    gameBoard.setToolCards(PennelloPerEglomise.getThisInstance(), i);
-                    break;
-
-                case 3:
-                    gameBoard.setToolCards(AlesatorePerLaminaDiRame.getThisInstance(), i);
-                    break;
-
-                case 4:
-                    gameBoard.setToolCards(Lathekin.getThisInstance(), i);
-                    break;
-
-                case 5:
-                    gameBoard.setToolCards(TaglierinaCircolare.getThisInstance(), i);
-                    break;
-
-                case 6:
-                    gameBoard.setToolCards(new ChangeDieValueToolCard(6), i);
-                    break;
-
-                case 7:
-                    gameBoard.setToolCards(Martelletto.getThisInstance(), i);
-                    break;
-
-                case 8:
-                    gameBoard.setToolCards(TenagliaARotelle.getThisInstance(), i);
-                    break;
-
-                case 9:
-                    gameBoard.setToolCards(RigaInSughero.getThisInstance(), i);
-                    break;
-
-                case 10:
-                    gameBoard.setToolCards(new ChangeDieValueToolCard(10), i);
-                    break;
-
-                case 11:
-                    gameBoard.setToolCards(DiluentePerPastaSalda.getThisInstance(), i);
-                    break;
-
-                case 12:
-                    gameBoard.setToolCards(TaglierinaManuale.getThisInstance(), i);
-                    break;
-
-            }
+            gameBoard.setToolCards(new ToolCard(cardIndex.get(i)), i);
         }
     }
 

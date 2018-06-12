@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -8,10 +8,7 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.utils.ProjectObservable;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.Socket;
-import java.util.Observable;
 
 public class VirtualViewSocket extends ProjectObservable implements VirtualViewInterface {
 
@@ -131,6 +128,11 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+
+    }
+
+    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         System.out.println("VWSocket -> VCSocket: " + successCreatePlayerMessage.toString());
         virtualClientSocket.notifyClient(successCreatePlayerMessage);
@@ -157,7 +159,12 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     public void update(ChooseDiceMove chooseDiceMove) {}
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+
+    }
+
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
 
     }
 

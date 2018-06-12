@@ -1,8 +1,6 @@
 package it.polimi.se2018.utils;
 
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
-import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -14,11 +12,13 @@ public interface ProjectObserver {
 
     void update(ChooseSchemaMessage chooseSchemaMessage);
 
-    void update(ComebackSocketMessage comebackSocketMessage);
-
     void update(ChooseDiceMove chooseDiceMove);
 
-    void update(ChangeDieValueMessage changeDieValueMessage);
+    void update(ToolCardActivationMessage toolCardActivationMessage);
+
+    void update(ToolCardErrorMessage toolCardErrorMessage);
+
+    void update(ComebackSocketMessage comebackSocketMessage);
 
     void update(CreatePlayerMessage createPlayerMessage);
 
@@ -35,6 +35,8 @@ public interface ProjectObserver {
     void update(SelectedSchemaMessage selectedSchemaMessage);
 
     void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage);
+
+    void update(SuccessMessage successMessage);
 
     void update(SuccessCreatePlayerMessage successCreatePlayerMessage);
 

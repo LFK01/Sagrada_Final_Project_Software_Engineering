@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.client.socket;
 
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -8,12 +8,6 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.SocketAddress;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * @author Luciano
@@ -163,6 +157,11 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+
+    }
+
+    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         System.out.println("RemoteWSocket -> Server: " + successCreatePlayerMessage.toString());
         server.sendToServer(successCreatePlayerMessage);
@@ -205,7 +204,12 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+
+    }
+
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
 
     }
 }

@@ -1,5 +1,5 @@
 package it.polimi.se2018.view;
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.MovingDieMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
@@ -31,6 +31,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     private String username;
     private boolean isPlayerTurn;
     private int playersNumber;
+    private int changedDiePosition;
 
     boolean windowCreated = true;
 
@@ -168,6 +169,19 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         new Thread(this).start();
     }
 
+    public int demandConnectionType() {
+        JFrame frameDemandConnection = new JFrame("Parent Window");
+        Object[] options = {"RMI", "Socket"};
+        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Choose connection:", "Connection", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
+        if(n == JOptionPane.YES_OPTION){
+            frameDemandConnection.dispose();
+            return 1;
+        }else{
+            frameDemandConnection.dispose();
+            return 2;
+        }
+    }
+
     public void playerNumberExceededDialog() {
         JFrame framePlayerNumberExceeded = new JFrame();
         Object[] options = {"OK"};
@@ -297,18 +311,18 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     public void update(ErrorMessage errorMessage) {
         System.out.println("sono entrato nell'update" + errorMessage.getRecipient());
         if(errorMessage.getRecipient().equals(username)){
-            if(errorMessage.toString().equals("NotValidUsername")){
+            if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
                 System.out.println("Username not available!");
                 this.createPlayer();
             }
-            if(errorMessage.toString().equals("PlayerNumberExceeded")){
+            if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){
                 //TODO waiting lobby
                 System.out.print("Impossibile connettersi");
             }
-            if(errorMessage.toString().equals("NotEnoughPlayer")){
+            if(errorMessage.toString().equalsIgnoreCase("NotEnoughPlayer")){
                 System.out.println("Minimum players number not reached.");
             }
-            if(errorMessage.toString().equals("UsernameNotFound")){
+            if(errorMessage.toString().equalsIgnoreCase("UsernameNotFound")){
 
             }
             if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
@@ -386,6 +400,15 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+        String whichSuccess = successMessage.getSuccessMessage().split("\n")[0];
+        if(whichSuccess.equals("ChangeDieValueToolCard")){
+            changedDiePosition = Integer.parseInt(successMessage.getSuccessMessage().split("\n")[1]);
+        }
+        System.out.println(successMessage.getSuccessMessage());
+    }
+
+    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         if(successCreatePlayerMessage.getRecipient().equals(username)){
             System.out.println("Successful  login, new username: " + successCreatePlayerMessage.getRecipient());
@@ -414,14 +437,34 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     }
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
 
     }
 
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
+        String[] toolCardNames = {"Pinza/Sgrossatrice",
+                "Pennello/per/Eglomise",
+                "Alesatore/per/lamina/di/rame",
+                "Lathekin",
+                "Taglierina/circolare",
+                "Pennello/per/Pasta/Salda",
+                "Martelletto",
+                "Tenaglia/a/Rotelle",
+                "Riga/in/Sughero",
+                "Tampone/Diamantato",
+                "Diluente/per/Pasta/Salda",
+                "Taglierina/Manuale"};
+        if(toolCardErrorMessage.getToolCardName().equalsIgnoreCase(toolCardNames[0].replace("/", " "))){
+            String sender = toolCardErrorMessage.getSender();
+            String recipient = toolCardErrorMessage.getRecipient();
+            this.update(new RequestMessage(sender, recipient, toolCardErrorMessage.getToolCardName(), InputManager.INPUT_MODIFY_DIE_VALUE));
+        }
+    }
 
     @Override
     public void run() {
-        System.out.println("thread started");
+        //TODO add stop tool card activation option
         scanner = new Scanner(new InputStreamReader(System.in));
         switch(inputManager){
             case INPUT_DISABLED:{
@@ -536,7 +579,45 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 //notifyObservers();
                 break;
             }
-            case INPUT_TOOL_CARD_MOVE_DICE_POSITIONS:{
+            case INPUT_MODIFY_DIE_VALUE:{
+                boolean wrongInput = true;
+                while (wrongInput){
+                    System.out.print("Choose a die from the draft pool to change its values: " +
+                            "\nDie position number: ");
+                    try{
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>playersNumber*2+1){
+                            wrongInput = true;
+                            System.out.println("Wrong input!");
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        wrongInput = true;
+                        System.out.println("Wrong input!");
+                    }
+                }
+                wrongInput = true;
+                StringBuilder builder = new StringBuilder();
+                builder.append("DiePosition: " + choice + " ");
+                if(toolCardUsageName.equalsIgnoreCase("Pinza Sgrossatrice")){
+                    System.out.println("Do you want to increase the die value? (Y/N)");
+                    while (wrongInput){
+                        input = scanner.nextLine();
+                        if(input.equalsIgnoreCase("y")||input.equalsIgnoreCase("n")){
+                           wrongInput = false;
+                           builder.append("IncreaseValue: " + input);
+                        } else {
+                            wrongInput = true;
+                        }
+                    }
+                }
+                setChanged();
+                notifyObservers(new ToolCardActivationMessage(username, "server", toolCardUsageName, builder.toString()));
+                break;
+            }
+            case INPUT_MOVE_DIE_ON_WINDOW:{
                 int positions[] = new int[INT_VALUES_NUMBER_TOOL_CARD_MOVE_DICE];
                 int positionIndex = 0;
                 boolean wrongInput = true;
@@ -612,31 +693,45 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 notifyObservers(new MovingDieMessage(username, "server", positions, toolCardUsageName));
                 break;
             }
-            case INPUT_TOOL_CARD_CHANGE_DICE_VALUE_POSITIONS:{
+            case INPUT_PLACE_DIE: {
                 boolean wrongInput = true;
-                while (wrongInput){
-                    System.out.print("Choose a die from the draft pool to change its values: " +
-                            "\nDie position number: ");
-                    try{
+                int row = -1, col = -1;
+                System.out.println("Choose die position:");
+                while (wrongInput) {
+                    System.out.print("row:");
+                    try {
                         input = scanner.nextLine();
-                        choice = Integer.parseInt(input);
-                        if(choice<1 || choice>playersNumber*2+1){
+                        row = Integer.parseInt(input);
+                        if (row < 1 || row >= SCHEMA_CARD_ROWS_NUMBER) {
                             wrongInput = true;
-                            System.out.println("Wrong input!");
+                        } else {
+                            System.out.println("Wrong Input!");
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Wrong Input!");
+                        wrongInput = true;
+                    }
+                }
+                wrongInput = true;
+                while (wrongInput) {
+                    try {
+                        input = scanner.nextLine();
+                        col = Integer.parseInt(input);
+                        if (col < 1 || col > SCHEMA_CARD_COLUMNS_NUMBER) {
+                            System.out.println("Wrong Input!");
+                            wrongInput = true;
                         } else {
                             wrongInput = false;
                         }
-                    } catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
+                        System.out.println("Wrong Input!");
                         wrongInput = true;
-                        System.out.println("Wrong input!");
                     }
                 }
                 setChanged();
-                notifyObservers(new ChangeDieValueMessage(username, "server", toolCardUsageName, choice));
+                notifyObservers(new ChooseDiceMove(username, "server", changedDiePosition, row, col));
                 break;
-            }
-            case INPUT_PLACE_DIE:{
-
             }
         }
     }

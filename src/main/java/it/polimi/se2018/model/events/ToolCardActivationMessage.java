@@ -2,14 +2,14 @@ package it.polimi.se2018.model.events;
 
 import it.polimi.se2018.model.events.messages.Message;
 
-public class ChangeDieValueMessage extends Message {
+public class ToolCardActivationMessage extends Message {
 
-    int position;
+    String values;
     String toolCardName;
 
-    public ChangeDieValueMessage(String sender, String recipient, String toolCardName, int position) {
+    public ToolCardActivationMessage(String sender, String recipient, String toolCardName, String values) {
         super(sender, recipient);
-        this.position = position;
+        this.values = values;
         this.toolCardName = toolCardName;
     }
 
@@ -17,7 +17,7 @@ public class ChangeDieValueMessage extends Message {
         return toolCardName;
     }
 
-    public int getPosition() {
-        return position;
+    public String getValues() {
+        return values;
     }
 }

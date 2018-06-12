@@ -1,8 +1,7 @@
 package it.polimi.se2018.controller;
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
-import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
+import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.*;
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -11,10 +10,9 @@ import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
-import it.polimi.se2018.model.game_equipment.Player;
+import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.model.tool_cards.AbstractToolCard;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
@@ -183,13 +181,33 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
-        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getName().equals(changeDieValueMessage.getToolCardName())){
-                String values = "" + changeDieValueMessage.getPosition();
-                toolCard.activateToolCard(changeDieValueMessage.getSender(), changeDieValueMessage.getToolCardName(), values, model);
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName())){
+                for (Player player: model.getParticipants()) {
+                    if(player.getName().equals(toolCardActivationMessage.getSender())){
+                        if(toolCard.isFirstUsage()){
+                            if(player.getFavorTokens()>=1){
+                                String values = toolCardActivationMessage.getValues();
+                                toolCard.activateToolCard(toolCardActivationMessage.getSender(), toolCardActivationMessage.getToolCardName(), values, model);
+                            } else {
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
+                            }
+                        } else {
+                            if(player.getFavorTokens()>=2){
+
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
+
     }
 
 
@@ -201,7 +219,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-        for(AbstractToolCard toolCard: model.getGameBoard().getToolCards()){
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
             if(useToolCardMove.getToolCardName().equals(toolCard.getName())){
                 if(toolCard.isFirstUsage()){
                     for(Player player: model.getParticipants()){
@@ -357,6 +375,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+
+    }
+
+    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
 
     }
@@ -387,6 +410,4 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public void roundManager() {
 
     }
-
-
 }

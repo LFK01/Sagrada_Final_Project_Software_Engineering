@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.model.events.ChangeDieValueMessage;
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -8,13 +8,10 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
-import sun.dc.pr.PRError;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
-import java.util.Observable;
-import java.util.Observer;
 
 public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface, ProjectObserver {
 
@@ -180,7 +177,12 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(ChangeDieValueMessage changeDieValueMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+
+    }
+
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
 
     }
 
@@ -219,6 +221,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
                 serverIsUp = false;
             }
         }
+    }
+
+    @Override
+    public void update(SuccessMessage successMessage) {
+
     }
 
     @Override

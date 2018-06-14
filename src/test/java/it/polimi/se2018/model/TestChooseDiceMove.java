@@ -20,12 +20,12 @@ public class TestChooseDiceMove {
         int row=2,col=1,draftPoolPos=0;
         Player player = null;
         try{
-            chooseDiceMove = new ChooseDiceMove("p1", "server", draftPoolPos, row, col);
+            chooseDiceMove = new ChooseDiceMove("p1", "server", draftPoolPos);
         }
         catch(NullPointerException e){
             fail();
         }
-        assertEquals(2,chooseDiceMove.getRow());
+        assertEquals(2,chooseDiceMove.getDraftPoolPos());
     }
 
 }

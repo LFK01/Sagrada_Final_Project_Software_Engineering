@@ -86,6 +86,13 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             notifyObservers(successMessage);
         }
     }
+    public void notifyView(RequestMessage requestMessage){
+        if(requestMessage.getRecipient().equals(username)){
+            System.out.println("RemoteWSocket -> Client: success message");
+            setChanged();
+            notifyObservers(requestMessage);
+        }
+    }
 
     public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
@@ -118,6 +125,12 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         username = createPlayerMessage.getPlayerName();
         System.out.println("RemoteWSocket -> Server: create player message");
         server.sendToServer(createPlayerMessage);
+    }
+
+    @Override
+    public void update(DiePlacementMessage diePlacementMessage) {
+        System.out.println("RemoteWSocket -> Server: " + diePlacementMessage.toString());
+        server.sendToServer(diePlacementMessage);
     }
 
     @Override

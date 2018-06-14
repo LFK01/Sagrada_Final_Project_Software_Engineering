@@ -86,6 +86,12 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         setChanged();
         notifyObservers(chooseDiceMove);
     }
+    public void updateServer(DiePlacementMessage diePlacementMessage){
+        System.out.println("VirtualView -> Controller");
+        setChanged();
+        notifyObservers(diePlacementMessage);
+
+    }
     public void updateServer(NoActionMove noActionMove){
         System.out.println("VirtualView -> Controller");
         setChanged();
@@ -112,6 +118,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     @Override
     public void update(CreatePlayerMessage createPlayerMessage) {
         virtualClientRMI.notifyClient(createPlayerMessage);
+    }
+
+    @Override
+    public void update(DiePlacementMessage diePlacementMessage) {
+
     }
 
     @Override
@@ -185,7 +196,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(RequestMessage requestMessage) {
-
+        virtualClientRMI.notifyClient(requestMessage);
     }
 
 

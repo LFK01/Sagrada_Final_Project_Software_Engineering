@@ -53,7 +53,8 @@ public class ToolCard {
                             //System.out.println("new description");
                             description = words[i+1].replace('/', ' ');
                             i++;
-                        }
+                            hasNextLine = false;
+                        }/*
                         if(words[i].trim().equalsIgnoreCase("effects:")){
                             String[] effectsNamesList = words[i+1].split("/");
                             for(String effectName: effectsNamesList){
@@ -64,7 +65,7 @@ public class ToolCard {
                             inputManager = InputManager.valueOf(words[i+1]);
                             i++;
                             hasNextLine = false;
-                        }
+                        }*/
                     }
                     i++;
                 }

@@ -109,6 +109,17 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
             }
         }
     }
+    public void notifyClient(RequestMessage requestMessage){
+        System.out.println("VirtualClientSocket -> Client: " + requestMessage.toString());
+        if(isConnected){
+            try{
+                writer.writeObject(requestMessage);
+            } catch (IOException e) {
+                isConnected = false;
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
+            }
+        }
+    }
 
     public void notifyClient(ErrorMessage errorMessage){
         System.out.println("VirtualClientSocket -> Client: " + errorMessage.toString());

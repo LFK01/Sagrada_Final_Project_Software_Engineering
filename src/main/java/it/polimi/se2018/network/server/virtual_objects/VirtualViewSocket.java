@@ -67,6 +67,12 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         setChanged();
         notifyObservers(chooseDiceMove);
     }
+    public void updateServer(DiePlacementMessage diePlacementMessage){
+        System.out.println("VirualViewSocket -> Controller");
+        setChanged();
+        notifyObservers(diePlacementMessage);
+
+    }
     public void updateServer(NoActionMove noActionMove){
         System.out.println("VirualViewSocket -> Controller");
         setChanged();
@@ -95,6 +101,11 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     public void update(CreatePlayerMessage createPlayerMessage) {
         System.out.println("VWSocket -> VCSocket: " + createPlayerMessage.toString());
         virtualClientSocket.notifyClient(createPlayerMessage);
+    }
+
+    @Override
+    public void update(DiePlacementMessage diePlacementMessage) {
+
     }
 
     @Override
@@ -173,7 +184,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     @Override
     public void update(RequestMessage requestMessage) {
-
+        System.out.println("VWSocket -> VCSocket: " + requestMessage.toString());
+        virtualClientSocket.notifyClient(requestMessage);
     }
 
     @Override

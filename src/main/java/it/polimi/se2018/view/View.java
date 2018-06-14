@@ -32,6 +32,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     private boolean isPlayerTurn;
     private int playersNumber;
     private int changedDiePosition;
+    private int draftPoolPosition = -1;
 
     boolean windowCreated = true;
 
@@ -74,97 +75,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         isPlayerTurn =false;
     }
 
-    /**
-     *method that throws a message to controller with the description of the move
-     * @param draftPoolPos  a class that contains dice in the game
-     * @param row   it serves for the position of the die
-     * @param col   it serves for the position of the die
-     */
-    public void handleDiceMove(int draftPoolPos ,int row,int col){
-        notifyObservers(new ChooseDiceMove(username, "server", draftPoolPos, row, col));
-    }
 
     /**
      * shows up a login window where the user can choose her/his name
      */
     public void createPlayer(){
-        //TODO when called by socket connection we have to check player number is lower than 4
-        /*JFrame frameCreatePlayer = new JFrame("New Player");
-        Container containerCreatePlayer = new Container();
-        GridLayout layourCreatePlayer = new GridLayout(3,1);
-
-        frameCreatePlayer.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frameCreatePlayer.setSize(300, 200);
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        frameCreatePlayer.setLocation(dim.width/2-frameCreatePlayer.getSize().width/2, dim.height/2-frameCreatePlayer.getSize().height/2);
-        frameCreatePlayer.add(containerCreatePlayer);
-        containerCreatePlayer.setLayout(layourCreatePlayer);
-
-        JLabel instructionLabel = new JLabel("Username:", JLabel.LEFT);
-        JTextField usernameTextField = new JTextField("username", JTextField.CENTER);
-        usernameTextField.setEnabled(true);
-        usernameTextField.setFocusable(true);
-
-        usernameTextField.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    username = usernameTextField.getText();
-                    frameCreatePlayer.dispose();
-                    setChanged();
-                    notifyObservers(new CreatePlayerMessage(username, "server", username));
-                }
-            }
-            @Override
-            public void keyPressed(KeyEvent e) {            }
-            @Override
-            public void keyReleased(KeyEvent e) {            }
-        });
-
-        usernameTextField.addMouseListener(new MouseListener() {
-            boolean firstPressed = false;
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(!firstPressed){
-                    firstPressed=true;
-                    usernameTextField.setText("");
-                }}
-            @Override
-            public void mousePressed(MouseEvent e) {            }
-            @Override
-            public void mouseReleased(MouseEvent e) {            }
-            @Override
-            public void mouseEntered(MouseEvent e) {            }
-            @Override
-            public void mouseExited(MouseEvent e) {            }
-        });
-
-        JButton confirmButton = new JButton("OK");
-        confirmButton.setEnabled(true);
-
-        confirmButton.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                username = usernameTextField.getText();
-                frameCreatePlayer.dispose();
-                setChanged();
-                notifyObservers(new CreatePlayerMessage(username, "server", username));
-            }
-            @Override
-            public void mousePressed(MouseEvent e) {           }
-            @Override
-            public void mouseReleased(MouseEvent e) {            }
-            @Override
-            public void mouseEntered(MouseEvent e) {            }
-            @Override
-            public void mouseExited(MouseEvent e) {            }
-        });
-
-        containerCreatePlayer.add(instructionLabel);
-        containerCreatePlayer.add(usernameTextField);
-        containerCreatePlayer.add(confirmButton);
-
-        frameCreatePlayer.setVisible(true);*/
         inputManager = InputManager.INPUT_PLAYER_NAME;
         new Thread(this).start();
     }
@@ -308,6 +223,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     }
 
     @Override
+    public void update(DiePlacementMessage diePlacementMessage) {
+
+    }
+
+    @Override
     public void update(ErrorMessage errorMessage) {
         System.out.println("sono entrato nell'update" + errorMessage.getRecipient());
         if(errorMessage.getRecipient().equals(username)){
@@ -343,30 +263,77 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(GameInitializationMessage gameInitializationMessage) {
-        System.out.println("Il tuo obiettivo privato è " + privateObjectiveCardsDescription + " :\n");
-        for(int i=0; i<gameInitializationMessage.getPublicObjectiveCardsDescription().length; i++){
-            System.out.println("Public Objective Card #" + (i+1) +" :\n" + gameInitializationMessage.getPublicObjectiveCardsDescription()[i]);
+        String playingPLayer=null;
+        boolean alreadyRead = false;
+        System.out.println("Private objective card: " + privateObjectiveCardsDescription);
+        //System.out.println(gameInitializationMessage.getGameboardInformation());
+        String[] words = gameInitializationMessage.getGameboardInformation().split("/");
+        for(int i =0; i<words.length;i++){
+            int cardNumber=1;
+            if (words[i].equalsIgnoreCase("PublicObjectiveCards:")) {
+                System.out.println("ciao1");
+                i++;
+                while (!alreadyRead) {
+                    if (words[i].equalsIgnoreCase("Name:")) {
+                        System.out.println("Public Objective Card #" + cardNumber + ": " + words[i + 1]);
+                        cardNumber++;
+                        i+=2;
+                    }
+                    if (words[i].equalsIgnoreCase("Description:")) {
+                        System.out.println("Description: " + words[i + 1] + "\n");
+                        i+=2;
+                    }
+                    if (words[i].equalsIgnoreCase("ToolCards:")) {
+                        alreadyRead = true;
+                    }
+                }
+            }
+            if(words[i].equalsIgnoreCase("ToolCards:")) {
+                cardNumber = 1;
+                alreadyRead=false;
+                i++;
+                while (!alreadyRead) {
+                    if (words[i].equalsIgnoreCase("Name:")) {
+                        System.out.println("ToolCards #" + cardNumber + ": " + words[i + 1]);
+                        cardNumber++;
+                        i+=2;
+                    }
+                    if (words[i].equalsIgnoreCase("Description:")) {
+                        System.out.println("Description: : " + words[i + 1] + "\n");
+                        i+=2;
+                    }
+                    if(words[i].equalsIgnoreCase("DiceList:")){
+                        alreadyRead = true;
+                    }
+                }
+            }
+            alreadyRead=false;
+            if(words[i].equalsIgnoreCase("DiceList:")){
+                System.out.println("Draft pool: ");
+                while (!alreadyRead) {
+                    System.out.print(words[i + 1] + " ");
+                    i++;
+                    if(words[i].equalsIgnoreCase("SchemaCard:")){
+                        alreadyRead = true;
+                    }
+                }
+            }
+            if(words[i].equalsIgnoreCase("SchemaCard:")){
+                System.out.println("\n");
+                while(!words[i].equalsIgnoreCase("schemaStop:")){
+                    System.out.println(words[i]);
+                    i++;
+                }
+            }
+            if(words[i].equalsIgnoreCase("playingPlayer:")){
+                playingPLayer = words[i+1];
+            }
         }
-        for(int j=0; j<gameInitializationMessage.getToolCardsDescription().length; j++){
-            toolCardDescription = gameInitializationMessage.getToolCardsDescription();
-            System.out.println("Tool Card #" + (j+1) +" :\n" + gameInitializationMessage.getToolCardsDescription()[j]);
-        }
-        System.out.println("roundTrack"+ ":\n"+ gameInitializationMessage.getRoundTrack().toString());
-        playersNumber = gameInitializationMessage.getSchemaInGame().length;
-        for(int z=0;z<gameInitializationMessage.getSchemaInGame().length;z++){
-            System.out.println(gameInitializationMessage.getSchemaInGame()[z]);
-        }
-        if(gameInitializationMessage.getPlayingPlayer().equals(username)){
-            System.out.println("It's your Turn! Type the number of your choice:" +
-                                "\n1 Place a die" +
-                                "\n2 Use a ToolCard" +
-                                "\n3 Do nothing");
-        }else{
-            System.out.println("It's not your turn!");
-        }
-        if(gameInitializationMessage.getPlayingPlayer().equals(username)) {
+        if(playingPLayer.equals(username)){
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             new Thread(this).start();
+        }else{
+            System.out.println("It's not your turn!");
         }
     }
 
@@ -382,8 +349,14 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(RequestMessage requestMessage) {
-        toolCardUsageName = requestMessage.getToolCardName();
+        if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("DraftPoolDiePosition:")){
+            draftPoolPosition = Integer.parseInt(requestMessage.getValues().split(" ")[1]);
+        }
+        if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("ToolCardName:")){
+            toolCardUsageName = requestMessage.getValues().split(" ")[1];
+        }
         inputManager = requestMessage.getInputManager();
+
         new Thread(this).start();
     }
 
@@ -394,6 +367,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
+        playersNumber = showPrivateObjectiveCardsMessage.getPlayerNumber();
         if(username.equals(showPrivateObjectiveCardsMessage.getRecipient())){
             showPrivateObjectiveCard(showPrivateObjectiveCardsMessage.getPrivateObjectiveCardColor());
         }
@@ -443,23 +417,8 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
-        String[] toolCardNames = {"Pinza/Sgrossatrice",
-                "Pennello/per/Eglomise",
-                "Alesatore/per/lamina/di/rame",
-                "Lathekin",
-                "Taglierina/circolare",
-                "Pennello/per/Pasta/Salda",
-                "Martelletto",
-                "Tenaglia/a/Rotelle",
-                "Riga/in/Sughero",
-                "Tampone/Diamantato",
-                "Diluente/per/Pasta/Salda",
-                "Taglierina/Manuale"};
-        if(toolCardErrorMessage.getToolCardName().equalsIgnoreCase(toolCardNames[0].replace("/", " "))){
-            String sender = toolCardErrorMessage.getSender();
-            String recipient = toolCardErrorMessage.getRecipient();
-            this.update(new RequestMessage(sender, recipient, toolCardErrorMessage.getToolCardName(), InputManager.INPUT_MODIFY_DIE_VALUE));
-        }
+        inputManager = toolCardErrorMessage.getInputManager();
+        new Thread(this).start();
     }
 
     @Override
@@ -530,6 +489,31 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             System.out.println("choose a valid number");
                         } else {
                             wrongInput = false;
+                            if(choice == 1){
+                                int diceOnRoundDice =-1;
+                                System.out.println("Take a die from the draftPool:");
+                                wrongInput = true;
+                                while(wrongInput) {
+                                    System.out.print("Die position: ");
+                                    try {
+                                        input = scanner.nextLine();
+                                        diceOnRoundDice = Integer.parseInt(input);
+                                        System.out.println("NUMERO_GIOCATORI " + playersNumber);
+                                        if (diceOnRoundDice < 1 || diceOnRoundDice > playersNumber *2 +1) {
+                                            System.out.println("Wrong Input");
+                                            wrongInput = true;
+                                        } else {
+                                            diceOnRoundDice = diceOnRoundDice-1;
+                                            wrongInput = false;
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Wrong Input");
+                                        wrongInput = true;
+                                    }
+                                }
+                                setChanged();
+                                notifyObservers(new ChooseDiceMove(username,"server",diceOnRoundDice));
+                            }
                             if(choice == 2){
                                 System.out.println("Tool card number: ");
                                 try{
@@ -550,31 +534,19 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                     wrongInput = true;
                                 }
                             }
+                            if (choice ==3){
+                                System.out.println("Ho deciso di passare il turno");
+                                setChanged();
+                                notifyObservers(new NoActionMove(username,"server"));
+
+                            }
                         }
                     } catch (NumberFormatException e){
                         System.out.println("Wrong input!");
                         wrongInput = true;
                     }
                 }
-                if(choice == 1){
-                    Scanner in = new Scanner(System.in);
-                    int diceOnRoundTrack, row, col;
-                    System.out.println("Take a die from the roundTrack");
-                    diceOnRoundTrack = in.nextInt()-1;
-                    System.out.println("choose a row ");
-                    row = in.nextInt()-1;
-                    System.out.println("choose a column");
-                    col = in.nextInt()-1;
-                    System.out.println("ho i valori da inviare" + diceOnRoundTrack + row+ col);
-                    setChanged();
-                    notifyObservers(new ChooseDiceMove(username,"server",diceOnRoundTrack,row,col));
-                }
-                if (choice ==3){
-                    System.out.println("Ho deciso di passare il turno");
-                    setChanged();
-                    notifyObservers(new NoActionMove(username,"server"));
 
-                }
                 //setChanged();
                 //notifyObservers();
                 break;
@@ -694,8 +666,9 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_PLACE_DIE: {
+                StringBuilder builder = new StringBuilder();
                 boolean wrongInput = true;
-                int row = -1, col = -1;
+                int row = -1;
                 System.out.println("Choose die position:");
                 while (wrongInput) {
                     System.out.print("row:");
@@ -704,9 +677,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         row = Integer.parseInt(input);
                         if (row < 1 || row >= SCHEMA_CARD_ROWS_NUMBER) {
                             wrongInput = true;
-                        } else {
                             System.out.println("Wrong Input!");
+                        } else {
+                            row = row-1;
                             wrongInput = false;
+                            builder.append("row: " + row + " ");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Wrong Input!");
@@ -714,7 +689,9 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     }
                 }
                 wrongInput = true;
+                int col = -1;
                 while (wrongInput) {
+                    System.out.println("col: ");
                     try {
                         input = scanner.nextLine();
                         col = Integer.parseInt(input);
@@ -722,15 +699,21 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             System.out.println("Wrong Input!");
                             wrongInput = true;
                         } else {
+                            col = col-1;
                             wrongInput = false;
+                            builder.append("col: " + col + " ");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Wrong Input!");
                         wrongInput = true;
                     }
                 }
+                builder.append("DraftPoolDiePosition: ");
+                builder.append(draftPoolPosition);
+                System.out.println("Riga: "+ row + " " + "col: " +col );
+                System.out.println(builder.toString());
                 setChanged();
-                notifyObservers(new ChooseDiceMove(username, "server", changedDiePosition, row, col));
+                notifyObservers(new DiePlacementMessage(username,"server",builder.toString()));
                 break;
             }
         }

@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-public class Server {
+public class    Server {
 
     private static int portSocket = 1111;
     private static int portRMI = 1099;

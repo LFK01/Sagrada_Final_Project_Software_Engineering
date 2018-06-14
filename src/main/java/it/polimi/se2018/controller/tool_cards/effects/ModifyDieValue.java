@@ -7,6 +7,7 @@ import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.player.Player;
+import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.util.ArrayList;
 
@@ -42,33 +43,18 @@ public class ModifyDieValue implements EffectInterface {
             if(increaseValue){
                 if(dieToModify.getValue() == 6){
                     model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove"));
+                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove", InputManager.INPUT_MODIFY_DIE_VALUE));
                 } else {
                     dieToModify.setValue(dieToModify.getValue()+1);
                     model.setChanged();
                     model.notifyObservers(new SuccessMessage("server", username, "SuccessfulMove"));
-                    Player activePlayer = null;
-                    for(Player player: model.getParticipants()){
-                        if(player.getName().equals(username)){
-                            activePlayer = player;
-                        }
-                    }
-                    for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-                        if(toolCard.getName().equalsIgnoreCase(toolCardName)){
-                            if(toolCard.isFirstUsage()){
-                                activePlayer.decreaseFavorTokens(false);
-                            } else {
-                                activePlayer.decreaseFavorTokens(true);
-                            }
-                        }
-                    }
                     model.updateGameboard();
                     isDone = true;
                 }
             } else {
                 if(dieToModify.getValue() == 1){
                     model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove"));
+                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove", InputManager.INPUT_MODIFY_DIE_VALUE));
                 } else {
                     dieToModify.setValue(dieToModify.getValue()+1);
                     Player activePlayer = null;

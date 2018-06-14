@@ -1,5 +1,6 @@
 package it.polimi.se2018.model;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
 import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
@@ -105,16 +106,24 @@ public class Model extends ProjectObservable implements Runnable{
 
     /**
      * method to check if a player can place a die in a position on his/her schema card
-     * @param message data structure containing all the information about the player move
+     *
      */
-    public void doDiceMove(ChooseDiceMove message){
+    public void doDiceMove(int draftPoolPos,int row,int col){
         try{
-            placeDie(participants.get(turnOfTheRound).getSchemaCard(), message.getDraftPoolPos(), message.getRow(), message.getCol());
-            removeDieFromDrafPool(message.getDraftPoolPos());
+            placeDie(participants.get(turnOfTheRound).getSchemaCard(),draftPoolPos,row,col);
+            removeDieFromDrafPool(draftPoolPos);
+            if(isFirstDraftOfDice()) {
+                participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
+            }
+            else {
+                participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
+            }
+            System.out.println("STO PER AGGIORNARE LA GAMEBOARD");
+            updateGameboard();
         }
         catch(FullCellException e){
             setChanged();
-            notifyObservers(new ErrorMessage("model",message.getSender(),"La posizione &eacute; gi&aacute; occupata"));
+            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"La posizione &eacute; gi&aacute; occupata"));
         }
         catch(RestrictionsNotRespectedException e){
             setChanged();
@@ -125,7 +134,6 @@ public class Model extends ProjectObservable implements Runnable{
     private void removeDieFromDrafPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
-        updateGameboard();
     }
 
     /**
@@ -340,7 +348,7 @@ public class Model extends ProjectObservable implements Runnable{
         for(int i=0; i < participants.size(); i++) {
             String colorString = privateCards.get(i).getDescription();
             setChanged();
-            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString));
+            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString,participants.size()));
             s = s+1;
         }
         sendSchemaCard();
@@ -391,37 +399,35 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void updateGameboard(){   //momentaneamente facoltativo
-        String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
-        String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
-        String roundTrack = null;
         Thread sendingMessageThread;
+        StringBuilder builderGameboard = new StringBuilder();
+        builderGameboard.append("PublicObjectiveCards:/");
         for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
-            StringBuilder builderPublicObjectiveCards = new StringBuilder();
-            builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
-            builderPublicObjectiveCards.append("Description: " + gameBoard.getPublicObjectiveCardDescription(i) + "\n");
-            publicObjectiveCardsDescription[i] = builderPublicObjectiveCards.toString();
+            builderGameboard.append("Name:/" + gameBoard.getPublicObjectiveCardName(i) + "/");
+            builderGameboard.append("Description:/" + gameBoard.getPublicObjectiveCardDescription(i) + "/");
         }
+        builderGameboard.append("ToolCards:/");
         for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
-            StringBuilder builderToolCards = new StringBuilder();
-            builderToolCards.append("Name: " + gameBoard.getToolCardName(i) + "\n");
-            builderToolCards.append("Description: " + gameBoard.getToolCardDescription(i) + "\n");
-            toolCardDescription[i] = builderToolCards.toString();
+            builderGameboard.append("Name:/" + gameBoard.getToolCardName(i) + "/");
+            builderGameboard.append("Description:/" + gameBoard.getToolCardDescription(i) + "/");
         }
-        StringBuilder builderRoundTrack = new StringBuilder();
+        builderGameboard.append("DiceList:/");
         RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
         for(int i=0; i<currentDiceList.size(); i++){
-            builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
+            builderGameboard.append(currentDiceList.get(i).toString() + "/");
         }
-        builderRoundTrack.append("\n");
-        roundTrack = builderRoundTrack.toString();
-        String[] schemaInGame = new String [participants.size()];
-        for (int i =0; i<schemaInGame.length;i++){
-            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
+        builderGameboard.append("/");
+        builderGameboard.append("SchemaCard:/");
+        for (int i =0; i<participants.size();i++){
+            builderGameboard.append(participants.get(i).getSchemaCard().toString() + "/");
         }
+        builderGameboard.append("schemaStop:/");
+        builderGameboard.append("playingPlayer:/");
+        builderGameboard.append(participants.get(turnOfTheRound).getName());
         for(int i = 0; i<participants.size(); i++){
             try{
-                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, schemaInGame, roundTrack, participants.get(turnOfTheRound).getName()));
+                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(),builderGameboard.toString()));
                 sendingMessageThread = new Thread(this);
                 sendingMessageThread.start();
                 sendingMessageThread.join();

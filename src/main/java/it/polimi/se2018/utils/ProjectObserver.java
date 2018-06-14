@@ -22,6 +22,8 @@ public interface ProjectObserver {
 
     void update(CreatePlayerMessage createPlayerMessage);
 
+    void update(DiePlacementMessage diePlacementMessage);
+
     void update(ErrorMessage errorMessage);
 
     void update(GameInitializationMessage gameInitializationMessage);

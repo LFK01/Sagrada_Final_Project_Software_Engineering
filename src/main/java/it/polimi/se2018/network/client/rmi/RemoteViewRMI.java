@@ -83,6 +83,13 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             setChanged();
             notifyObservers(gameInitializationMessage);
         }
+    }
+    private void notifyView(RequestMessage requestMessage){
+        if(requestMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI - > view: " + requestMessage.toString());
+            setChanged();
+            notifyObservers(requestMessage);
+        }
 
     }
 
@@ -138,6 +145,19 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
                 serverIsUp = false;
             }
         }
+    }
+
+    @Override
+    public void update(DiePlacementMessage diePlacementMessage) {
+        if(serverIsUp){
+            try{
+                System.out.println("RemoteVRMI -> Server: " + diePlacementMessage.toString());
+                server.sendToServer(diePlacementMessage);
+            } catch (RemoteException e){
+                serverIsUp = false;
+            }
+        }
+
     }
 
     @Override

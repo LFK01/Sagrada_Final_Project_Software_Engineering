@@ -20,6 +20,10 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMIInterface {
+    @Override
+    public void sendToServer(DiePlacementMessage diePlacementMessage) throws RemoteException {
+
+    }
 
     private Server server;
 

@@ -15,27 +15,14 @@ public class ChooseDiceMove extends Message {
     /**
      * Initializes ChooseDiceMove with reference of player, die posizione and new die position
      * @param draftPoolPos
-     * @param row
-     * @param col
-     *
      */
-    public ChooseDiceMove(String sender,String recipient,int draftPoolPos , int row, int col) {
+    public ChooseDiceMove(String sender,String recipient,int draftPoolPos ) {
         super(sender, recipient);
         this.draftPoolPos = draftPoolPos;
-        this.row=row;
-        this.col=col;
     }
 
     public int getDraftPoolPos() {
         return draftPoolPos;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getCol() {
-        return col;
     }
 
 

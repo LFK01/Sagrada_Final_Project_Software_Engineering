@@ -14,7 +14,7 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
     private static SfumatureDiverseRiga thisInstance;
 
     private SfumatureDiverseRiga() {
-        super( "Sfumature diverse - Riga",  "Righe senza sfumature ripetute","5" , false);
+        super( "Sfumature diverse Riga",  "Righe senza sfumature ripetute","5" , false);
     }
 
     public static synchronized SfumatureDiverseRiga getThisInstance() {

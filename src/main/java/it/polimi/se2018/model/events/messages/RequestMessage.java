@@ -4,18 +4,18 @@ import it.polimi.se2018.view.comand_line.InputManager;
 
 public class RequestMessage extends Message {
 
-    private String toolCardName;
+    private String values;
 
     private InputManager inputManager;
 
-    public RequestMessage(String sender, String recipient, String toolCardName, InputManager inputManager) {
+    public RequestMessage(String sender, String recipient, String values, InputManager inputManager) {
         super(sender, recipient);
-        this.toolCardName = toolCardName;
+        this.values = values;
         this.inputManager = inputManager;
     }
 
-    public String getToolCardName() {
-        return toolCardName;
+    public String getValues() {
+        return values;
     }
 
     public InputManager getInputManager() {

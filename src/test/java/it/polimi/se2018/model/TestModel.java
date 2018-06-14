@@ -57,7 +57,7 @@ public class TestModel {
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice4);
 
         SchemaCard schemaCard = new SchemaCard(1);
-        ChooseDiceMove chooseDiceMove = new ChooseDiceMove("luca","model",1,1,1);
+        ChooseDiceMove chooseDiceMove = new ChooseDiceMove("luca","model",1);
         //model.doDiceMove(chooseDiceMove);
         //model.placeDie(schemaCard,5,0,0);
         //model.placeDie(schemaCard,6,0,0);

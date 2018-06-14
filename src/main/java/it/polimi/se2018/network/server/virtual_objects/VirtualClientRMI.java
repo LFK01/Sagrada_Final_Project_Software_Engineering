@@ -131,6 +131,12 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
+    public void sendToServer(DiePlacementMessage diePlacementMessage) throws RemoteException {
+        System.out.println("VirtualClientRMI -> Server: " + diePlacementMessage.toString());
+        virtualView.updateServer(diePlacementMessage);
+        }
+
+    @Override
     public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + updateTurnMessage.toString());
         virtualView.updateServer(updateTurnMessage);
@@ -181,6 +187,19 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
                 e.printStackTrace();
             }
         }
+    }
+    public void notifyClient(RequestMessage requestMessage){
+        if(isConnected){
+            try{
+                System.out.println("VCRMI -> RemoteVRMI: " + requestMessage.toString());
+                remoteView.updateClient(requestMessage);
+            } catch (RemoteException e) {
+                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
+                isConnected = false;
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void notifyClient(ErrorMessage errorMessage){

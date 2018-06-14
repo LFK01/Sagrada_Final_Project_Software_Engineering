@@ -237,7 +237,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         int row=-1;
         int col = -1;
         int draftPoolPosition=-1;
-        System.out.println(words[0]);
+        //System.out.println(words[0]);
         for(int i =0;i<words.length;i++){
             System.out.println("SONO ENTRATO NEL CICLO");
             if(words[i].trim().equalsIgnoreCase("row:")){
@@ -291,8 +291,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             extracts tool cards
             sends initialization message
         */
-        System.out.println("Number of players that has selected a schemaCard: " + playerNumberDoneSelecting);
-        System.out.println("Number of participants in the match: " + model.getParticipantsNumber());
+        //System.out.println("Number of players that has selected a schemaCard: " + playerNumberDoneSelecting);
+        //System.out.println("Number of participants in the match: " + model.getParticipantsNumber());
         if(playerNumberDoneSelecting == model.getParticipantsNumber()){
             model.extractPublicObjectiveCards();
             model.extractToolCards();
@@ -301,10 +301,22 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
     public void update(ChooseDiceMove message) {
-        System.out.println(message.getDraftPoolPos() + " " );
-        String draftPoolDiePosition = "DraftPoolDiePosition: " + String.valueOf(message.getDraftPoolPos());
-        setChanged();
-        notifyObservers(new RequestMessage("controller",message.getSender(), draftPoolDiePosition, InputManager.INPUT_PLACE_DIE));
+        System.out.println("STO STAMPANDO SE IL GIOCATORE PUò FARE LA MOSSA");
+        System.out.println(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed());
+        if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed() && model.isFirstDraftOfDice()){
+            setChanged();
+            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
+        }
+         else if((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())){
+            setChanged();
+            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
+        }
+        else {
+           System.out.println(message.getDraftPoolPos() + " ");
+            String draftPoolDiePosition = "DraftPoolDiePosition: " + String.valueOf(message.getDraftPoolPos());
+            setChanged();
+            notifyObservers(new RequestMessage("controller", message.getSender(), draftPoolDiePosition, InputManager.INPUT_PLACE_DIE));
+        }
     }
     public void update(NoActionMove message){
         System.out.println(model.getTurnOfTheRound());

@@ -110,15 +110,18 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void doDiceMove(int draftPoolPos,int row,int col){
         try{
+            //System.out.println(participants.get(turnOfTheRound).getSchemaCard());
             placeDie(participants.get(turnOfTheRound).getSchemaCard(),draftPoolPos,row,col);
             removeDieFromDrafPool(draftPoolPos);
+            System.out.println("CONTROLLO SE è IL PRIMO GIRO");
+            System.out.println(isFirstDraftOfDice());
             if(isFirstDraftOfDice()) {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
             }
             else {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
             }
-            System.out.println("STO PER AGGIORNARE LA GAMEBOARD");
+            //System.out.println("STO PER AGGIORNARE LA GAMEBOARD");
             updateGameboard();
         }
         catch(FullCellException e){
@@ -419,7 +422,8 @@ public class Model extends ProjectObservable implements Runnable{
         }
         builderGameboard.append("/");
         builderGameboard.append("SchemaCard:/");
-        for (int i =0; i<participants.size();i++){
+        for (int i =participants.size()-1; i>=0;i--){
+            builderGameboard.append(participants.get(i).getName() + "\n");
             builderGameboard.append(participants.get(i).getSchemaCard().toString() + "/");
         }
         builderGameboard.append("schemaStop:/");

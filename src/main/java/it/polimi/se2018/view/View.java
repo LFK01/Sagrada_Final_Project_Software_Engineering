@@ -258,6 +258,11 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 new Thread(this).start();
 
             }
+            if(errorMessage.toString().equals("You have already used all your moves in this round")){
+                System.out.println("You have already used all your moves in this round");
+                inputManager = InputManager.INPUT_CHOOSE_MOVE;
+                new Thread(this).start();
+            }
         }
     }
 
@@ -313,7 +318,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 while (!alreadyRead) {
                     System.out.print(words[i + 1] + " ");
                     i++;
-                    if(words[i].equalsIgnoreCase("SchemaCard:")){
+                    if(words[i+1].equalsIgnoreCase("SchemaCard:")){
                         alreadyRead = true;
                     }
                 }
@@ -321,6 +326,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             if(words[i].equalsIgnoreCase("SchemaCard:")){
                 System.out.println("\n");
                 while(!words[i].equalsIgnoreCase("schemaStop:")){
+
                     System.out.println(words[i]);
                     i++;
                 }
@@ -675,7 +681,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     try {
                         input = scanner.nextLine();
                         row = Integer.parseInt(input);
-                        if (row < 1 || row >= SCHEMA_CARD_ROWS_NUMBER) {
+                        if (row < 1 || row > SCHEMA_CARD_ROWS_NUMBER) {
                             wrongInput = true;
                             System.out.println("Wrong Input!");
                         } else {

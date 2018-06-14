@@ -27,6 +27,9 @@ public class Player implements Serializable {
         this.schemaCard = null;
         this.points=0;
         this.playerTurns = new Round[GAME_ROUNDS_NUMBER];
+        for(int i =0; i<10;i++){
+            playerTurns[i] = new Round();
+        }
     }
 
     public String getName(){ return name; }

@@ -61,7 +61,7 @@ public class TestModel {
         //model.doDiceMove(chooseDiceMove);
         //model.placeDie(schemaCard,5,0,0);
         //model.placeDie(schemaCard,6,0,0);
-        model.placeDie(schemaCard,5,1,4);
+        model.doDiceMove(4,5,1);
         model.placeDie(schemaCard,6,2,4);
         model.placeDie(schemaCard,7,1,3);
 
@@ -70,15 +70,6 @@ public class TestModel {
         }catch(RestrictionsNotRespectedException e){
             fail();
         }
-
-
-        /*try {
-            model.placeDie(schemaCard, 5, 3, 4);
-        }
-        catch(RestrictionsNotRespectedException e){
-            fail();
-        }*/
-
         System.out.println(schemaCard.toString());
 
         assertEquals(Color.YELLOW,schemaCard.getCell(0,0).getAssignedDice().getDiceColor());

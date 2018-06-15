@@ -109,9 +109,22 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
+    public void update(ChooseDiceMove chooseDiceMove) {
+        System.out.println("RemoteWSocket -> Server: " + chooseDiceMove.toString());
+        server.sendToServer(chooseDiceMove);
+
+    }
+
+    @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
         System.out.println("RemoteWSocket -> Server: " + chooseSchemaMessage.toString());
         server.sendToServer(chooseSchemaMessage);
+    }
+
+    @Override
+    public void update(ComebackMessage comebackMessage) {
+        System.out.println("RemoteWSocket -> Server: " + comebackMessage.toString());
+        server.sendToServer(comebackMessage);
     }
 
     @Override
@@ -152,6 +165,12 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
+    public void update(NoActionMove noActionMove){
+        System.out.println("RemoteWSocket -> Server: " + noActionMove.toString());
+        server.sendToServer(noActionMove);
+    }
+
+    @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
         System.out.println("RemoteWSocket -> Server: " + selectedSchemaMessage.toString());
         server.sendToServer(selectedSchemaMessage);
@@ -165,7 +184,8 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     @Override
     public void update(SuccessMessage successMessage) {
-
+        System.out.println("RemoteWSocket -> Server: " + successMessage.toString());
+        server.sendToServer(successMessage);
     }
 
     @Override
@@ -181,14 +201,21 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(NoActionMove noActionMove){
-        System.out.println("RemoteWSocket -> Server: " + noActionMove.toString());
-        server.sendToServer(noActionMove);
+    public void update(RequestMessage requestMessage) {
+        System.out.println("RemoteWSocket -> Server: " + requestMessage.toString());
+        server.sendToServer(requestMessage);
     }
 
     @Override
-    public void update(RequestMessage requestMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+        System.out.println("RemoteWSocket -> Server: " + toolCardActivationMessage.toString());
+        server.sendToServer(toolCardActivationMessage);
+    }
 
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
+        System.out.println("RemoteWSocket -> Server: " + toolCardErrorMessage.toString());
+        server.sendToServer(toolCardErrorMessage);
     }
 
 
@@ -200,23 +227,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-
-    }
-
-    @Override
-    public void update(ChooseDiceMove chooseDiceMove) {
-        System.out.println("RemoteWSocket -> Server: " + chooseDiceMove.toString());
-        server.sendToServer(chooseDiceMove);
-
-    }
-
-    @Override
-    public void update(ToolCardActivationMessage toolCardActivationMessage) {
-
-    }
-
-    @Override
-    public void update(ToolCardErrorMessage toolCardErrorMessage) {
-
+        System.out.println("RemoteWSocket -> Server: " + useToolCardMove.toString());
+        server.sendToServer(useToolCardMove);
     }
 }

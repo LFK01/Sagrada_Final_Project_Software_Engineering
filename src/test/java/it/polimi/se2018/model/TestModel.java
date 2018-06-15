@@ -61,18 +61,27 @@ public class TestModel {
         //model.doDiceMove(chooseDiceMove);
         //model.placeDie(schemaCard,5,0,0);
         //model.placeDie(schemaCard,6,0,0);
-        model.doDiceMove(4,5,1);
+        /*model.placeDie(schemaCard,5,1,4);
         model.placeDie(schemaCard,6,2,4);
-        model.placeDie(schemaCard,7,1,3);
-
+        model.placeDie(schemaCard,7,1,3);*/
+        /*
         try{
-            model.placeDie(schemaCard,8,0,1);
+            //model.placeDie(schemaCard,8,0,1);
         }catch(RestrictionsNotRespectedException e){
             fail();
+        }*/
+
+
+        /*try {
+            model.placeDie(schemaCard, 5, 3, 4);
         }
+        catch(RestrictionsNotRespectedException e){
+            fail();
+        }*/
+
         System.out.println(schemaCard.toString());
 
-        assertEquals(Color.YELLOW,schemaCard.getCell(0,0).getAssignedDice().getDiceColor());
+        //assertEquals(Color.YELLOW,schemaCard.getCell(0,0).getAssignedDice().getDiceColor());
         //assertEquals(Color.BLUE,schemaCard.getCell(0,1).getAssignedDice().getDiceColor());
         //assertNotEquals(Color.RED,schemaCard.getCell(2,3).getAssignedDice().getDiceColor());
 
@@ -107,17 +116,17 @@ public class TestModel {
 
     @Test
     public void testHasADieNear(){
-        GameBoard gameboard = null;
-        ArrayList<Player> partecipants = new ArrayList();
-        partecipants.add(new Player("luca"));
-        partecipants.add(new Player("marco"));
+        GameBoard gameBoard = null;
         Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
         try{
-            model.getGameBoard();
+            gameBoard = model.getGameBoard();
         }
         catch(NullPointerException e) {
             fail();
         }
+        assertNotNull(gameBoard);
     }
 
     @Test

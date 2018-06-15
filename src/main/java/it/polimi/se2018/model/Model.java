@@ -1,20 +1,14 @@
 package it.polimi.se2018.model;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import it.polimi.se2018.controller.tool_cards.ToolCard;
-import it.polimi.se2018.model.events.messages.ChooseSchemaMessage;
-import it.polimi.se2018.model.events.messages.SuccessCreatePlayerMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
-import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.utils.ProjectObservable;
 
@@ -35,10 +29,11 @@ import java.util.*;
 public class Model extends ProjectObservable implements Runnable{
 
     private int roundNumber;
-    private static final int SCHEMA_CARDS_EXTRACT_NUMBER = 2;
-    private static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
-    private static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
-    private static final int SCHEMA_CARD_NUMBER = 24;
+    public static final int SCHEMA_CARDS_EXTRACT_NUMBER = 2;
+    public static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
+    public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
+    public static final int TOOL_CARD_NUMBER = 12;
+    public static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -110,18 +105,14 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void doDiceMove(int draftPoolPos,int row,int col){
         try{
-            //System.out.println(participants.get(turnOfTheRound).getSchemaCard());
-            placeDie(participants.get(turnOfTheRound).getSchemaCard(),draftPoolPos,row,col);
-            removeDieFromDrafPool(draftPoolPos);
-            System.out.println("CONTROLLO SE è IL PRIMO GIRO");
-            System.out.println(isFirstDraftOfDice());
+            placeDie(participants.get(turnOfTheRound).getSchemaCard(),draftPoolPos,row,col, false, false,false);
+            removeDieFromDraftPool(draftPoolPos);
             if(isFirstDraftOfDice()) {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
             }
             else {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
             }
-            //System.out.println("STO PER AGGIORNARE LA GAMEBOARD");
             updateGameboard();
         }
         catch(FullCellException e){
@@ -134,17 +125,9 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
-    private void removeDieFromDrafPool(int draftPoolPos) {
+    private void removeDieFromDraftPool(int draftPoolPos) {
         int currentRound = gameBoard.getRoundTrack().getCurrentRound();
         gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
-    }
-
-    /**
-     * method to check if a player can activate a card specified on the parameter move
-     * @param move data structure containing all the information about the player move
-     */
-    public void doToolCardMove(UseToolCardMove move) {
-
     }
 
     /**
@@ -164,10 +147,12 @@ public class Model extends ProjectObservable implements Runnable{
         return participants.indexOf(player) == turnOfTheRound;
     }
 
-    //è public solo per il test
-    public void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
+    public void placeDie(SchemaCard schemaCard, int drafPoolPos, int row, int col,
+                        boolean avoidColorRestrictions, boolean avoidValueRestrictions,
+                        boolean avoidNearnessRestrictions) throws RestrictionsNotRespectedException,
+                        FullCellException{
         Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
-        schemaCard.placeDie(chosenDie, row, col);
+        schemaCard.placeDie(chosenDie, row, col, avoidColorRestrictions, avoidValueRestrictions, avoidNearnessRestrictions);
     }
 
     /**
@@ -197,9 +182,7 @@ public class Model extends ProjectObservable implements Runnable{
      * @param name
      */
     public void addPlayer(String name){
-        System.out.println("Model adds player");
         participants.add(new Player(name));
-        System.out.println("Model -> VWInterface");
         setChanged();
         notifyObservers(new SuccessCreatePlayerMessage("server",name));
     }
@@ -230,12 +213,14 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void extractToolCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(12);
-        for(int i = 1; i <= 12; i++){
+        ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARD_NUMBER);
+        for(int i = 1; i <= TOOL_CARD_NUMBER; i++){
+            System.out.println("added: " + i);
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
+            System.out.println("extracted: " + cardIndex.get(i));
             gameBoard.setToolCards(new ToolCard(cardIndex.get(i)), i);
         }
     }
@@ -304,7 +289,7 @@ public class Model extends ProjectObservable implements Runnable{
         System.out.println("Dealing SchemaCards to players ");
         Thread sendingMessageThread;
         int extractedCardIndex = 0;
-        ArrayList<Integer> randomValues = new ArrayList<Integer>();
+        ArrayList<Integer> randomValues = new ArrayList<>();
         for(int i=0; i<participants.size(); i++){
             System.out.println("Participant: " + participants.get(i).getName());
         }
@@ -340,7 +325,7 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void sendPrivateObjectiveCard(){
-        ArrayList<AbstractObjectiveCard> privateCards = new ArrayList<AbstractObjectiveCard>();
+        ArrayList<AbstractObjectiveCard> privateCards = new ArrayList<>();
         privateCards.add(SfumatureBlu.getThisInstance());
         privateCards.add(SfumatureGialle.getThisInstance());
         privateCards.add(SfumatureVerdi.getThisInstance());
@@ -396,9 +381,7 @@ public class Model extends ProjectObservable implements Runnable{
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
-        }
-        removeSemaphore();
-        */
+        }*/
     }
 
     public void updateGameboard(){   //momentaneamente facoltativo
@@ -406,25 +389,25 @@ public class Model extends ProjectObservable implements Runnable{
         StringBuilder builderGameboard = new StringBuilder();
         builderGameboard.append("PublicObjectiveCards:/");
         for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/" + gameBoard.getPublicObjectiveCardName(i) + "/");
-            builderGameboard.append("Description:/" + gameBoard.getPublicObjectiveCardDescription(i) + "/");
+            builderGameboard.append("Name:/").append(gameBoard.getPublicObjectiveCardName(i)).append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getPublicObjectiveCardDescription(i)).append("/");
         }
         builderGameboard.append("ToolCards:/");
         for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/" + gameBoard.getToolCardName(i) + "/");
-            builderGameboard.append("Description:/" + gameBoard.getToolCardDescription(i) + "/");
+            builderGameboard.append("Name:/").append(gameBoard.getToolCardName(i)).append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
         }
         builderGameboard.append("DiceList:/");
         RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
         for(int i=0; i<currentDiceList.size(); i++){
-            builderGameboard.append(currentDiceList.get(i).toString() + "/");
+            builderGameboard.append(currentDiceList.get(i).toString()).append("/");
         }
         builderGameboard.append("/");
         builderGameboard.append("SchemaCard:/");
         for (int i =participants.size()-1; i>=0;i--){
-            builderGameboard.append(participants.get(i).getName() + "\n");
-            builderGameboard.append(participants.get(i).getSchemaCard().toString() + "/");
+            builderGameboard.append(participants.get(i).getName()).append("\n");
+            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
         }
         builderGameboard.append("schemaStop:/");
         builderGameboard.append("playingPlayer:/");

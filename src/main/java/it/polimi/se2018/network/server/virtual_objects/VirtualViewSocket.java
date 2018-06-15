@@ -92,6 +92,12 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
+    public void update(ComebackMessage comebackMessage) {
+        System.out.println("VWSocket -> VCSocket: " + comebackMessage.toString());
+        virtualClientSocket.notifyClient(comebackMessage);
+    }
+
+    @Override
     public void update(ComebackSocketMessage comebackSocketMessage) {
         System.out.println("VWSocket -> VCSocket: " + comebackSocketMessage.toString());
         virtualClientSocket.notifyClient(comebackSocketMessage);
@@ -163,7 +169,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-
+        System.out.println("VWSocket -> VCSocket: " + useToolCardMove.toString());
+        virtualClientSocket.notifyClient(useToolCardMove);
     }
 
     @Override

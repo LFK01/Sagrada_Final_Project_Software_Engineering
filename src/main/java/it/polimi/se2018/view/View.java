@@ -10,10 +10,6 @@ import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
@@ -32,15 +28,12 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     private boolean isPlayerTurn;
     private int playersNumber;
     private int changedDiePosition;
-    private int draftPoolPosition = -1;
-
-    boolean windowCreated = true;
+    private int draftPoolDiceNumber  = -1;
 
     /**
      * input variables
      */
     private Scanner scanner;
-    //private boolean windowCreated = true;
     private int choice = 0;
     private String input;
 
@@ -48,10 +41,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     private String[] schemaName = new String[4];
 
-    private Thread inputThread;
-
-    private String[] publicObjectiveCardsDescription;
-    private String[] toolCardDescription;
+    private String[] toolCardNames;
     private String privateObjectiveCardsDescription;
     private boolean matchIsOn;
     private String toolCardUsageName;
@@ -62,8 +52,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
      */
     public View(){
         inputManager = InputManager.INPUT_DISABLED;
-        publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARD_NUMBER];
-        toolCardDescription = new String[TOOL_CARD_NUMBER];
+        toolCardNames = new String[TOOL_CARD_NUMBER];
         matchIsOn = true;
     }
 
@@ -84,116 +73,9 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         new Thread(this).start();
     }
 
-    public int demandConnectionType() {
-        JFrame frameDemandConnection = new JFrame("Parent Window");
-        Object[] options = {"RMI", "Socket"};
-        int n = JOptionPane.showOptionDialog(frameDemandConnection, "Choose connection:", "Connection", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, null);
-        if(n == JOptionPane.YES_OPTION){
-            frameDemandConnection.dispose();
-            return 1;
-        }else{
-            frameDemandConnection.dispose();
-            return 2;
-        }
-    }
-
-    public void playerNumberExceededDialog() {
-        JFrame framePlayerNumberExceeded = new JFrame();
-        Object[] options = {"OK"};
-        JOptionPane.showOptionDialog(framePlayerNumberExceeded, "Connection Failed", "Player number limit already reached, unable to add another player", JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, options, null);
-    }
-
-    public static void showSuccessMessage(JFrame parent){
-        Object[] options = {"OK"};
-        JOptionPane.showOptionDialog(parent, "Registration successfully completed!", "Success!", JOptionPane.DEFAULT_OPTION , JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
-    }
-
-    public int chooseConnectionWindow() {
-
-            if (windowCreated) {
-
-                JFrame frame = new JFrame("Quale connessione vuoi scegliere ?");
-                Container container = new Container();
-                ImageIcon iconRMI = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaRMI.PNG");
-                ImageIcon iconSocket = new ImageIcon("src\\main\\java\\it\\polimi\\se2018\\view\\CatturaSocket.PNG");
-                ImageIcon iconComeBack = new ImageIcon("C:\\Users\\giovanni\\IdeaProjects\\ing-sw-2018-fiscaletti-franchin-gangemi\\src\\main\\java\\it\\polimi\\se2018\\view\\comeBack2.jpg");
-                JButton buttonRMI = new JButton(iconRMI);
-                JButton buttonComeBack = new JButton(iconComeBack);
-                JButton buttonSocket = new JButton(iconSocket);
-                buttonRMI.addMouseListener(new MouseListener() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        setChoice();
-                    }
-
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        setChoice();
-                    }
-
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
-                        setChoice();
-
-                    }
-
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        setChoice();
-
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        setChoice();
-
-                    }
-                });
-
-                container.setLayout(new GridLayout(1, 3));
-                container.add(buttonRMI);
-                container.add(buttonComeBack);
-                container.add(buttonSocket);
-                Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-                frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-                frame.setLocation(dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2);
-                frame.add(container);
-                frame.setSize(550, 750);
-                frame.setResizable(false);
-                frame.setVisible(true);
-
-
-            }
-        return choice;
-    }
-
-
-    public void setChoice(){
-        choice = 1;
-    }
-
-
-
-
-    public void chooseSchemaWindow(int schema1,int schema2) {
-
-    }
-
     public void showPrivateObjectiveCard(String description){
         System.out.println("Il tuo obiettivo privato è " + description);
-        privateObjectiveCardsDescription = new String(description);
-    }
-
-
-    public void showGameboard(){
-        for(int i =0; i<3; i++){
-            System.out.println("Objective number"+ " " +(i+1)+ " " + publicObjectiveCardsDescription[i]);
-        }
-        for(int j =0; j<3; j++){
-            System.out.println("ToolCard number"+ " " +(j+1)+ " " + toolCardDescription[j]);
-        }
-        //notifyObservers(new StartGameMessage(username,"server"));
-
+        privateObjectiveCardsDescription = description;
     }
 
     @Override
@@ -206,10 +88,15 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         for(int i=0;i<4;i++) {
             System.out.println("type" + " " + (i+1) + " "+ "to choose this schema");
             System.out.println(chooseSchemaMessage.getSchemaCards(i));
-            schemaName[i]= new String(chooseSchemaMessage.getSchemaCards(i).split("\n")[0]);
+            schemaName[i]= chooseSchemaMessage.getSchemaCards(i).split("\n")[0];
         }
         inputManager = InputManager.INPUT_SCHEMA_CARD;
         new Thread(this).start();
+    }
+
+    @Override
+    public void update(ComebackMessage comebackMessage) {
+
     }
 
     @Override
@@ -229,7 +116,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(ErrorMessage errorMessage) {
-        System.out.println("sono entrato nell'update" + errorMessage.getRecipient());
         if(errorMessage.getRecipient().equals(username)){
             if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
                 System.out.println("Username not available!");
@@ -242,21 +128,28 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
             if(errorMessage.toString().equalsIgnoreCase("NotEnoughPlayer")){
                 System.out.println("Minimum players number not reached.");
             }
+            if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
+                System.out.println("Professor Oak says that it's not the time to use that!");
+                inputManager = InputManager.INPUT_CHOOSE_MOVE;
+                new Thread(this).start();
+            }
             if(errorMessage.toString().equalsIgnoreCase("UsernameNotFound")){
-
+                System.out.println("Username not found");
+            }
+            if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
+                System.out.println("You need more tokens to activate this card!");
+                inputManager = InputManager.INPUT_CHOOSE_MOVE;
+                new Thread(this).start();
             }
             if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
                 System.out.println("Posizione già occupata");
-
                 inputManager =InputManager.INPUT_CHOOSE_MOVE;
                 new Thread(this).start();
-
             }
             if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
                 System.out.println("Posizione non valida");
                 inputManager =InputManager.INPUT_CHOOSE_MOVE;
                 new Thread(this).start();
-
             }
             if(errorMessage.toString().equals("You have already used all your moves in this round")){
                 System.out.println("You have already used all your moves in this round");
@@ -271,8 +164,8 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         String playingPLayer=null;
         boolean alreadyRead = false;
         System.out.println("Private objective card: " + privateObjectiveCardsDescription);
-        //System.out.println(gameInitializationMessage.getGameboardInformation());
         String[] words = gameInitializationMessage.getGameboardInformation().split("/");
+        System.out.println(gameInitializationMessage.getGameboardInformation());
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
             if (words[i].equalsIgnoreCase("PublicObjectiveCards:")) {
@@ -300,6 +193,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 while (!alreadyRead) {
                     if (words[i].equalsIgnoreCase("Name:")) {
                         System.out.println("ToolCards #" + cardNumber + ": " + words[i + 1]);
+                        toolCardNames[cardNumber-1]= "Name: " + words[i+1].replace(" ", "/") + " ";
                         cardNumber++;
                         i+=2;
                     }
@@ -356,13 +250,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     @Override
     public void update(RequestMessage requestMessage) {
         if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("DraftPoolDiePosition:")){
-            draftPoolPosition = Integer.parseInt(requestMessage.getValues().split(" ")[1]);
+            draftPoolDiceNumber = Integer.parseInt(requestMessage.getValues().split(" ")[1]);
         }
         if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("ToolCardName:")){
             toolCardUsageName = requestMessage.getValues().split(" ")[1];
         }
         inputManager = requestMessage.getInputManager();
-
+        System.out.println(inputManager.toString());
         new Thread(this).start();
     }
 
@@ -434,7 +328,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
         switch(inputManager){
             case INPUT_DISABLED:{
                 input = scanner.nextLine();
-                if(input!= ""){
+                if(input.equals("")){
                     System.out.println("Invalid input, wait for further instruction.");
                 }
                 break;
@@ -525,14 +419,14 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                 try{
                                     input = scanner.nextLine();
                                     choice = Integer.parseInt(input);
-                                    if(choice<1 || choice >3){
+                                    if(choice<1 || choice >TOOL_CARD_NUMBER){
                                         System.out.println("Wrong input!");
                                         wrongInput = true;
                                     } else {
                                         wrongInput = false;
-                                        if(toolCardDescription[choice].split(" ")[0].equals("Name:")){
+                                        if(toolCardNames[choice-1].split(" ")[0].equals("Name:")){
                                             setChanged();
-                                            notifyObservers(new UseToolCardMove(username, "server", toolCardDescription[choice].split(" ")[1]));
+                                            notifyObservers(new UseToolCardMove(username, "server", toolCardNames[choice].split(" ")[1].replace("/", " ")));
                                         }
                                     }
                                 } catch (NumberFormatException e){
@@ -544,7 +438,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                 System.out.println("Ho deciso di passare il turno");
                                 setChanged();
                                 notifyObservers(new NoActionMove(username,"server"));
-
                             }
                         }
                     } catch (NumberFormatException e){
@@ -552,7 +445,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         wrongInput = true;
                     }
                 }
-
                 //setChanged();
                 //notifyObservers();
                 break;
@@ -578,14 +470,14 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 }
                 wrongInput = true;
                 StringBuilder builder = new StringBuilder();
-                builder.append("DiePosition: " + choice + " ");
+                builder.append("DiePosition: ").append(choice).append(" ");
                 if(toolCardUsageName.equalsIgnoreCase("Pinza Sgrossatrice")){
                     System.out.println("Do you want to increase the die value? (Y/N)");
                     while (wrongInput){
                         input = scanner.nextLine();
                         if(input.equalsIgnoreCase("y")||input.equalsIgnoreCase("n")){
                            wrongInput = false;
-                           builder.append("IncreaseValue: " + input);
+                           builder.append("IncreaseValue: ").append(input);
                         } else {
                             wrongInput = true;
                         }
@@ -687,7 +579,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         } else {
                             row = row-1;
                             wrongInput = false;
-                            builder.append("row: " + row + " ");
+                            builder.append("row: ").append(row).append(" ");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Wrong Input!");
@@ -707,7 +599,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         } else {
                             col = col-1;
                             wrongInput = false;
-                            builder.append("col: " + col + " ");
+                            builder.append("col: ").append(col).append(" ");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Wrong Input!");
@@ -715,11 +607,80 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     }
                 }
                 builder.append("DraftPoolDiePosition: ");
-                builder.append(draftPoolPosition);
+                builder.append(draftPoolDiceNumber);
                 System.out.println("Riga: "+ row + " " + "col: " +col );
                 System.out.println(builder.toString());
                 setChanged();
                 notifyObservers(new DiePlacementMessage(username,"server",builder.toString()));
+                break;
+            }
+            case INPUT_POSITION_DRAFTPOOL_POSITION_ROUNDTRACK:{
+                boolean wrongInput = true;
+                int draftPoolPosition = -1;
+                int roundNumber = -1;
+                int roundTrackPosition = -1;
+                System.out.println("Choose a die from the draft pool: ");
+                while (wrongInput){
+                    System.out.print("Position: ");
+                    try{
+                        input = scanner.nextLine();
+                        draftPoolPosition = Integer.parseInt(input);
+                        if(draftPoolPosition<1 || draftPoolPosition>draftPoolDiceNumber){
+                            wrongInput = true;
+                            System.out.println("Wrong Input!");
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        System.out.println("Wrong Input!");
+                        wrongInput = true;
+                    }
+                }
+                wrongInput = true;
+                System.out.println("Choose a round of the Round Track: ");
+                while (wrongInput){
+                    System.out.print("Round: ");
+                    try {
+                        input = scanner.nextLine();
+                        roundNumber = Integer.parseInt(input);
+                        if(draftPoolPosition<1 || draftPoolPosition>playersNumber*2+1){
+                            wrongInput = true;
+                            System.out.println("Wrong Input!");
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        System.out.println("Wrong Input!");
+                        wrongInput = true;
+                    }
+                }
+                wrongInput = true;
+                System.out.println("Choose a die from the Round Track:");
+                while (wrongInput){
+                    System.out.print("Position: ");
+                    try {
+                        input = scanner.nextLine();
+                        roundTrackPosition = Integer.parseInt(input);
+                        if(roundTrackPosition<1 || roundTrackPosition>playersNumber*2+1){
+                            wrongInput = true;
+                            System.out.println("Wrong Input!");
+                        } else {
+                            wrongInput = false;
+                        }
+                    } catch (NumberFormatException e){
+                        System.out.println("Wrong Input!");
+                        wrongInput = true;
+                    }
+                }
+                StringBuilder builder = new StringBuilder();
+                builder.append("DraftPoolPosition: ").append(draftPoolPosition).append(" ");
+                builder.append("RoundNumber: ").append(roundNumber).append(" ");
+                builder.append("RoundTrackPosition: ").append(roundTrackPosition).append(" ");
+                setChanged();
+                notifyObservers(new ToolCardActivationMessage(username, "server", toolCardUsageName, builder.toString()));
+                break;
+            }
+            case INPUT_CHOOSE_DIE:{
                 break;
             }
         }

@@ -1,13 +1,11 @@
 package it.polimi.se2018.utils;
 
-import com.sun.org.apache.xml.internal.serializer.utils.SerializerMessages_pt_BR;
 import it.polimi.se2018.model.events.messages.Message;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
 
 public class ProjectObservable {
 

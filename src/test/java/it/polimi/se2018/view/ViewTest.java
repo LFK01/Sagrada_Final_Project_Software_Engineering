@@ -5,8 +5,6 @@ import it.polimi.se2018.model.events.messages.RequestMessage;
 import it.polimi.se2018.view.comand_line.InputManager;
 import org.junit.Test;
 
-import javax.swing.*;
-
 public class ViewTest {
 
     @Test

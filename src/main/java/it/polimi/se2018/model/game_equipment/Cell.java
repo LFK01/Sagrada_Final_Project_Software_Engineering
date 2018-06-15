@@ -9,7 +9,6 @@ import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
  * @author Giorgia
  */
 
-//edited Luciano 13/05/2018 comments
 public class Cell {
 
     private Color cellColor; /*color value for color restriction*/
@@ -38,9 +37,6 @@ public class Cell {
 
         this.value = value;
         this.containsDie = false;
-        this.avoidValueRestriction = false;
-        this.avoidColorRestriction = false;
-        this.avoidNearnessRestriction = false;
         this.assignedDice = null;
 
     }
@@ -86,7 +82,7 @@ public class Cell {
      * @param dice Die to be placed
      * @throws RestrictionsNotRespectedException, FullCellException
      */
-    public void setAssignedDice(Dice dice) throws RestrictionsNotRespectedException, FullCellException{
+    public void setAssignedDice(Dice dice, boolean avoidColorRestriction, boolean avoidValueRestriction) throws RestrictionsNotRespectedException, FullCellException{
         if(isFull()){
             throw (new FullCellException("Cella piena!"));
         }
@@ -96,22 +92,22 @@ public class Cell {
                 containsDie = true;
             }
             else{
-                if(dice.getValue()!=this.value){
-                    throw new RestrictionsNotRespectedException("Valore dado non corretto!");
-                }
-                else{
+                if(dice.getValue()==this.value || avoidValueRestriction){
                     this.assignedDice = dice;
                     containsDie = true;
+                }
+                else{
+                    throw new RestrictionsNotRespectedException("Valore dado non corretto!");
                 }
             }
         }
         else{
-            if(dice.getDiceColor()!=this.cellColor){
-                throw new RestrictionsNotRespectedException("Colore dado non corretto!");
-            }
-            else{
+            if(dice.getDiceColor()==this.cellColor  || avoidColorRestriction){
                 this.assignedDice = dice;
                 containsDie = true;
+            }
+            else{
+                throw new RestrictionsNotRespectedException("Colore dado non corretto!");
             }
         }
     }

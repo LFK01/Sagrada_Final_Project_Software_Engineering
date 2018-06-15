@@ -7,4 +7,6 @@ public interface EffectInterface {
     void doYourJob(String username, String toolCardName, String values, Model model);
 
     boolean isDone();
+
+    void setDone(boolean b);
 }

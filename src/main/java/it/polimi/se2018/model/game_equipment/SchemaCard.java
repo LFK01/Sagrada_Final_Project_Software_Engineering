@@ -2,7 +2,6 @@ package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.model.exceptions.*;
 
-import javax.xml.validation.Schema;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
@@ -27,7 +26,8 @@ public class SchemaCard {
     public SchemaCard(int schemaCardIndex) {
         Scanner inputFile = null;
         try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\SchemaCards.txt"));
+            inputFile = new Scanner(new FileInputStream("src\\main\\java" +
+                    "\\it\\polimi\\se2018\\SchemaCards.txt"));
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -134,118 +134,113 @@ public class SchemaCard {
         }
     }
 
-        public SchemaCard(String schemaName){
-            Scanner inputFile = null;
-
+    public SchemaCard(String schemaName){
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\" +
+                    "polimi\\se2018\\SchemaCards.txt"));
+            String line = "";
+            boolean hasNextLine = true;
+            boolean cardFound = false;
+            boolean completedRows = false;
+            boolean stopReading = false;
+            int row=0;
             try{
-                inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\SchemaCards.txt"));
-                String line = "";
-                boolean hasNextLine = true;
-                boolean cardFound = false;
-                boolean completedRows = false;
-                boolean stopReading = false;
-                int row=0;
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine && !stopReading){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length && !completedRows){
+                    if(words[i].trim().equals("name:")){
+                        if(schemaName.replace(' ', '/').equals(words[i+1])){
+                            cardFound = true;
+                            name = words[i+1].replace('/', ' ');
+                            i++;
+                        }
+                    }
+                    if(cardFound){
+                        if(words[i].trim().equals("difficulty:")){
+                            difficultyLevel = Integer.parseInt(words[i+1]);
+                            i++;
+                        }
+                        if(words[i].startsWith("[")){
+                            for(int col=0; col<words.length; col++){
+                                switch(words[col].trim()){
+                                    case "[]":{
+                                        this.cells[row][col] = new Cell(null, 0);
+                                        break;
+                                    }
+                                    case "[1]":{
+                                        this.cells[row][col] = new Cell(null, 1);
+                                        break;
+                                    }
+                                    case "[2]":{
+                                        this.cells[row][col] = new Cell(null, 2);
+                                        break;
+                                    }
+                                    case "[3]":{
+                                        this.cells[row][col] = new Cell(null, 3);
+                                        break;
+                                    }
+                                    case "[4]":{
+                                        this.cells[row][col] = new Cell(null, 4);
+                                        break;
+                                    }
+                                    case "[5]":{
+                                        this.cells[row][col] = new Cell(null, 5);
+                                        break;
+                                    }
+                                    case "[6]":{
+                                        this.cells[row][col] = new Cell(null, 6);
+                                        break;
+                                    }
+                                    case "[Y]":{
+                                        this.cells[row][col] = new Cell(Color.YELLOW, 0);
+                                        break;
+                                    }
+                                    case "[R]":{
+                                        this.cells[row][col] = new Cell(Color.RED, 0);
+                                        break;
+                                    }
+                                    case "[B]":{
+                                        this.cells[row][col] = new Cell(Color.BLUE, 0);
+                                        break;
+                                    }
+                                    case "[G]":{
+                                        this.cells[row][col] = new Cell(Color.GREEN, 0);
+                                        break;
+                                    }
+                                    case "[P]":{
+                                        this.cells[row][col] = new Cell(Color.PURPLE, 0);
+                                        break;
+                                    }
+                                }
+                            }
+                            row++;
+                            if(row>3){
+                                completedRows = true;
+                                cardFound = false;
+                                stopReading = true;
+                            }
+                        }
+                    }
+                    i=words.length;
+                }
                 try{
                     line = inputFile.nextLine();
                 } catch (NoSuchElementException e){
                     hasNextLine = false;
                 }
-                while(hasNextLine && !stopReading){
-                    String[] words = line.split(" ");
-                    int i = 0;
-                    while(i<words.length && !completedRows){
-                        if(words[i].trim().equals("name:")){
-                            if(schemaName.replace(' ', '/').equals(words[i+1])){
-                                cardFound = true;
-                                name = words[i+1].replace('/', ' ');
-                                i++;
-                            }
-                        }
-                        if(cardFound){
-                            if(words[i].trim().equals("difficulty:")){
-                                difficultyLevel = Integer.parseInt(words[i+1]);
-                                i++;
-                            }
-                            if(words[i].startsWith("[")){
-                                for(int col=0; col<words.length; col++){
-                                    switch(words[col].trim()){
-                                        case "[]":{
-                                            this.cells[row][col] = new Cell(null, 0);
-                                            break;
-                                        }
-                                        case "[1]":{
-                                            this.cells[row][col] = new Cell(null, 1);
-                                            break;
-                                        }
-                                        case "[2]":{
-                                            this.cells[row][col] = new Cell(null, 2);
-                                            break;
-                                        }
-                                        case "[3]":{
-                                            this.cells[row][col] = new Cell(null, 3);
-                                            break;
-                                        }
-                                        case "[4]":{
-                                            this.cells[row][col] = new Cell(null, 4);
-                                            break;
-                                        }
-                                        case "[5]":{
-                                            this.cells[row][col] = new Cell(null, 5);
-                                            break;
-                                        }
-                                        case "[6]":{
-                                            this.cells[row][col] = new Cell(null, 6);
-                                            break;
-                                        }
-                                        case "[Y]":{
-                                            this.cells[row][col] = new Cell(Color.YELLOW, 0);
-                                            break;
-                                        }
-                                        case "[R]":{
-                                            this.cells[row][col] = new Cell(Color.RED, 0);
-                                            break;
-                                        }
-                                        case "[B]":{
-                                            this.cells[row][col] = new Cell(Color.BLUE, 0);
-                                            break;
-                                        }
-                                        case "[G]":{
-                                            this.cells[row][col] = new Cell(Color.GREEN, 0);
-                                            break;
-                                        }
-                                        case "[P]":{
-                                            this.cells[row][col] = new Cell(Color.PURPLE, 0);
-                                            break;
-                                        }
-                                    }
-                                }
-                                row++;
-                                if(row>3){
-                                    completedRows = true;
-                                    cardFound = false;
-                                    stopReading = true;
-                                }
-                            }
-                        }
-                        i=words.length;
-                    }
-                    try{
-                        line = inputFile.nextLine();
-                    } catch (NoSuchElementException e){
-                        hasNextLine = false;
-                    }
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                inputFile.close();
             }
-
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
         }
-
-
-
-
+    }
 
     /**
      *
@@ -277,7 +272,7 @@ public class SchemaCard {
      *
      * @return reference to cells
      */
-        public Cell[][] getCells () {
+    public Cell[][] getCells () {
             return cells;
         }
 
@@ -293,11 +288,30 @@ public class SchemaCard {
             }
             return true;
     }
+
+    public boolean hasLessThanTwoDie(){
+        int counter = 0;
+        for (int i = 0; i < cells.length; i++) {
+            for (int j = 0; j < cells[i].length; j++) {
+                if (cells[i][j].isFull()) {
+                    counter++;
+                    if(counter>2){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
     
-    public void placeDie(Dice die, int row, int col) throws RestrictionsNotRespectedException, FullCellException{
+    public void placeDie(Dice die, int row, int col,
+                         boolean avoidColorRestrictions,
+                         boolean avoidValueRestrictions,
+                         boolean avoidNearnessRestriction)
+            throws RestrictionsNotRespectedException, FullCellException{
         boolean isPlacingFirstDie = (this.isEmpty() && ((row==0||row==3) || (col==0||col==4)));
         if (isPlacingFirstDie){
-            this.getCell(row, col).setAssignedDice(die);    
+            this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
         }
         else{
             if(this.isEmpty()){
@@ -305,8 +319,8 @@ public class SchemaCard {
             }
             else{
                 boolean hasADieNear = this.hasADieNear(row, col);
-                if(hasADieNear){
-                    this.getCell(row, col).setAssignedDice(die);
+                if(hasADieNear || avoidNearnessRestriction){
+                    this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
                 }
                 else{
                     throw (new RestrictionsNotRespectedException("Il dado deve avere un altro dado vicino!"));
@@ -558,8 +572,8 @@ public class SchemaCard {
     @Override
     public String toString(){
         StringBuilder schema = new StringBuilder();
-        schema.append(name + "\n");
-        schema.append("difficulty level: " + difficultyLevel + "\n");
+        schema.append(name).append("\n");
+        schema.append("difficulty level: ").append(difficultyLevel).append("\n");
         for(int row=0; row<cells.length; row++){
             for(int col=0; col<cells[row].length; col++){
                 if(cells[row][col].isFull()){
@@ -569,23 +583,23 @@ public class SchemaCard {
                     try{
                         switch (cells[row][col].getCellColor()){
                             case BLUE:{
-                                schema.append(PaintingTool.ANSI_BLUE.escape() + "[ ]" + PaintingTool.RESET);
+                                schema.append(PaintingTool.ANSI_BLUE.escape()).append("[ ]").append(PaintingTool.RESET);
                                 break;
                             }
                             case GREEN:{
-                                schema.append(PaintingTool.ANSI_GREEN.escape() + "[ ]" + PaintingTool.RESET);
+                                schema.append(PaintingTool.ANSI_GREEN.escape()).append("[ ]").append(PaintingTool.RESET);
                                 break;
                             }
                             case PURPLE:{
-                                schema.append(PaintingTool.ANSI_PURPLE.escape() + "[ ]" + PaintingTool.RESET);
+                                schema.append(PaintingTool.ANSI_PURPLE.escape()).append("[ ]").append(PaintingTool.RESET);
                                 break;
                             }
                             case RED:{
-                                schema.append(PaintingTool.ANSI_RED.escape() + "[ ]" + PaintingTool.RESET);
+                                schema.append(PaintingTool.ANSI_RED.escape()).append("[ ]").append(PaintingTool.RESET);
                                 break;
                             }
                             case YELLOW:{
-                                schema.append(PaintingTool.ANSI_YELLOW.escape() + "[ ]" + PaintingTool.RESET);
+                                schema.append(PaintingTool.ANSI_YELLOW.escape()).append("[ ]").append(PaintingTool.RESET);
                                 break;
                             }
                         }

@@ -16,6 +16,8 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(Message message) throws RemoteException;
 
+    void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException;
+
     void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException;
 
     void sendToServer(ComebackMessage comebackMessage) throws RemoteException;
@@ -24,9 +26,17 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException;
 
+    void sendToServer(DiePlacementMessage diePlacementMessage) throws  RemoteException;
+
     void sendToServer(ErrorMessage errorMessage) throws RemoteException;
 
+    void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException;
+
     void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException;
+
+    void sendToServer(NoActionMove noActionMove) throws  RemoteException;
+
+    void sendToServer(RequestMessage requestMessage) throws RemoteException;
 
     void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException;
 
@@ -36,17 +46,11 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(SuccessMessage successMessage) throws RemoteException;
 
+    void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException;
+
     void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException;
 
     void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException;
-
-    void sendToServer(NoActionMove noActionMove) throws  RemoteException;
-
-    void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException;
-
-    void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException;
-
-    void sendToServer(DiePlacementMessage diePlacementMessage) throws  RemoteException;
 
     ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException;
 }

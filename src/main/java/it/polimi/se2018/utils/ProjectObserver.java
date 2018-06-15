@@ -10,13 +10,11 @@ public interface ProjectObserver {
 
     void update(Message message);
 
-    void update(ChooseSchemaMessage chooseSchemaMessage);
-
     void update(ChooseDiceMove chooseDiceMove);
 
-    void update(ToolCardActivationMessage toolCardActivationMessage);
+    void update(ChooseSchemaMessage chooseSchemaMessage);
 
-    void update(ToolCardErrorMessage toolCardErrorMessage);
+    void update(ComebackMessage comebackMessage);
 
     void update(ComebackSocketMessage comebackSocketMessage);
 
@@ -43,6 +41,10 @@ public interface ProjectObserver {
     void update(SuccessCreatePlayerMessage successCreatePlayerMessage);
 
     void update(SuccessMoveMessage successMoveMessage);
+
+    void update(ToolCardActivationMessage toolCardActivationMessage);
+
+    void update(ToolCardErrorMessage toolCardErrorMessage);
 
     void update(UpdateTurnMessage updateTurnMessage);
 

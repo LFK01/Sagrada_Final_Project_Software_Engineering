@@ -8,14 +8,9 @@ import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
-import it.polimi.se2018.network.server.virtual_objects.VirtualClientRMI;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewRMI;
-import it.polimi.se2018.network.server.virtual_objects.VirtualViewSocket;
 
-import java.awt.*;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -45,7 +40,6 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
                 e.printStackTrace();
             }
             server.addClient(newVirtualView);
-            System.out.println("new client: " + newVirtualView.toString() + "added to serverList.");
             return remoteServerRef;
         } else {
             throw new PlayerNumberExceededException("Player number limit already reached.");
@@ -113,23 +107,33 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
+    public void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
     public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 
     @Override
     public void sendToServer(NoActionMove noActionMove) {
+        /*method to be called in VirtualClientRMI*/
+    }
 
+    @Override
+    public void sendToServer(RequestMessage requestMessage) throws RemoteException {
+        /*method to be called in VirtualClientRMI*/
     }
 
     @Override
     public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException {
-
+        /*method to be called in VirtualClientRMI*/
     }
 
     @Override
     public void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException {
-
+        /*method to be called in VirtualClientRMI*/
     }
 
     @Override

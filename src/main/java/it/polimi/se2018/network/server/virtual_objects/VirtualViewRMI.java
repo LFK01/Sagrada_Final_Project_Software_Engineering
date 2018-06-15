@@ -111,6 +111,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
+    public void update(ComebackMessage comebackMessage) {
+        
+    }
+
+    @Override
     public void update(ComebackSocketMessage comebackSocketMessage) {
         virtualClientRMI.notifyClient(comebackSocketMessage);
     }
@@ -188,11 +193,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-
+        virtualClientRMI.notifyClient(useToolCardMove);
     }
 
     @Override
-    public void update(NoActionMove noActionMove){}
+    public void update(NoActionMove noActionMove){virtualClientRMI.notifyClient(noActionMove);}
 
     @Override
     public void update(RequestMessage requestMessage) {

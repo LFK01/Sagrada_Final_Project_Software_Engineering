@@ -1,6 +1,4 @@
 package it.polimi.se2018.controller;
-import it.polimi.se2018.controller.exceptions.InvalidCellPositionException;
-import it.polimi.se2018.controller.exceptions.InvalidDraftPoolPosException;
 import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.ToolCardActivationMessage;
@@ -8,8 +6,6 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
 import it.polimi.se2018.model.player.Player;
@@ -117,84 +113,44 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(Message message) {
-        System.out.println("calls the wrong method");
     }
 
-
-    @Override
-    public void update(ToolCardActivationMessage toolCardActivationMessage) {
-        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName())){
-                for (Player player: model.getParticipants()) {
-                    if(player.getName().equals(toolCardActivationMessage.getSender())){
-                        if(toolCard.isFirstUsage()){
-                            if(player.getFavorTokens()>=1){
-                                String values = toolCardActivationMessage.getValues();
-                                toolCard.activateToolCard(toolCardActivationMessage.getSender(), toolCardActivationMessage.getToolCardName(), values, model);
-                            } else {
-                                setChanged();
-                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
-                            }
-                        } else {
-                            if(player.getFavorTokens()>=2){
-
-                            }
-                        }
-                    }
-                }
-            }
+    public void update(ChooseDiceMove message) {
+        System.out.println("STO STAMPANDO SE IL GIOCATORE PUò FARE LA MOSSA");
+        System.out.println(model.getParticipants().get(model.getTurnOfTheRound()).
+                getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed());
+        if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
+                [model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed()
+                && model.isFirstDraftOfDice()){
+            setChanged();
+            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
+        }
+        else if((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
+                [model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())){
+            setChanged();
+            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
+        }
+        else {
+            System.out.println(message.getDraftPoolPos() + " ");
+            String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
+            setChanged();
+            notifyObservers(new RequestMessage("controller", message.getSender(), draftPoolDiePosition, InputManager.INPUT_PLACE_DIE));
         }
     }
 
     @Override
-    public void update(ToolCardErrorMessage toolCardErrorMessage) {
-
-    }
-
-
-
-    @Override
-    public void update(RequestMessage requestMessage) {
+    public void update(ChooseSchemaMessage chooseSchemaMessage) {
 
     }
 
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
-        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(useToolCardMove.getToolCardName().equals(toolCard.getName())){
-                if(toolCard.isFirstUsage()){
-                    for(Player player: model.getParticipants()){
-                        if(player.getName().equals(useToolCardMove.getSender())){
-                            if(player.getFavorTokens()>=1){
-                                player.decreaseFavorTokens(false);
-                                setChanged();
-                                String name = useToolCardMove.getToolCardName();
-                                notifyObservers(new RequestMessage("server", useToolCardMove.getSender(), name, toolCard.getInputManager(name)));
-                            }
-                            else{
-                                setChanged();
-                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
-                            }
-                        }
-                    }
-                } else {
-                    for(Player player: model.getParticipants()){
-                        if(player.getName().equals(useToolCardMove.getSender())){
-                            if(player.getFavorTokens()>=2){
-                                player.decreaseFavorTokens(true);
-                                setChanged();
-                                String name = useToolCardMove.getToolCardName();
-                                notifyObservers(new RequestMessage("server", useToolCardMove.getSender(), name, toolCard.getInputManager(name)));
-                            }
-                            else{
-                                setChanged();
-                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    public void update(ComebackMessage comebackMessage) {
+
+    }
+
+    public void update(ComebackSocketMessage message){
+        setChanged();
+        notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
     }
 
     public void update(CreatePlayerMessage message){
@@ -221,7 +177,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         }
                     }
                 }
-            }, 1000*time);
+            }, 1000L*time);
         }
         model.addPlayer(message.getPlayerName());
         if(model.getParticipants().size()==4){
@@ -270,16 +226,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     }
 
-    @Override
-    public void update(ChooseSchemaMessage chooseSchemaMessage) {
-
-    }
-
-    public void update(ComebackSocketMessage message){
-        setChanged();
-        notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
-    }
-
     public void update(SelectedSchemaMessage message) {
         for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
             if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
@@ -287,12 +233,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 playerNumberDoneSelecting++;
             }
         }
-        /*  extracts public objective cards
-            extracts tool cards
-            sends initialization message
-        */
-        //System.out.println("Number of players that has selected a schemaCard: " + playerNumberDoneSelecting);
-        //System.out.println("Number of participants in the match: " + model.getParticipantsNumber());
         if(playerNumberDoneSelecting == model.getParticipantsNumber()){
             model.extractPublicObjectiveCards();
             model.extractToolCards();
@@ -300,24 +240,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             model.updateGameboard();
         }
     }
-    public void update(ChooseDiceMove message) {
-        System.out.println("STO STAMPANDO SE IL GIOCATORE PUò FARE LA MOSSA");
-        System.out.println(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed());
-        if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed() && model.isFirstDraftOfDice()){
-            setChanged();
-            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
-        }
-         else if((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())){
-            setChanged();
-            notifyObservers(new ErrorMessage("model",model.getParticipants().get(model.getTurnOfTheRound()).getName(),"You have already used all your moves in this round"));
-        }
-        else {
-           System.out.println(message.getDraftPoolPos() + " ");
-            String draftPoolDiePosition = "DraftPoolDiePosition: " + String.valueOf(message.getDraftPoolPos());
-            setChanged();
-            notifyObservers(new RequestMessage("controller", message.getSender(), draftPoolDiePosition, InputManager.INPUT_PLACE_DIE));
-        }
-    }
+
     public void update(NoActionMove message){
         System.out.println(model.getTurnOfTheRound());
         model.updateTurnOfTheRound();
@@ -333,21 +256,13 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         else model.updateGameboard();
     }
 
+    @Override
+    public void update(RequestMessage requestMessage) {
 
-    public void update(StartGameMessage startGameMessage){
-        allPlayersReady = allPlayersReady + 1;
-        if(allPlayersReady==4){
-            model.sendSchemaAndTurn();
-        }
     }
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
-
-    }
-
-    @Override
-    public void update(SuccessMessage successMessage) {
 
     }
 
@@ -357,18 +272,92 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
+    public void update(SuccessMessage successMessage) {
+
+    }
+
+    @Override
     public void update(SuccessMoveMessage successMoveMessage) {
 
     }
 
     @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
+    public void update(ToolCardActivationMessage toolCardActivationMessage) {
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName())){
+                /*finds active tool card*/
+                for (Player player: model.getParticipants()) {
+                    if(player.getName().equals(toolCardActivationMessage.getSender())){
+                        /*finds active player*/
+                        String values = toolCardActivationMessage.getValues();
+                        toolCard.activateToolCard(player.getName(), toolCard.getName(), values, model);
+                    }
+                }
+            }
+        }
+    }
 
+    @Override
+    public void update(ToolCardErrorMessage toolCardErrorMessage) {
+        /*shouldn't be called here*/
+    }
+
+    @Override
+    public void update(UpdateTurnMessage updateTurnMessage) {
+        /*shouldn't be called here*/
     }
 
 
-    public void sendSchemaCardController(){
-        model.sendSchemaCard();
+    @Override
+    public void update(UseToolCardMove useToolCardMove) {
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(useToolCardMove.getToolCardName().equals(toolCard.getName())){
+                /*finds tool card*/
+                System.out.println("found card: " + toolCard.getName());
+                if(toolCard.isFirstUsage()){
+                    System.out.println("first usage");
+                    for(Player player: model.getParticipants()){
+                        if(player.getName().equals(useToolCardMove.getSender())){
+                            System.out.println("found player: " + player.getName());
+                            if(player.getFavorTokens()>=1){
+                                if(toolCard.checkPlayerAbilityToUseTool(player, toolCard.getName(),
+                                        model.getRoundNumber(), model.isFirstDraftOfDice())) {
+                                    System.out.println("player can use tool card");
+                                    setChanged();
+                                    String name = useToolCardMove.getToolCardName();
+                                    System.out.println("inputManager: " + toolCard.getInputManagerList().get(0));
+                                    notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
+                                            name, toolCard.getInputManagerList().get(0)));
+                                } else {
+                                    setChanged();
+                                    notifyObservers(new ErrorMessage("server", player.getName(),"PlayerUnableToUseToolCard"));
+                                }
+                            } else {
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(),"NotEnoughFavorTokens"));
+                            }
+                        }
+                    }
+                } else {
+                    for(Player player: model.getParticipants()){
+                        if(player.getName().equals(useToolCardMove.getSender())){
+                            if(player.getFavorTokens()>=2 &&
+                                    toolCard.checkPlayerAbilityToUseTool(player, toolCard.getName(),
+                                            model.getRoundNumber(), model.isFirstDraftOfDice())){
+                                setChanged();
+                                String name = useToolCardMove.getToolCardName();
+                                notifyObservers(new RequestMessage("server", useToolCardMove.getSender(), name,
+                                        toolCard.getInputManagerList().get(0)));
+                            }
+                            else{
+                                setChanged();
+                                notifyObservers(new ErrorMessage("server", player.getName(), "NotEnoughFavorTokens"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public Model getModel(){
@@ -379,7 +368,4 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         this.time = time;
     }
 
-    public void roundManager() {
-
-    }
 }

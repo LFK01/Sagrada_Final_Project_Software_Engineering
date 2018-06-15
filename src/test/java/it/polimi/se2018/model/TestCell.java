@@ -39,8 +39,8 @@ public class TestCell {
         boolean erroreAssegnamento=true;
         boolean testPassed=false;
         //boolean value to check if all the exceptions in the test get caught
-        Dice dadoProva1=null;
-        Dice dadoProva2=null;
+        Dice dadoProva1;
+        Dice dadoProva2;
         dadoProva1 = new Dice(Color.BLUE, 1);
         dadoProva2 = new Dice(Color.GREEN, 2);
         Cell cellaProva1= new Cell(Color.BLUE, 1);
@@ -59,7 +59,7 @@ public class TestCell {
         //not compatible w/ dado1, compatible w/ dado2
         try
         {
-            cellaProva1.setAssignedDice(dadoProva1);
+            cellaProva1.setAssignedDice(dadoProva1, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -68,7 +68,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva2.setAssignedDice(dadoProva1);
+            cellaProva2.setAssignedDice(dadoProva1, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -77,7 +77,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva3.setAssignedDice(dadoProva1);
+            cellaProva3.setAssignedDice(dadoProva1, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -86,7 +86,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva4.setAssignedDice(dadoProva1);
+            cellaProva4.setAssignedDice(dadoProva1, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -95,7 +95,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva4.setAssignedDice(dadoProva2);
+            cellaProva4.setAssignedDice(dadoProva2, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -108,7 +108,7 @@ public class TestCell {
         Dice thrownAwayDie = cellaProva4.removeDieFromCell();
         assertEquals(thrownAwayDie, dadoProva1);
         try{
-            cellaProva4.setAssignedDice(dadoProva2);
+            cellaProva4.setAssignedDice(dadoProva2, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -117,7 +117,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva5.setAssignedDice(dadoProva2);
+            cellaProva5.setAssignedDice(dadoProva2, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -126,7 +126,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva6.setAssignedDice(dadoProva2);
+            cellaProva6.setAssignedDice(dadoProva2, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -135,7 +135,7 @@ public class TestCell {
             fail();
         }
         try{
-            cellaProva7.setAssignedDice(dadoProva2);
+            cellaProva7.setAssignedDice(dadoProva2, false, false);
         }
         catch(RestrictionsNotRespectedException e){
             fail();
@@ -154,11 +154,10 @@ public class TestCell {
         assertEquals(dadoProva2.getDiceColor(), cellaProva4.getAssignedDice().getDiceColor());
         assertEquals(dadoProva1.getValue(), cellaProva1.getAssignedDice().getValue());
         assertEquals(dadoProva2.getValue(), cellaProva4.getAssignedDice().getValue());
-        thrownAwayDie = cellaProva1.removeDieFromCell();
-        thrownAwayDie = cellaProva2.removeDieFromCell();
-        thrownAwayDie = null;
+        cellaProva1.removeDieFromCell();
+        cellaProva2.removeDieFromCell();
         try{
-            cellaProva1.setAssignedDice(dadoProva2);
+            cellaProva1.setAssignedDice(dadoProva2, false, false);
         }
         catch (RestrictionsNotRespectedException e){
             excpetionCalledCorrect = true;
@@ -167,10 +166,10 @@ public class TestCell {
             fail();
         }
         assertTrue(excpetionCalledCorrect);
-        thrownAwayDie = cellaProva1.removeDieFromCell();
+        cellaProva1.removeDieFromCell();
         excpetionCalledCorrect = false;
         try{
-            cellaProva2.setAssignedDice(dadoProva2);
+            cellaProva2.setAssignedDice(dadoProva2, false, false);
         }
         catch (RestrictionsNotRespectedException e){
             excpetionCalledCorrect = true;

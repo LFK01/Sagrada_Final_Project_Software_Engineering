@@ -1,16 +1,9 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
 import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.server.Server;
-import it.polimi.se2018.network.server.virtual_objects.VirtualClientInterface;
-import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 

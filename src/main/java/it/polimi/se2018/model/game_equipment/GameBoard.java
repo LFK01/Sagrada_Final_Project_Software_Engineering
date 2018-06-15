@@ -67,15 +67,6 @@ public class GameBoard {
         return toolCards;
     }
 
-    public ToolCard getToolCard(String toolCardName) {
-        for(ToolCard toolCard: toolCards){
-            if(toolCard.getName().equals(toolCardName)){
-                return toolCard;
-            }
-        }
-        return null;
-    }
-
     public String getPublicObjectiveCardPoints(int index) {
         return publicObjectiveCards[index].getPoints();
     }

@@ -1,0 +1,67 @@
+package it.polimi.se2018.controller.tool_cards.effects;
+
+import it.polimi.se2018.controller.tool_cards.EffectInterface;
+import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
+import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.player.Player;
+import it.polimi.se2018.view.comand_line.InputManager;
+
+import java.util.ArrayList;
+
+/**
+ * Effects class. Invocated when "" is used. Activates a method
+ * to place a die on the schema card.
+ */
+public class PlaceDie implements EffectInterface {
+
+    private boolean isDone;
+    private int draftPoolDiePosition;
+    private int row;
+    private int col;
+
+    @Override
+    public void doYourJob(String username, String toolCardName, String values, Model model) {
+        String[] words = values.split(" ");
+        for(int i = 0; i<words.length; i++){
+            if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
+                draftPoolDiePosition = Integer.parseInt(words[i+1]);
+            }
+            if(words[i].trim().equalsIgnoreCase("row:")){
+                row = Integer.parseInt(words[i+1]);
+            }
+            if(words[i].trim().equalsIgnoreCase("col:")){
+                col = Integer.parseInt(words[i+1]);
+            }
+        }
+        ArrayList<Dice> diceList = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
+        Dice die = diceList.get(draftPoolDiePosition);
+        for(Player player: model.getParticipants()){
+            if(player.getName().equals(username)){
+                try{
+                    player.getSchemaCard().placeDie(die, row, col, false,
+                            false, false);
+                } catch (RestrictionsNotRespectedException e){
+                    model.setChanged();
+                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPosition", InputManager.INPUT_CHOOSE_DIE));
+                } catch (FullCellException e){
+                    model.setChanged();
+                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "FullCell", InputManager.INPUT_CHOOSE_DIE));
+                }
+            }
+        }
+        isDone = true;
+    }
+
+    @Override
+    public boolean isDone() {
+        return isDone;
+    }
+
+    @Override
+    public void setDone(boolean b) {
+        isDone = b;
+    }
+}

@@ -7,10 +7,10 @@ package it.polimi.se2018.model.game_equipment;
  */
 public class RoundTrack {
 
-
+    public static final int ROUND_NUMBER = 10;
     private int currentRound;/*integer value of the current Round*/
 
-    private RoundDice[] roundDice = new RoundDice[10];
+    private RoundDice[] roundDice;
     /*array of RoundDice where dice left from the draft pool
      are saved*/
 
@@ -19,7 +19,7 @@ public class RoundTrack {
      */
     public RoundTrack() {
         this.currentRound = 0;
-        roundDice = new RoundDice[10];
+        roundDice = new RoundDice[ROUND_NUMBER];
     }
 
     /**
@@ -42,5 +42,14 @@ public class RoundTrack {
 
     public Dice getDie(int index) {
         return roundDice[this.currentRound].getDice(index);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i<roundDice.length; i++){
+            builder.append("Round #").append(i).append(" 1: ").append(roundDice[i].getDiceList().toString());
+        }
+        return builder.toString();
     }
 }

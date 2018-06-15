@@ -64,6 +64,13 @@ public class RoundDice {
         return diceList.get(index);
     }
 
+    public Dice setDice(Dice newDie, int index){
+        Dice oldDie = diceList.get(index);
+        diceList.remove(oldDie);
+        diceList.add(newDie);
+        return oldDie;
+    }
+
     /**
      * Participants number getter
      * @return the participants number
@@ -85,7 +92,7 @@ public class RoundDice {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for(Dice die: diceList){
-            builder.append(die.toString() + "");
+            builder.append(die.toString());
         }
         return builder.toString();
     }

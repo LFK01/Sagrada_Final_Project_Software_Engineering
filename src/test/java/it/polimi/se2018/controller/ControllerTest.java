@@ -23,8 +23,5 @@ public class ControllerTest {
         controller.getModel().addPlayer("p1");
         controller.getModel().addPlayer("p2");
         NoActionMove noActionMove = new NoActionMove("p1","server");
-        controller.update(noActionMove);
-
-
     }
 }

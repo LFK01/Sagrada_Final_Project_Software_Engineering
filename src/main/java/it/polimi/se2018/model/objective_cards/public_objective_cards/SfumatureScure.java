@@ -1,19 +1,15 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Giovanni
  */
 
-public class SfumatureScure extends AbstractObjectiveCard {
+public class SfumatureScure {
 
     private static SfumatureScure thisInstance;
-
-    private SfumatureScure(){
-        super("SfumatureScure","Set di 5 & 6 ovunque","2",false);
-    }
 
     public synchronized static SfumatureScure getThisInstance() {
         if(thisInstance==null){

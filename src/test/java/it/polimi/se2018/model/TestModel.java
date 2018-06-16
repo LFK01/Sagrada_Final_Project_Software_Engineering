@@ -163,7 +163,7 @@ public class TestModel {
         //controller.getModel().extractToolCards();
         controller.getModel().extractPublicObjectiveCards();
         //controller.getModel().extractToolCards();
-        controller.getModel().sendInitializationMessage();
+
 
         //controller.getModel().sendSchemaCard();
         //controller.getModel().extractRoundTrack();
@@ -175,7 +175,7 @@ public class TestModel {
         model.addPlayer("p1");
         model.addPlayer("p2");
         model.extractRoundTrack();
-        model.sendInitializationMessage();
+
 
     }
 
@@ -222,7 +222,7 @@ public class TestModel {
         model.extractPublicObjectiveCards();
         model.setSchemaCardPlayer(0,"Battlo");
         model.setSchemaCardPlayer(1,"Battlo");
-        model.sendInitializationMessage();
+
     }
 
 

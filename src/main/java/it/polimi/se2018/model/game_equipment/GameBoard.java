@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.controller.tool_cards.ToolCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 import java.util.ArrayList;
 
@@ -17,15 +17,15 @@ public class GameBoard {
     private static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     private String matchId;
     private DiceBag diceBag;
-    private AbstractObjectiveCard publicObjectiveCards[];
-    private ArrayList<AbstractObjectiveCard> privateObjectiveCards;
+    private ObjectiveCard publicObjectiveCards[];
+    private ArrayList<ObjectiveCard> privateObjectiveCards;
     private ToolCard toolCards[];
     private RoundTrack roundTrack;
     private PointTrack pointTrack;
 
     public GameBoard() {
         this.diceBag = new DiceBag();
-        this.publicObjectiveCards = new AbstractObjectiveCard[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
+        this.publicObjectiveCards = new ObjectiveCard[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
         this.privateObjectiveCards = new ArrayList<>();
         this.toolCards = new ToolCard[TOOL_CARDS_EXTRACT_NUMBER];
         this.roundTrack = new RoundTrack();
@@ -67,7 +67,7 @@ public class GameBoard {
         return toolCards;
     }
 
-    public String getPublicObjectiveCardPoints(int index) {
+    public int getPublicObjectiveCardPoints(int index) {
         return publicObjectiveCards[index].getPoints();
     }
 
@@ -83,11 +83,16 @@ public class GameBoard {
         return pointTrack;
     }
 
-    public void setPublicObjectiveCards (AbstractObjectiveCard publicObjectiveCards, int index) {
+    public void setPublicObjectiveCards (ObjectiveCard publicObjectiveCards, int index) {
         this.publicObjectiveCards[index] = publicObjectiveCards;
+    }
+
+    public ObjectiveCard[] getPublicObjectiveCards() {
+        return publicObjectiveCards;
     }
 
     public void setToolCards(ToolCard toolCard, int index) {
         this.toolCards[index] = toolCard;
     }
+
 }

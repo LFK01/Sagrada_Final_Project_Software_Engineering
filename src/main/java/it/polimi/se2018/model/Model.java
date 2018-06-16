@@ -5,7 +5,7 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.*;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
@@ -126,8 +126,7 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     private void removeDieFromDraftPool(int draftPoolPos) {
-        int currentRound = gameBoard.getRoundTrack().getCurrentRound();
-        gameBoard.getRoundDice()[currentRound].removeDiceFromDraftPool(draftPoolPos);
+        gameBoard.getRoundDice()[roundNumber].removeDiceFromDraftPool(draftPoolPos);
     }
 
     /**
@@ -151,7 +150,7 @@ public class Model extends ProjectObservable implements Runnable{
                         boolean avoidColorRestrictions, boolean avoidValueRestrictions,
                         boolean avoidNearnessRestrictions) throws RestrictionsNotRespectedException,
                         FullCellException{
-        Dice chosenDie = gameBoard.getRoundDice()[gameBoard.getRoundTrack().getCurrentRound()].getDice(drafPoolPos);
+        Dice chosenDie = gameBoard.getRoundDice()[roundNumber].getDice(drafPoolPos);
         schemaCard.placeDie(chosenDie, row, col, avoidColorRestrictions, avoidValueRestrictions, avoidNearnessRestrictions);
     }
 
@@ -226,55 +225,15 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void extractPublicObjectiveCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(12);
-
-        for(int i = 1; i <= 10; i++){
+        ArrayList<Integer> cardIndex = new ArrayList<>(3);
+        for(int i = 1; i <= 3; i++){
+            System.out.println("added: " + i);
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
-            switch (cardIndex.get(i)) {
-                case 1:
-                    gameBoard.setPublicObjectiveCards(ColoriDiversiRiga.getThisInstance(), i);
-                    break;
-
-                case 2:
-                    gameBoard.setPublicObjectiveCards(ColoriDiversiColonna.getThisInstance(), i);
-                    break;
-
-                case 3:
-                    gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
-                    break;
-
-                case 4:
-                    gameBoard.setPublicObjectiveCards(SfumatureDiverseRiga.getThisInstance(), i);
-                    break;
-
-                case 5:
-                    gameBoard.setPublicObjectiveCards(SfumatureChiare.getThisInstance(), i);
-                    break;
-
-                case 6:
-                    gameBoard.setPublicObjectiveCards(SfumatureMedie.getThisInstance(), i);
-                    break;
-
-                case 7:
-                    gameBoard.setPublicObjectiveCards(SfumatureScure.getThisInstance(), i);
-                    break;
-
-                case 8:
-                    gameBoard.setPublicObjectiveCards(SfumatureDiverse.getThisInstance(), i);
-                    break;
-
-                case 9:
-                    gameBoard.setPublicObjectiveCards(DiagonaliColorate.getThisInstance(), i);
-                    break;
-
-                case 10:
-                    gameBoard.setPublicObjectiveCards(VarietaDiColore.getThisInstance(), i);
-                    break;
-
-            }
+            System.out.println("extracted: " + cardIndex.get(i));
+            gameBoard.setPublicObjectiveCards(new ObjectiveCard(false,cardIndex.get(i)), i);
         }
     }
 
@@ -325,63 +284,25 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void sendPrivateObjectiveCard(){
-        ArrayList<AbstractObjectiveCard> privateCards = new ArrayList<>();
-        privateCards.add(SfumatureBlu.getThisInstance());
-        privateCards.add(SfumatureGialle.getThisInstance());
-        privateCards.add(SfumatureVerdi.getThisInstance());
-        privateCards.add(SfumatureRosse.getThisInstance());
-        privateCards.add(SfumatureViola.getThisInstance());
-        Collections.shuffle(privateCards);
+        ArrayList<Integer> cardIndex = new ArrayList<>(3);
+        ArrayList<ObjectiveCard> privateObjectiveCard =new ArrayList<>();
+        for(int i = 1; i < participants.size(); i++){
+            System.out.println("added: " + i);
+            cardIndex.add(i);
+        }
+        Collections.shuffle(cardIndex);
+        for(int i = 0; i < participants.size(); i++) {
+            System.out.println("extracted: " + cardIndex.get(i));
+            privateObjectiveCard.add(new ObjectiveCard(true,cardIndex.get(i)));
+        }
         int s =0;
         for(int i=0; i < participants.size(); i++) {
-            String colorString = privateCards.get(i).getDescription();
+            String colorString = privateObjectiveCard.get(i).getDescription();
             setChanged();
             notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString,participants.size()));
             s = s+1;
         }
         sendSchemaCard();
-    }
-
-    public void sendInitializationMessage(){
-        /*System.out.println("Sending initialization messages");
-        String[] publicObjectiveCardsDescription = new String[PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER];
-        String[] toolCardDescription = new String[TOOL_CARDS_EXTRACT_NUMBER];
-        String roundTrack = null;
-        Thread sendingMessageThread;
-        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
-            StringBuilder builderPublicObjectiveCards = new StringBuilder();
-            builderPublicObjectiveCards.append("Name: " + gameBoard.getPublicObjectiveCardName(i) + "\n");
-            builderPublicObjectiveCards.append("Description: " + gameBoard.getPublicObjectiveCardDescription(i) + "\n");
-            publicObjectiveCardsDescription[i] = builderPublicObjectiveCards.toString();
-        }
-        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
-            StringBuilder builderToolCards = new StringBuilder();
-            builderToolCards.append("Name: " + gameBoard.getToolCardName(i) + "\n");
-            builderToolCards.append("Description: " + gameBoard.getToolCardDescription(i) + "\n");
-            toolCardDescription[i] = builderToolCards.toString();
-        }
-        StringBuilder builderRoundTrack = new StringBuilder();
-        RoundDice currentRoundDice = gameBoard.getRoundDice()[turnOfTheRound];
-        List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(int i=0; i<currentDiceList.size(); i++){
-            builderRoundTrack.append(currentDiceList.get(i).toString() + " ");
-        }
-        builderRoundTrack.append("\n");
-        roundTrack = builderRoundTrack.toString();
-        String[] schemaInGame = new String [participants.size()];
-        for (int i =0; i<schemaInGame.length;i++){
-            schemaInGame[i] = new String(participants.get(i).getSchemaCard().toString());
-        }
-        for(int i = 0; i<participants.size(); i++){
-            try{
-                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(), publicObjectiveCardsDescription, toolCardDescription, schemaInGame, roundTrack, participants.get(turnOfTheRound).getName()));
-                sendingMessageThread = new Thread(this);
-                sendingMessageThread.start();
-                sendingMessageThread.join();
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
-        }*/
     }
 
     public void updateGameboard(){   //momentaneamente facoltativo
@@ -424,15 +345,6 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
-
-    /**
-    * a method to send updated schema cards and playerTurn to the view
-    */
-    public void sendSchemaAndTurn(){
-        setChanged();
-        //notifyObservers(new SendSchemaAndTurn("model",participants.get(turnOfTheRound).getName(),schemaInGame));
-
-    }
     public void updateRound(){
         roundNumber = roundNumber +1;
         resetTurnOfTheRound();

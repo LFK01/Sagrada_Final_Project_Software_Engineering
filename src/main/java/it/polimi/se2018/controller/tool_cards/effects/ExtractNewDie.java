@@ -1,12 +1,12 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
-import it.polimi.se2018.controller.tool_cards.EffectInterface;
+import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Dice;
 
 import java.util.Random;
 
-public class ExtractNewDie implements EffectInterface {
+public class ExtractNewDie implements TCEffectInterface {
 
     boolean isDone = false;
 

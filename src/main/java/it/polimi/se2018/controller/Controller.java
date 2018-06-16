@@ -51,41 +51,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     /**
-     * Method that randomly extracts and deals one private objective card per player
-     */
-    private void dealPrivateObjectiveCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(12);
-        for(int i = 1; i <= 5; i++){
-            cardIndex.add(i);
-        }
-        Collections.shuffle(cardIndex);
-        for(int i = 0; i < model.getParticipantsNumber(); i++) {
-            switch(cardIndex.get(i)) {
-                case 1: {
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureRosse.getThisInstance());
-                    break;
-                }
-                case 2: {
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureGialle.getThisInstance());
-                    break;
-                }
-                case 3: {
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureVerdi.getThisInstance());
-                    break;
-                }
-                case 4: {
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureBlu.getThisInstance());
-                    break;
-                }
-                case 5: {
-                    model.getPlayer(i).setPrivateObjectiveCard(SfumatureViola.getThisInstance());
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
      * Method that randomly extracts 3 public objective cards
      */
     /**

@@ -1,19 +1,16 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Giovanni
  */
 
-public class VarietaDiColore extends AbstractObjectiveCard{
+public class VarietaDiColore {
 
     private static VarietaDiColore thisInstance;
 
-    private VarietaDiColore(){
-        super("varietaDicolore","Set di dadi di ogni colore ovunque", "#",false );
 
-    }
 
     public static VarietaDiColore getThisInstance(){
     if(thisInstance==null){
@@ -22,7 +19,7 @@ public class VarietaDiColore extends AbstractObjectiveCard{
     return thisInstance;
     }
 
-    @Override
+
     public int countPoints(SchemaCard schemaCard){
         return 0;
     }

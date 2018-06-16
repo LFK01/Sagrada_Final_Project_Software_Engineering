@@ -5,17 +5,14 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards;
  */
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 import static java.lang.Integer.parseInt;
 
-public class SfumatureDiverseRiga extends AbstractObjectiveCard {
+public class SfumatureDiverseRiga {
 
     private static SfumatureDiverseRiga thisInstance;
 
-    private SfumatureDiverseRiga() {
-        super( "Sfumature diverse Riga",  "Righe senza sfumature ripetute","5" , false);
-    }
 
     public static synchronized SfumatureDiverseRiga getThisInstance() {
         if(thisInstance == null){
@@ -28,7 +25,6 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
      * @param schemaCard
      * @return notifyView count points
      */
-    @Override
     public int countPoints(SchemaCard schemaCard){
         int n=0;        //variabile che serve per il controllo
         int points=0;
@@ -39,7 +35,7 @@ public class SfumatureDiverseRiga extends AbstractObjectiveCard {
                 }
             }
             if(n==0){
-                points = points + parseInt(ColoriDiversiRiga.getThisInstance().getPoints());
+                //points = points + parseInt(ColoriDiversiRiga.getThisInstance().getPoints());
             }
             n=0;
         }

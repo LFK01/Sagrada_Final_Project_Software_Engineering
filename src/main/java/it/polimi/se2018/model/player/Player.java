@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.player;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ public class Player implements Serializable {
     private String name;
     private boolean state;
     private int favorTokens;
-    private AbstractObjectiveCard privateObjective;
+    private ObjectiveCard privateObjective;
     private SchemaCard schemaCard;
     private int points;
     private Round[] playerTurns;
@@ -46,7 +46,7 @@ public class Player implements Serializable {
         return points;
     }
 
-    public AbstractObjectiveCard getPrivateObjective() {
+    public ObjectiveCard getPrivateObjective() {
         return privateObjective;
     }
 
@@ -58,7 +58,7 @@ public class Player implements Serializable {
         return playerTurns;
     }
 
-    public void setPrivateObjectiveCard(AbstractObjectiveCard privateObjective){
+    public void setPrivateObjectiveCard(ObjectiveCard privateObjective){
         this.privateObjective = privateObjective;
     }
     

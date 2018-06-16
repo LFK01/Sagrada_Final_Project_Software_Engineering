@@ -32,7 +32,7 @@ public class ToolCard {
     private String name;
     private String description;
     private ArrayList<InputManager> inputManagerList = new ArrayList<>();
-    private ArrayList<EffectInterface> effectsList = new ArrayList<>();
+    private ArrayList<TCEffectInterface> effectsList = new ArrayList<>();
     private EffectsFactory effectsFactory = new EffectsFactory();
     private boolean firstUsage;
 
@@ -150,7 +150,7 @@ public class ToolCard {
      */
     public void activateToolCard(String username, String toolCardName, String values, Model model){
         boolean executingEffect = false;
-        EffectInterface effectToExecute = effectsList.get(0);
+        TCEffectInterface effectToExecute = effectsList.get(0);
         while (!executingEffect) {
             /*searches for an undone effect*/
             if (!effectToExecute.isDone()) {
@@ -314,7 +314,7 @@ public class ToolCard {
     }
 
     private void setAllEffectsNotDone() {
-        for(EffectInterface effect: effectsList){
+        for(TCEffectInterface effect: effectsList){
             effect.setDone(false);
         }
     }

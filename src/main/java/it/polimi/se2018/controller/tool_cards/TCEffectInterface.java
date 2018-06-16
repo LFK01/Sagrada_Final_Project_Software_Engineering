@@ -2,7 +2,7 @@ package it.polimi.se2018.controller.tool_cards;
 
 import it.polimi.se2018.model.Model;
 
-public interface EffectInterface {
+public interface TCEffectInterface {
 
     void doYourJob(String username, String toolCardName, String values, Model model);
 

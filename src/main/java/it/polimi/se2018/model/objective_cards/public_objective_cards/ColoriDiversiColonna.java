@@ -1,14 +1,17 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
-public class ColoriDiversiColonna extends AbstractObjectiveCard {
+/**
+ * @author giovanni
+ */
+public class ColoriDiversiColonna  {
 
     public static ColoriDiversiColonna thisInstance;
 
     private ColoriDiversiColonna() {
-        super("Colori diversi - Colonna", "Colonne senza colori ripetuti", "5", false);
+
     }
 
     public synchronized static ColoriDiversiColonna getThisInstance(){
@@ -18,8 +21,25 @@ public class ColoriDiversiColonna extends AbstractObjectiveCard {
         return thisInstance;
     }
 
-    @Override
     public int countPoints(SchemaCard schemaCard) {
-        return 0;
+       int n=0;
+       int points=0;
+        for(int i =0;i<5;i++){
+            for(int j =0; j<3 && n==0; j++){ //fino alla penultima riga
+                if(!schemaCard.getCell(j,i).isFull()){
+                    n=1;
+                }
+                else if(schemaCard.getCell(j,i).getAssignedDice().getDiceColor().equals(schemaCard.getCell(j+1,i).getAssignedDice().getDiceColor())){
+                    n=1;
+                }
+            }
+            if(n==0){
+                points = points + 5;
+            }
+            else {
+                n=0;
+            }
+        }
+        return points;
     }
 }

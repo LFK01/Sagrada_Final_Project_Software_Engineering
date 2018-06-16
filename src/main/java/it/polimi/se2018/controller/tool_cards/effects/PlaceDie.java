@@ -1,6 +1,6 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
-import it.polimi.se2018.controller.tool_cards.EffectInterface;
+import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.exceptions.FullCellException;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Effects class. Invocated when "" is used. Activates a method
  * to place a die on the schema card.
  */
-public class PlaceDie implements EffectInterface {
+public class PlaceDie implements TCEffectInterface {
 
     private boolean isDone;
     private int draftPoolDiePosition;

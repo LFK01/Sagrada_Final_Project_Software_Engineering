@@ -7,7 +7,7 @@ public class EffectsFactory {
 
     public EffectsFactory(){}
 
-    public EffectInterface getThisEffect(String effectName){
+    public TCEffectInterface getThisEffect(String effectName){
         if(effectName.equalsIgnoreCase("ModifyDieValue")){
             return new ModifyDieValue();
         }
@@ -27,7 +27,7 @@ public class EffectsFactory {
             return new ExtractNewDie();
         }
         else {
-            return new EffectInterface() {
+            return new TCEffectInterface() {
                 @Override
                 public void doYourJob(String username, String toolCardName, String values, Model model) {
                 }

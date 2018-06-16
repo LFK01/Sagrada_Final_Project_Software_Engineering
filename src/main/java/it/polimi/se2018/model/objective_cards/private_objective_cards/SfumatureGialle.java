@@ -2,20 +2,15 @@ package it.polimi.se2018.model.objective_cards.private_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Luciano
  */
 
-public class SfumatureGialle extends AbstractObjectiveCard {
+public class SfumatureGialle {
 
     private static SfumatureGialle thisInstance;
-
-    private SfumatureGialle() {
-        super("Sfumature Gialle", "Somma dei valori su tutti i dadi gialli", "#", true);
-    }
-
     public synchronized static SfumatureGialle getThisInstance(){
         if(thisInstance==null){
             thisInstance = new SfumatureGialle();
@@ -27,7 +22,6 @@ public class SfumatureGialle extends AbstractObjectiveCard {
      * @param schemaCard
      * @return n number of yellow dice in the schema
      */
-    @Override
     public int countPoints(SchemaCard schemaCard) {
 
         int sum=0;

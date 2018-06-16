@@ -1,6 +1,6 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
-import it.polimi.se2018.controller.tool_cards.EffectInterface;
+import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
@@ -10,7 +10,7 @@ import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
 
-public class MoveDieOnWindow implements EffectInterface {
+public class MoveDieOnWindow implements TCEffectInterface {
 
     private boolean isDone;
     private Player activePlayer;

@@ -1,0 +1,77 @@
+PublicObjectiveCards:
+Number: 1
+Name: Colori/Diversi/Riga
+Description: Colonne/senza/colori/ripetuti
+Points: 5
+Effects:
+Number: 2
+Name: Colori/Diversi/Riga
+Description: Righe/senza/colori/ripetuti
+Points: 6
+Effects:
+Number: 3
+Name: Diagonali/Colorate
+Description: Numero/di/dadi/dello/stesso/colore/diagonalmente/adiacenti
+Points: 0
+Effects:
+Number: 4
+Name: Sfumature/Chiare
+Description: Set di 1 & 2 ovunque
+Points: 2
+Effects:
+Number: 5
+Name: Sfumature/Diverse
+Description: Set/di/dadi/di/ogni/valore/ovunque
+Points: 5
+Effects:
+Number: 6
+Name: Sfumature/Diverse/Colonna
+Description: Colonne/senza/sfumature/ripetute
+Points: 4
+Effects:
+Number: 7
+Name: Sfumature/Diverse/Riga
+Description: Righe/senza/sfumature/ripetute
+Points: 5
+Effects:
+Number: 8
+Name: Sfumature/Medie
+Description: Set/di/3/&/4/ovunque
+Points: 2
+Effects:
+Number: 9
+Name: Sfumature/Scure
+Description: Set/di/5/&/6/ovunque
+Points: 2
+Effects:
+Number: 10
+Name: Varietà/di/Colore
+Description: Set/di/dadi/di/ogni/colore/ovunque
+Points: 0
+Effects:
+PrivateObjectiveCards
+Number: 1
+Name:
+Description:
+Points:
+Effects:
+Number:
+Name:
+Description:
+Points:
+Effects:
+Number:
+Name:
+Description:
+Points:
+Effects:
+Number:
+Name:
+Description:
+Points:
+Effects:
+Number:
+Name:
+Description:
+Points:
+Effects:

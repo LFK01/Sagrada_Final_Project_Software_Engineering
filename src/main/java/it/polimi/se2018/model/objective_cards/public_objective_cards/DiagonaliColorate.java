@@ -1,14 +1,11 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 //Giovanni
-public class DiagonaliColorate extends AbstractObjectiveCard{
+public class DiagonaliColorate {
     private static DiagonaliColorate thisInstance;
 
-    private DiagonaliColorate(){
-        super("DiagonaliColorate","Numero di dadi dello stesso colore diagonalmente adiacenti","0",false);
-    }
 
     public static synchronized DiagonaliColorate getThisInstance() {
         if(thisInstance == null){
@@ -18,7 +15,6 @@ public class DiagonaliColorate extends AbstractObjectiveCard{
         return thisInstance;
     }
 
-    @Override
     public int countPoints(SchemaCard schemaCard){
         return 0;
 

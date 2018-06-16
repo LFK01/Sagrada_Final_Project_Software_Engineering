@@ -2,19 +2,15 @@ package it.polimi.se2018.model.objective_cards.private_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Giovanni
  */
 
-public class SfumatureViola extends AbstractObjectiveCard {
+public class SfumatureViola {
 
     private static SfumatureViola thisInstance;
-
-    private SfumatureViola(){
-        super("SfumatureViola","Somma dei valori su tutti i dadi viola","#",true);
-    }
 
     public synchronized static SfumatureViola getThisInstance(){
         if(thisInstance == null){
@@ -27,7 +23,7 @@ public class SfumatureViola extends AbstractObjectiveCard {
      * @param schemaCard
      * @return n number of purple dice in the schema
      */
-    @Override
+
     public int countPoints(SchemaCard schemaCard){
         int sum=0;
         for(int i=0; i<4; i++){

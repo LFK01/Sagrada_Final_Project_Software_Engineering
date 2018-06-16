@@ -1,19 +1,15 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Luciano
  */
 
-public class SfumatureMedie extends AbstractObjectiveCard {
+public class SfumatureMedie  {
 
     private static SfumatureMedie thisInstance;
-
-    private SfumatureMedie(){
-        super("SfumatureMedie","Set di 3 & 4 ovunque","2",false);
-    }
 
     public synchronized static SfumatureMedie getThisInstance(){
         if(thisInstance==null){
@@ -22,7 +18,6 @@ public class SfumatureMedie extends AbstractObjectiveCard {
         return thisInstance;
     }
 
-    @Override
     public int countPoints(SchemaCard schemaCard) {
         return 0;
     }

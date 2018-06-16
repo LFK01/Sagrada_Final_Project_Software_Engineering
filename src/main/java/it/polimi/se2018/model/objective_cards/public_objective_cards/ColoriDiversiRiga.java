@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 import static java.lang.Integer.parseInt;
 
@@ -9,13 +9,10 @@ import static java.lang.Integer.parseInt;
  * @author Luciano
  * edited giovanni
  */
-public class ColoriDiversiRiga extends AbstractObjectiveCard {
+public class ColoriDiversiRiga {
 
     private static ColoriDiversiRiga thisInstance = null; //tentativo
 
-    private ColoriDiversiRiga() {
-        super("Colori diversi - Riga", "Righe senza colori ripetuti", "6", false);
-    }
 
     public static synchronized ColoriDiversiRiga getThisInstance(){
         if(thisInstance==null){
@@ -28,7 +25,7 @@ public class ColoriDiversiRiga extends AbstractObjectiveCard {
      * @param schemaCard
      * @return notifyView count points
      */
-    @Override
+
     public int countPoints(SchemaCard schemaCard) {
         int n=0;        //variabile che serve per il controllo
         int points=0;
@@ -39,7 +36,7 @@ public class ColoriDiversiRiga extends AbstractObjectiveCard {
             }
         }
         if(n==0){
-            points = points + parseInt(ColoriDiversiRiga.getThisInstance().getPoints());
+            //points = points + parseInt(ColoriDiversiRiga.getThisInstance().getPoints());
         }
         n=0;
     }

@@ -2,19 +2,16 @@ package it.polimi.se2018.model.objective_cards.private_objective_cards;
 
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
-import it.polimi.se2018.model.objective_cards.AbstractObjectiveCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 /**
  * @author Luciano
  */
 
-public class SfumatureVerdi extends AbstractObjectiveCard {
+public class SfumatureVerdi{
 
     private static SfumatureVerdi thisInstance;
 
-    private SfumatureVerdi() {
-        super("Sfumature Verdi", "Somma dei valori su tutti i dadi verdi", "#", true);
-    }
 
     public synchronized static SfumatureVerdi getThisInstance(){
         if(thisInstance==null){
@@ -27,7 +24,6 @@ public class SfumatureVerdi extends AbstractObjectiveCard {
      * @param schemaCard
      * @return n number of  green dice in the schema
      */
-    @Override
     public int countPoints(SchemaCard schemaCard) {
         int sum=0;
         for(int i=0; i<4; i++){

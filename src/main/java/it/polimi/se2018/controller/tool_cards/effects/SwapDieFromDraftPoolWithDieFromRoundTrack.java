@@ -1,12 +1,12 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
-import it.polimi.se2018.controller.tool_cards.EffectInterface;
+import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.view.comand_line.InputManager;
 
-public class SwapDieFromDraftPoolWithDieFromRoundTrack implements EffectInterface {
+public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterface {
 
     boolean isDone;
     int draftPoolPosition;

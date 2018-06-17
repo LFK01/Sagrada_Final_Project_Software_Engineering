@@ -1,10 +1,11 @@
-package it.polimi.se2018.model.objective_cards;
+package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 
 import it.polimi.se2018.model.Model;
+import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
-public class Shades implements ObjectiveCardEffectInterface  {
+public class Shades implements ObjectiveCardEffectInterface {
     @Override
-    public void countsPoints(Model model, String cardName, int point) {
+    public void countPoints(Model model, String cardName, int point) {
         int check1 = 0;
         int check2 = 0;
         if (cardName.equals("Sfumature Chiare ")) {

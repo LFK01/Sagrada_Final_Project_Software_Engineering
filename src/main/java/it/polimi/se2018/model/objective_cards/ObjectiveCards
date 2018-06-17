@@ -1,9 +1,9 @@
 PublicObjectiveCards:
 Number: 1
-Name: Colori/Diversi/Riga
+Name: Colori/Diversi/Colonne
 Description: Colonne/senza/colori/ripetuti
 Points: 5
-Effects:
+Effects: ColumnCardsCS
 Number: 2
 Name: Colori/Diversi/Riga
 Description: Righe/senza/colori/ripetuti
@@ -49,29 +49,29 @@ Name: Varietà/di/Colore
 Description: Set/di/dadi/di/ogni/colore/ovunque
 Points: 0
 Effects:
-PrivateObjectiveCards
+PrivateObjectiveCards:
 Number: 1
-Name:
-Description:
-Points:
-Effects:
-Number:
-Name:
-Description:
-Points:
-Effects:
-Number:
-Name:
-Description:
-Points:
-Effects:
-Number:
-Name:
-Description:
-Points:
-Effects:
-Number:
-Name:
-Description:
-Points:
-Effects:
+Name: Sfumature/Rosse
+Description: Somma/dei/valori/su/tutti/i/dadi/rossi
+Points: 0
+Effects: PrivateCardEffect
+Number:2
+Name: Sfumature/Gialle
+Description: Somma/dei/valori/su/tutti/i/dadi/gialli
+Points: 0
+Effects: PrivateCardEffect
+Number:3
+Name: Sfumature/Verdi
+Description: Somma/dei/valori/su/tutti/i/dadi/verdi
+Points: 0
+Effects: PrivateCardEffect
+Number:4
+Name: Sfumature/Blu
+Description: Somma/dei/valori/su/tutti/i/dadi/blu
+Points: 0
+Effects: PrivateCardEffect
+Number:5
+Name: Sfumature/Viola
+Description: Somma/dei/valori/su/tutti/i/dadi/viola
+Points: 0
+Effects: PrivateCardEffect

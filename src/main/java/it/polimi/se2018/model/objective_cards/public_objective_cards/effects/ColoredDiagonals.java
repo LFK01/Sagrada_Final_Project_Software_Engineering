@@ -1,9 +1,9 @@
-package it.polimi.se2018.model.objective_cards.private_objective_cards;
+package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
-public class DefaultCase implements ObjectiveCardEffectInterface {
+public class ColoredDiagonals implements ObjectiveCardEffectInterface {
     @Override
     public void countPoints(Model model, String cardName, int point) {
 

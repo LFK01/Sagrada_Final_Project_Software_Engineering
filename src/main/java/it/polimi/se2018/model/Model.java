@@ -369,6 +369,12 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
 
+    public void countPoints(){
+        for(int i =0;i<3;i++){
+            gameBoard.getPublicObjectiveCards()[i].countPoints(this,gameBoard.getPublicObjectiveCardName(i),gameBoard.getPublicObjectiveCardPoints(i));
+        }
+    }
+
     @Override
     public void run() {
         setChanged();

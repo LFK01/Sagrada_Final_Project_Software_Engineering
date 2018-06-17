@@ -8,6 +8,7 @@ public class ObjectiveCardTest {
 
     @Test
     public void initializationTest(){
+      int i =0;
         ObjectiveCard objectiveCard1 = new ObjectiveCard(true, 1);
     }
 }

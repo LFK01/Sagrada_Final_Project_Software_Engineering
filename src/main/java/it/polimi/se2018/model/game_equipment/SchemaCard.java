@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.game_equipment;
 
-import it.polimi.se2018.model.exceptions.*;
+import it.polimi.se2018.exceptions.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -11,8 +11,6 @@ public class ProjectObservable {
 
     private ArrayList<ProjectObserver> observers;
     private Message memorizedMessage;
-    private Semaphore available;
-    //private boolean settedSemaphore;
 
     private boolean changed;
     public ProjectObservable(){
@@ -42,15 +40,6 @@ public class ProjectObservable {
         }
     }
 
-    /*public void addSemaphore(Semaphore available){
-        this.available = available;
-        settedSemaphore = true;
-    }*/
-
-    /*public void removeSemaphore(){
-        settedSemaphore = false;
-    }*/
-
     public void notifyObservers(Message message){
         System.out.println("notifying " + observers.size() + " observers w/: " + message.toString() +
                             "\n Recipient: " + message.getRecipient());
@@ -65,9 +54,6 @@ public class ProjectObservable {
                     }
                 }
                 changed = false;
-                /*if(settedSemaphore){
-                    available.release();
-                }*/
             }
         }
     }
@@ -78,13 +64,14 @@ public class ProjectObservable {
         synchronized (observers){
             if(changed){
                 for(ProjectObserver observer: observers){
-                    System.out.println("observer: " + observer.toString());
-                    observer.update(memorizedMessage);
+                    try{
+                        Method update = observer.getClass().getMethod("update", memorizedMessage.getClass());
+                        update.invoke(observer, memorizedMessage);
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
                 }
                 changed = false;
-                /*if(settedSemaphore){
-                    available.release();
-                }*/
             }
         }
     }

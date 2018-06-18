@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.ConnectException;
 import java.net.Socket;
 
 /**
@@ -22,7 +23,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     private RemoteViewSocket remoteViewSocket;
     private boolean serverIsUp;
 
-    public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket) {
+    public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket) throws ConnectException{
         socketSetUp(localhost, port, remoteViewSocket);
         /*String message = "";
         System.out.println("NetworkHandler setup...");
@@ -37,12 +38,10 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
         }*/
         this.start();
         serverIsUp = true;
-        System.out.println("Network handler started.");
     }
 
-    public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket, String oldUsername){
+    public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket, String oldUsername) throws ConnectException{
         socketSetUp(localhost, port, remoteViewSocket);
-        System.out.println("Socket comeback: network handler created, socket set up");
         String message = "";
         try{
             message = (String) inputStream.readObject();
@@ -50,7 +49,6 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             e.printStackTrace();
         }
         if(message.equals("ConnectionEnabled")){
-            System.out.println("handshake received.");
             serverIsUp = true;
             this.start();
             try{
@@ -61,14 +59,14 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
         }
     }
 
-    private void socketSetUp(String localhost, int port, RemoteViewSocket remoteViewSocket){
+    private void socketSetUp(String localhost, int port, RemoteViewSocket remoteViewSocket) throws ConnectException{
         try{
             socket = new Socket(localhost, port);
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             this.remoteViewSocket = remoteViewSocket;
         } catch (IOException e){
-            e.printStackTrace();
+            throw new ConnectException();
         }
     }
 
@@ -101,7 +99,7 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     @Override
     public void sendToServer(Message message) {
         try {
-            System.out.println("NetworkHandler -> Server");
+            System.out.println("NetworkHandler -> Server: " + message.toString());
             outputStream.writeObject(message);
         } catch (IOException e){
             serverIsUp = false;

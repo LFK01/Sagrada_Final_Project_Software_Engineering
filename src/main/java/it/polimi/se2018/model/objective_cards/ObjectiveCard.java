@@ -31,7 +31,6 @@ public class ObjectiveCard {
             inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\model\\objective_cards\\ObjectiveCards"));
             String line = "";
             boolean hasNextLine = true;
-            boolean readingPrivateOjective = false;
             boolean cardFound = false;
             try{
                 line = inputFile.nextLine();
@@ -39,13 +38,11 @@ public class ObjectiveCard {
                 hasNextLine = false;
             }
             while(hasNextLine){
-                //System.out.println("reading: " + line);
                 String[] words = line.split(" ");
                 int i=0;
                 while(i<words.length){
                     if(isPrivate){
                         if(words[i].trim().equalsIgnoreCase("PrivateObjectiveCards:")){
-                            //System.out.println("HO TROVATO LE CARTE");
                             while (hasNextLine){
                                 i=0;
                                 words = line.split(" ");
@@ -56,7 +53,6 @@ public class ObjectiveCard {
                                     }
                                 }
                                 if(cardFound){
-                                    //System.out.println("CARTA FOUND");
                                     if(words[i].trim().equalsIgnoreCase("Name:")){
                                         name = words[i+1].replace('/', ' ');
                                         System.out.println("Nome: " + name );
@@ -74,7 +70,6 @@ public class ObjectiveCard {
                                     }
                                     if(words[i].trim().equalsIgnoreCase("Effects:")){
                                         effect = factory.assigneEffect(words[i+1].replace('/',' '));
-                                        System.out.println("found eff");
                                         i++;
                                         hasNextLine = false;
                                     }

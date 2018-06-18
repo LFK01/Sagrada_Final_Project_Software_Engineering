@@ -2,17 +2,16 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.*;
 import it.polimi.se2018.model.objective_cards.ObjectiveCard;
-import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
-import it.polimi.se2018.model.objective_cards.public_objective_cards.*;
 import it.polimi.se2018.utils.ProjectObservable;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is supposed to contain all the data about a game and all the
@@ -29,11 +28,13 @@ import java.util.*;
 public class Model extends ProjectObservable implements Runnable{
 
     private int roundNumber;
+    public static final int TOOL_CARDS_NUMBER = 12;
+    public static final int PUBLIC_OBJECTIVE_CARDS_NUMBER = 10;
+    public static final int PRIVATE_OBJECTIVE_CARDS_NUMBER = 5;
+    public static final int SCHEMA_CARDS_NUMBER = 24;
     public static final int SCHEMA_CARDS_EXTRACT_NUMBER = 2;
     public static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
-    public static final int TOOL_CARD_NUMBER = 12;
-    public static final int SCHEMA_CARD_NUMBER = 24;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -84,14 +85,14 @@ public class Model extends ProjectObservable implements Runnable{
 
     /**
      * Getter method for a specific player
-     * @param index
+     * @param index player number, used to get the current turn player
      * @return reference of the player specified in the index parameter
      */
     public Player getPlayer(int index) {
         return participants.get(index);
     }
 
-    public ArrayList<Player> getParticipants() {
+    public List<Player> getParticipants() {
         return participants;
     }
 
@@ -130,14 +131,6 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     /**
-     * method to check if a player can skip a move
-     * @param move
-     */
-    public void checkNoActionMove(NoActionMove move) {
-
-    }
-
-    /**
      * method to check if the turnOfTheRound of the player specified in the parameter field
      * @param player
      * @return true if is the turnOfTheRound of the current player
@@ -172,7 +165,7 @@ public class Model extends ProjectObservable implements Runnable{
         }
         else{
             /*second run of turns to choose a die*/
-                turnOfTheRound--;
+            turnOfTheRound--;
         }
     }
 
@@ -181,45 +174,19 @@ public class Model extends ProjectObservable implements Runnable{
      * @param name
      */
     public void addPlayer(String name){
+        System.out.println("add player");
         participants.add(new Player(name));
         setChanged();
         notifyObservers(new SuccessCreatePlayerMessage("server",name));
     }
 
-    /**
-     * Method to remove a player from the model
-     * @param username String to retrieve player name
-     *
-     */
-    public void removePlayer(String username){
-
-    }
-
-    /**
-     * method to modify the token numeber of a specific player, gets called after a tool card has been used
-     * @param toolCardIndex number of tokens to deduct
-     * @param playerPosition integer number to get the player reference
-     */
-    public  void  updateFavorTokens(int toolCardIndex, int playerPosition){
-        if(gameBoard.getToolCards()[toolCardIndex].isFirstUsage()){
-            participants.get(playerPosition).decreaseFavorTokens(false);
-        }
-        else {
-            participants.get(playerPosition).decreaseFavorTokens(true);
-        }
-        setChanged();
-        notifyObservers();
-    }
-
     public void extractToolCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARD_NUMBER);
-        for(int i = 1; i <= TOOL_CARD_NUMBER; i++){
-            System.out.println("added: " + i);
+        ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
+        for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
-            System.out.println("extracted: " + cardIndex.get(i));
             gameBoard.setToolCards(new ToolCard(cardIndex.get(i)), i);
         }
     }
@@ -245,35 +212,32 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void sendSchemaCard(){
-        System.out.println("Dealing SchemaCards to players ");
         Thread sendingMessageThread;
         int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<>();
-        for(int i=0; i<participants.size(); i++){
-            System.out.println("Participant: " + participants.get(i).getName());
-        }
-        for(int i = 1; i<= SCHEMA_CARD_NUMBER/2; i++){
+        for(int i = 1; i<= SCHEMA_CARDS_NUMBER /2; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
-        for(int t=0; t < participants.size(); t++) {
+        for(Player player: participants) {
             SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER *2];
             String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER *2];
+            sendingMessageThread = new Thread(this);
             for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i+=2){
                 extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
-                extractedSchemaCards[i+1] = new SchemaCard((SCHEMA_CARD_NUMBER+1)-randomValues.get(extractedCardIndex));
+                extractedSchemaCards[i+1] = new SchemaCard((SCHEMA_CARDS_NUMBER +1)-randomValues.get(extractedCardIndex));
                 schemaCards[i+1] = extractedSchemaCards[i+1].toString();
                 extractedCardIndex++;
             }
+            setDefaultSchemaCard(player, extractedSchemaCards[0]);
             try{
-                Message sentMessage = new ChooseSchemaMessage("model", participants.get(t).getName(), schemaCards);
+                Message sentMessage = new ChooseSchemaMessage("model", player.getName(), schemaCards);
                 memorizeMessage(sentMessage);
-                sendingMessageThread = new Thread(this);
                 sendingMessageThread.start();
                 sendingMessageThread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
             }
         }
     }
@@ -283,29 +247,33 @@ public class Model extends ProjectObservable implements Runnable{
         participants.get(playerPos).setSchemaCard(schema);
     }
 
+    private void setDefaultSchemaCard(Player player, SchemaCard schemaCard){
+        player.setSchemaCard(schemaCard);
+    }
+
     public void sendPrivateObjectiveCard(){
         ArrayList<Integer> cardIndex = new ArrayList<>(3);
         ArrayList<ObjectiveCard> privateObjectiveCard =new ArrayList<>();
-        for(int i = 1; i < participants.size(); i++){
-            System.out.println("added: " + i);
+        for(int i = 1; i < PRIVATE_OBJECTIVE_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        for(int i = 0; i < participants.size(); i++) {
-            System.out.println("extracted: " + cardIndex.get(i));
-            privateObjectiveCard.add(new ObjectiveCard(true,cardIndex.get(i)));
+        for(Player player: participants) {
+            privateObjectiveCard.add(new ObjectiveCard(true, cardIndex.get(participants.indexOf(player))));
         }
         int s =0;
-        for(int i=0; i < participants.size(); i++) {
-            String colorString = privateObjectiveCard.get(i).getDescription();
+        for(Player player: participants) {
+            String colorString = privateObjectiveCard.get(participants.indexOf(player)).getDescription();
             setChanged();
-            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", participants.get(i).getName(), colorString,participants.size()));
+            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", player.getName(), colorString,
+                    participants.size()));
             s = s+1;
         }
         sendSchemaCard();
     }
 
-    public void updateGameboard(){   //momentaneamente facoltativo
+
+    public void updateGameboard(){
         Thread sendingMessageThread;
         StringBuilder builderGameboard = new StringBuilder();
         builderGameboard.append("PublicObjectiveCards:/");
@@ -321,8 +289,8 @@ public class Model extends ProjectObservable implements Runnable{
         builderGameboard.append("DiceList:/");
         RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(int i=0; i<currentDiceList.size(); i++){
-            builderGameboard.append(currentDiceList.get(i).toString()).append("/");
+        for(Dice die: currentDiceList){
+            builderGameboard.append(die.toString()).append("/");
         }
         builderGameboard.append("/");
         builderGameboard.append("SchemaCard:/");
@@ -333,14 +301,15 @@ public class Model extends ProjectObservable implements Runnable{
         builderGameboard.append("schemaStop:/");
         builderGameboard.append("playingPlayer:/");
         builderGameboard.append(participants.get(turnOfTheRound).getName());
-        for(int i = 0; i<participants.size(); i++){
+        for(Player player: participants){
+            sendingMessageThread = new Thread(this);
             try{
-                memorizeMessage(new GameInitializationMessage("model", participants.get(i).getName(),builderGameboard.toString()));
-                sendingMessageThread = new Thread(this);
+                memorizeMessage(new GameInitializationMessage("model", player.getName(),builderGameboard.toString()));
                 sendingMessageThread.start();
                 sendingMessageThread.join();
             } catch (InterruptedException e){
-                e.printStackTrace();
+                sendingMessageThread.interrupt();
+                Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
             }
         }
     }
@@ -352,6 +321,7 @@ public class Model extends ProjectObservable implements Runnable{
         changeFirstPlayer();
         extractRoundTrack();
     }
+
     public void changeFirstPlayer(){
         Player lastPlayer = participants.remove(0);
         participants.add(lastPlayer);

@@ -1,8 +1,8 @@
 package it.polimi.se2018.model.game_equipment;
 
-import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.NoColorException;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.NoColorException;
+import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 
 /**
  * Class meant to contain a Die and all the information about the placing restrictions
@@ -84,7 +84,7 @@ public class Cell {
      */
     public void setAssignedDice(Dice dice, boolean avoidColorRestriction, boolean avoidValueRestriction) throws RestrictionsNotRespectedException, FullCellException{
         if(isFull()){
-            throw (new FullCellException("Cella piena!"));
+            throw (new FullCellException());
         }
         if(noColor){
             if(this.value==0){

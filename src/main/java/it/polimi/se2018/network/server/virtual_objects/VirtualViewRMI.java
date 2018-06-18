@@ -29,7 +29,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         }
     }
 
-
     /**
      * constructor method called when a new username wants to connect to an existing game
      * with a username already used
@@ -81,24 +80,24 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         setChanged();
         notifyObservers(selectedSchemaMessage);
     }
+
     public void updateServer(ChooseDiceMove chooseDiceMove){
         System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(chooseDiceMove);
     }
+
     public void updateServer(DiePlacementMessage diePlacementMessage){
         System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(diePlacementMessage);
-
     }
+
     public void updateServer(NoActionMove noActionMove){
         System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(noActionMove);
     }
-
-
 
     @Override
     public void update(Message message) {
@@ -112,7 +111,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        
+        virtualClientRMI.notifyClient(comebackMessage);
     }
 
     @Override
@@ -127,7 +126,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(DiePlacementMessage diePlacementMessage) {
-
+        virtualClientRMI.notifyClient(diePlacementMessage);
     }
 
     @Override
@@ -148,6 +147,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
+        virtualClientRMI.notifyClient(selectedSchemaMessage);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(SuccessMessage successMessage) {
-
+        virtualClientRMI.notifyClient(successMessage);
     }
 
 
@@ -174,21 +174,17 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(ChooseDiceMove chooseDiceMove){
+        virtualClientRMI.notifyClient(chooseDiceMove);
     }
 
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
-
+        virtualClientRMI.notifyClient(toolCardActivationMessage);
     }
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
-
-    }
-
-    @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
-        virtualClientRMI.notifyClient(updateTurnMessage);
+        virtualClientRMI.notifyClient(toolCardErrorMessage);
     }
 
     @Override

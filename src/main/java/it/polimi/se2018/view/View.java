@@ -11,6 +11,7 @@ import it.polimi.se2018.view.comand_line.InputManager;
 
 
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -163,13 +164,10 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     public void update(GameInitializationMessage gameInitializationMessage) {
         String playingPLayer=null;
         boolean alreadyRead = false;
-        System.out.println("Private objective card: " + privateObjectiveCardsDescription);
         String[] words = gameInitializationMessage.getGameboardInformation().split("/");
-        System.out.println(gameInitializationMessage.getGameboardInformation());
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
             if (words[i].equalsIgnoreCase("PublicObjectiveCards:")) {
-                System.out.println("ciao1");
                 i++;
                 while (!alreadyRead) {
                     if (words[i].equalsIgnoreCase("Name:")) {
@@ -249,12 +247,19 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     @Override
     public void update(RequestMessage requestMessage) {
-        if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("DraftPoolDiePosition:")){
-            draftPoolDiceNumber = Integer.parseInt(requestMessage.getValues().split(" ")[1]);
+        for(String name: toolCardNames){
+            System.out.println(name);
         }
-        if(requestMessage.getValues().split(" ")[0].equalsIgnoreCase("ToolCardName:")){
-            toolCardUsageName = requestMessage.getValues().split(" ")[1];
+        String[] lines = requestMessage.getValues().split("\n");
+        for(String line: lines){
+            if(line.split(" ")[0].equalsIgnoreCase("DraftPoolDiePosition:")){
+                draftPoolDiceNumber = Integer.parseInt(requestMessage.getValues().split(" ")[1]);
+            }
+            if(line.split(" ")[0].equalsIgnoreCase("ToolCardName:")){
+                toolCardUsageName = requestMessage.getValues().split(" ")[1].replace("/", " ");
+            }
         }
+        System.out.println("requestMessage values: " + requestMessage.getValues());
         inputManager = requestMessage.getInputManager();
         System.out.println(inputManager.toString());
         new Thread(this).start();
@@ -294,12 +299,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
 
     }
 
-
-    @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
-
-    }
-
     @Override
     public void update(UseToolCardMove useToolCardMove) {
 
@@ -325,6 +324,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
     public void run() {
         //TODO add stop tool card activation option
         scanner = new Scanner(new InputStreamReader(System.in));
+        boolean wrongInput;
         switch(inputManager){
             case INPUT_DISABLED:{
                 input = scanner.nextLine();
@@ -334,7 +334,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_PLAYER_NAME:{
-                boolean wrongInput = true;
+                wrongInput = true;
                 while(wrongInput){
                     System.out.print("New Username: ");
                     username = scanner.nextLine();
@@ -350,7 +350,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_SCHEMA_CARD:{
-                boolean wrongInput = true;
+                wrongInput = true;
                 while(wrongInput){
                     try{
                         System.out.println("Schema card number: ");
@@ -374,11 +374,12 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_CHOOSE_MOVE:{
+                int toolCardNumber = -1;
                 System.out.println("It's your Turn! Type the number of your choice:" +
                         "\n1 Place a die" +
                         "\n2 Use a ToolCard" +
                         "\n3 Do nothing");
-                boolean wrongInput = true;
+                wrongInput = true;
                 while(wrongInput){
                     try{
                         input = scanner.nextLine();
@@ -398,7 +399,6 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                     try {
                                         input = scanner.nextLine();
                                         diceOnRoundDice = Integer.parseInt(input);
-                                        System.out.println("NUMERO_GIOCATORI " + playersNumber);
                                         if (diceOnRoundDice < 1 || diceOnRoundDice > playersNumber *2 +1) {
                                             System.out.println("Wrong Input");
                                             wrongInput = true;
@@ -418,15 +418,18 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                 System.out.println("Tool card number: ");
                                 try{
                                     input = scanner.nextLine();
-                                    choice = Integer.parseInt(input);
-                                    if(choice<1 || choice >TOOL_CARD_NUMBER){
+                                    toolCardNumber = Integer.parseInt(input);
+                                    if(toolCardNumber<1 || toolCardNumber >TOOL_CARD_NUMBER){
                                         System.out.println("Wrong input!");
                                         wrongInput = true;
                                     } else {
                                         wrongInput = false;
-                                        if(toolCardNames[choice-1].split(" ")[0].equals("Name:")){
+                                        System.out.println("decided to use: " +
+                                                toolCardNames[toolCardNumber-1].split(" ")[1].replace("/", " "));
+                                        if(toolCardNames[toolCardNumber-1].split(" ")[0].equals("Name:")){
                                             setChanged();
-                                            notifyObservers(new UseToolCardMove(username, "server", toolCardNames[choice].split(" ")[1].replace("/", " ")));
+                                            notifyObservers(new UseToolCardMove(username, "server",
+                                                    toolCardNames[toolCardNumber-1].split(" ")[1].replace("/", " ")));
                                         }
                                     }
                                 } catch (NumberFormatException e){
@@ -434,7 +437,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                                     wrongInput = true;
                                 }
                             }
-                            if (choice ==3){
+                            if (choice == 3){
                                 System.out.println("Ho deciso di passare il turno");
                                 setChanged();
                                 notifyObservers(new NoActionMove(username,"server"));
@@ -445,12 +448,10 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         wrongInput = true;
                     }
                 }
-                //setChanged();
-                //notifyObservers();
                 break;
             }
             case INPUT_MODIFY_DIE_VALUE:{
-                boolean wrongInput = true;
+                wrongInput = true;
                 while (wrongInput){
                     System.out.print("Choose a die from the draft pool to change its values: " +
                             "\nDie position number: ");
@@ -470,7 +471,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 }
                 wrongInput = true;
                 StringBuilder builder = new StringBuilder();
-                builder.append("DiePosition: ").append(choice).append(" ");
+                builder.append("DiePosition: ").append(choice-1).append(" ");
                 if(toolCardUsageName.equalsIgnoreCase("Pinza Sgrossatrice")){
                     System.out.println("Do you want to increase the die value? (Y/N)");
                     while (wrongInput){
@@ -484,13 +485,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     }
                 }
                 setChanged();
-                notifyObservers(new ToolCardActivationMessage(username, "server", toolCardUsageName, builder.toString()));
+                notifyObservers(new ToolCardActivationMessage(username, "server", toolCardUsageName.replace(" ", "/"), builder.toString()));
                 break;
             }
             case INPUT_MOVE_DIE_ON_WINDOW:{
-                int positions[] = new int[INT_VALUES_NUMBER_TOOL_CARD_MOVE_DICE];
+                StringBuilder builder = new StringBuilder();
                 int positionIndex = 0;
-                boolean wrongInput = true;
+                wrongInput = true;
                 System.out.println("Choose a die to move from your window:");
                 while(wrongInput){
                     System.out.print("Row: ");
@@ -501,7 +502,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             wrongInput = true;
                         } else {
                             wrongInput = false;
-                            positions[positionIndex] = choice;
+                            builder.append("oldDieRow: ").append(choice).append("\n");
                             positionIndex++;
                         }
                     } catch (NumberFormatException e){
@@ -518,7 +519,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             wrongInput = true;
                         } else {
                             wrongInput = false;
-                            positions[positionIndex] = choice;
+                            builder.append("oldDieCol: ").append(choice).append("\n");
                             positionIndex++;
                         }
                     } catch (NumberFormatException e){
@@ -538,7 +539,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                         }
                     } catch (NumberFormatException e){
                         wrongInput = true;
-                        positions[positionIndex] = choice;
+                        builder.append("newDieRow: ").append(choice).append("\n");
                         positionIndex++;
                     }
                 }
@@ -552,7 +553,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                             wrongInput = true;
                         } else {
                             wrongInput = false;
-                            positions[positionIndex] = choice;
+                            builder.append("newDieCol: ").append(choice).append("\n");
                             positionIndex++;
                         }
                     } catch (NumberFormatException e){
@@ -560,12 +561,13 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     }
                 }
                 setChanged();
-                notifyObservers(new MovingDieMessage(username, "server", positions, toolCardUsageName));
+                notifyObservers(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageName.replace(" ", "/"), builder.toString()));
                 break;
             }
             case INPUT_PLACE_DIE: {
                 StringBuilder builder = new StringBuilder();
-                boolean wrongInput = true;
+                wrongInput = true;
                 int row = -1;
                 System.out.println("Choose die position:");
                 while (wrongInput) {
@@ -615,7 +617,7 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                 break;
             }
             case INPUT_POSITION_DRAFTPOOL_POSITION_ROUNDTRACK:{
-                boolean wrongInput = true;
+                wrongInput = true;
                 int draftPoolPosition = -1;
                 int roundNumber = -1;
                 int roundTrackPosition = -1;
@@ -673,14 +675,39 @@ public class View extends ProjectObservable implements ProjectObserver, Runnable
                     }
                 }
                 StringBuilder builder = new StringBuilder();
-                builder.append("DraftPoolPosition: ").append(draftPoolPosition).append(" ");
-                builder.append("RoundNumber: ").append(roundNumber).append(" ");
-                builder.append("RoundTrackPosition: ").append(roundTrackPosition).append(" ");
+                builder.append("DraftPoolPosition: ").append(draftPoolPosition-1).append(" ");
+                builder.append("RoundNumber: ").append(roundNumber-1).append(" ");
+                builder.append("RoundTrackPosition: ").append(roundTrackPosition-1).append(" ");
                 setChanged();
-                notifyObservers(new ToolCardActivationMessage(username, "server", toolCardUsageName, builder.toString()));
+                notifyObservers(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageName.replace(" ", "/"), builder.toString()));
                 break;
             }
             case INPUT_CHOOSE_DIE:{
+                System.out.println("Choose a die from the draft pool: ");
+                StringBuilder builder = new StringBuilder();
+                wrongInput = true;
+                while (wrongInput){
+                    try {
+                        System.out.print("position: ");
+                        input = scanner.nextLine();
+                        choice = Integer.parseInt(input);
+                        if(choice<1 || choice>playersNumber*2+1){
+                            wrongInput = true;
+                            System.out.println("Wrong Input!");
+                        } else {
+                            wrongInput = false;
+                            builder.append("Position: ").append(choice-1);
+                            setChanged();
+                            notifyObservers(new ToolCardActivationMessage(username, "server",
+                                    toolCardUsageName.replace(" ", "/"), builder.toString()));
+                        }
+                    } catch (NumberFormatException e){
+                        System.out.println("Wrong Input!");
+                        wrongInput = true;
+                    }
+
+                }
                 break;
             }
         }

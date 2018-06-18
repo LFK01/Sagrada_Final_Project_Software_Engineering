@@ -22,11 +22,9 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     private ObjectInputStream inputStream;
     private VirtualViewSocket virtualViewSocket;
     private boolean isConnected;
-
     private String username;
 
     public VirtualClientSocket(Server server, Socket clientConnection){
-        System.out.println("New VirtualClientSocket...");
         this.server = server;
         this.clientConnection = clientConnection;
         this.isConnected = true;
@@ -36,11 +34,11 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         } catch (IOException e){
             e.printStackTrace();
         }
-        System.out.println("Handshake...");
         virtualViewSocket = new VirtualViewSocket(this);
         virtualViewSocket.addObserver(server.getController());
         server.getController().addObserver(virtualViewSocket);
-        server.getController().getModel().addObserver(virtualViewSocket);
+        server.getController().addObserverToModel(virtualViewSocket);
+        username = this.toString();
     }
 
     public void resetOldPlayer(ComebackSocketMessage message) throws PlayerNotFoundException{

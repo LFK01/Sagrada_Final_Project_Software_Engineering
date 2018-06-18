@@ -1,8 +1,10 @@
 package it.polimi.se2018.controller.tool_cards;
 
+import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.RequestMessage;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
+import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
 
@@ -17,18 +19,6 @@ import java.util.Scanner;
  */
 public class ToolCard {
 
-    private static final String[] toolCardNames = {"Pinza/Sgrossatrice",
-            "Pennello/per/Eglomise",
-            "Alesatore/per/lamina/di/rame",
-            "Lathekin",
-            "Taglierina/circolare",
-            "Pennello/per/Pasta/Salda",
-            "Martelletto",
-            "Tenaglia/a/Rotelle",
-            "Riga/in/Sughero",
-            "Tampone/Diamantato",
-            "Diluente/per/Pasta/Salda",
-            "Taglierina/Manuale"};
     private String name;
     private String description;
     private ArrayList<InputManager> inputManagerList = new ArrayList<>();
@@ -55,13 +45,11 @@ public class ToolCard {
                 hasNextLine = false;
             }
             while(hasNextLine){
-                System.out.println("reading: " + line);
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
                     if(words[i].trim().equalsIgnoreCase("number:")){
                         if(toolCardNumber == Integer.parseInt(words[i+1])){
-                            System.out.println("found card: " + toolCardNumber);
                             cardFound = true;
                             i++;
                         }
@@ -106,6 +94,48 @@ public class ToolCard {
         firstUsage = true;
     }
 
+    public static String searchNameByNumber(int toolCardNumber){
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
+            String line = "";
+            boolean hasNextLine = true;
+            boolean cardFound = false;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equalsIgnoreCase("number:")){
+                        if(toolCardNumber == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                    }
+                    if(cardFound){
+                        if(words[i].trim().equalsIgnoreCase("name:")){
+                            return words[i+1].replace('/', ' ');
+                        }
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return "";
+    }
     /**
      *
      * @return Name of the tool card
@@ -155,32 +185,40 @@ public class ToolCard {
             /*searches for an undone effect*/
             if (!effectToExecute.isDone()) {
                 /*executes effect*/
-                effectToExecute.doYourJob(username, toolCardName, values, model);
-                effectToExecute.setDone(true);
-                executingEffect = true;
-                if (effectsList.indexOf(effectToExecute) == effectsList.size() - 1) {
-                    /*has done all effects in effectsList, resets all the effects and decreases player
-                    * favor tokens as player has successfully used the tool card*/
-                    setAllEffectsNotDone();
-                    decreasePlayerFavorTokens(username, model);
-                    /*updates player moves*/
-                    setPlayerToolMoveDone(username, model);
-                    if(toolCardName.equals(toolCardNames[8-1].replace("/", " "))){
-                        /*after placing two consecutive dice player can't place another die*/
-                        setNextRoundDieMoveDone(username, model);
-                    }
-                    /* player gets notified of the results of the move and
-                    * every player gets an update of the gameboard*/
-                    model.setChanged();
-                    model.notifyObservers(new SuccessMessage("server", username, "SuccessfulMove"));
-                    model.updateGameboard();
-                } else{
-                    if(effectsList.indexOf(effectToExecute) != 0) {
-                        model.updateGameboard();
+                System.out.println("executing effect: " + effectToExecute.toString());
+                try {
+                    effectToExecute.doYourJob(username, toolCardName, values, model);
+                    executingEffect = true;
+                    if (effectsList.indexOf(effectToExecute) == effectsList.size() - 1) {
+                        /*has done all effects in effectsList, resets all the effects and decreases player
+                         * favor tokens as player has successfully used the tool card*/
+                        setAllEffectsNotDone();
+                        decreasePlayerFavorTokens(username, model);
+                        /*updates player moves*/
+                        setPlayerToolMoveDone(username, model);
+                        if (toolCardName.equals(ToolCard.searchNameByNumber(8))) {
+                            /*after placing two consecutive dice player can't place another die*/
+                            setNextRoundDieMoveDone(username, model);
+                        }
+                        /* player gets notified of the results of the move and
+                         * every player gets an update of the gameboard*/
                         model.setChanged();
-                        model.notifyObservers(new RequestMessage("server", username, toolCardName,
-                                inputManagerList.get(effectsList.indexOf(effectToExecute))));
+                        model.notifyObservers(new SuccessMessage("server", username, "SuccessfulMove"));
+                        model.updateGameboard();
                     }
+                    else{
+                        if (effectsList.indexOf(effectToExecute) != 0) {
+                            model.updateGameboard();
+                            model.setChanged();
+                            model.notifyObservers(new RequestMessage("server", username, toolCardName,
+                                    inputManagerList.get(effectsList.indexOf(effectToExecute))));
+                        }
+                    }
+                } catch (ExecutingEffectException e){
+                    model.setChanged();
+                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName,
+                            "WrongInputParameters",
+                            inputManagerList.get(effectsList.indexOf(effectToExecute)-1)));
                 }
             } else {
                 if (effectsList.indexOf(effectToExecute) < effectsList.size() - 1) {
@@ -216,76 +254,105 @@ public class ToolCard {
                                                     boolean isFirstDraftOfDice){
         boolean playerAbleToActivateCard;
         if(isFirstDraftOfDice){
+            /*players are picking their first die*/
             if(activePlayer.getPlayerTurns()[roundNumber].getTurn1().getToolMove().isBeenUsed()){
                 /*player has already used a tool card in this turn*/
                 playerAbleToActivateCard = false;
             } else {
                 if(activePlayer.getPlayerTurns()[roundNumber].getTurn1().getDieMove().isBeenUsed()){
                     /*player has already placed a die in this turn*/
-                    playerAbleToActivateCard = checkSpecificCard(activePlayer, toolCardName);
+                    playerAbleToActivateCard = checkSpecificCardsWithAPlacedDie(activePlayer, toolCardName);
                 } else{
-                    if(toolCardName.equals(toolCardNames[8-1].replace("/", " "))){
-                        /*player has to place a die before using this card*/
-                        playerAbleToActivateCard = false;
-                    } else {
-                        playerAbleToActivateCard = true;
-                    }
+                    playerAbleToActivateCard = checkSpecificCardsWithoutAPlacedDie(activePlayer, toolCardName);
                 }
             }
-            if(toolCardName.equals(toolCardNames[7-1].replace("/", " "))){
+            if(toolCardName.equals(ToolCard.searchNameByNumber(7))){
                 /*this toolcard can't be activated on the first draft of dice*/
                 playerAbleToActivateCard = false;
             }
         }else{
+            /*players are picking their second die*/
             if(activePlayer.getPlayerTurns()[roundNumber].getTurn2().getToolMove().isBeenUsed()){
                 /*player has already used a tool card in this turn*/
                 playerAbleToActivateCard = false;
             } else {
                 if(activePlayer.getPlayerTurns()[roundNumber].getTurn2().getDieMove().isBeenUsed()){
                     /*player has already placed a die in this turn*/
-                    playerAbleToActivateCard = checkSpecificCard(activePlayer, toolCardName);
+                    playerAbleToActivateCard = checkSpecificCardsWithAPlacedDie(activePlayer, toolCardName);
                 } else{
+                    playerAbleToActivateCard = checkSpecificCardsWithoutAPlacedDie(activePlayer, toolCardName);
+                }
+                if(toolCardName.equals(ToolCard.searchNameByNumber(8))){
+                    /*this tool card can be used only on the first draft of dice*/
+                    playerAbleToActivateCard = false;
+                }
+            }
+        }
+        if(roundNumber<2 && (toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(12))
+                || toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(5))
+                )){
+            /*these toolcards require at least a die placed on the roundTrack*/
+            playerAbleToActivateCard = false;
+        }
+        return playerAbleToActivateCard;
+    }
+
+    private boolean checkSpecificCardsWithAPlacedDie(Player activePlayer, String toolCardName) {
+        boolean playerAbleToActivateCard;
+        if(toolCardName.equals(ToolCard.searchNameByNumber(6)) ||
+                toolCardName.equals(ToolCard.searchNameByNumber(9)) ||
+                toolCardName.equals(ToolCard.searchNameByNumber(11))){
+            /*these toolcards can't be used if a die has already been placed*/
+            playerAbleToActivateCard = false;
+        } else{
+            if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
+                if(toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                    /*these schema card can't be activated whit less than two dice*/
+                    playerAbleToActivateCard = false;
+                } else {
                     playerAbleToActivateCard = true;
                 }
-                if(toolCardName.equals(toolCardNames[8-1].replace("/", " "))){
-                    /*this tool card can be used only on the first turn*/
+            } else{
+                playerAbleToActivateCard = true;
+            }
+        }
+        return playerAbleToActivateCard;
+    }
+
+    private boolean checkSpecificCardsWithoutAPlacedDie(Player activePlayer, String toolCardName){
+        boolean playerAbleToActivateCard = false;
+        if(toolCardName.equals(ToolCard.searchNameByNumber(8))){
+            /*player has to place a die before using this card*/
+            playerAbleToActivateCard = false;
+        } else {
+            if(activePlayer.getSchemaCard().isEmpty()){
+                if(toolCardName.equals(ToolCard.searchNameByNumber(2)) ||
+                        toolCardName.equals(ToolCard.searchNameByNumber(3)) ||
+                        toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                    /*these toolcards can't be activated with an empty window*/
                     playerAbleToActivateCard = false;
+                } else {
+                    playerAbleToActivateCard = true;
+                }
+            } else {
+                if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
+                    if(toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
+                            toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                        /*these schema card can't be activated whit less than two dice*/
+                        playerAbleToActivateCard = false;
+                    } else {
+                        playerAbleToActivateCard = true;
+                    }
+                } else{
+                    playerAbleToActivateCard = true;
                 }
             }
         }
         return playerAbleToActivateCard;
     }
 
-    private boolean checkSpecificCard(Player activePlayer, String toolCardName){
-        boolean playerAbleToActivateCard;
-        if(toolCardName.equals(toolCardNames[6-1].replace("/", " ")) ||
-                toolCardName.equals(toolCardNames[9-1].replace("/", " ")) ||
-                toolCardName.equals(toolCardNames[11-1].replace("/", " "))){
-            /*these toolcards can't be used if a die has already been placed*/
-            playerAbleToActivateCard = false;
-        } else {
-            if(activePlayer.getSchemaCard().isEmpty()){
-                if(toolCardName.equals(toolCardNames[2-1].replace("/", " ")) ||
-                        toolCardName.equals(toolCardNames[3-1].replace("/", " ")) ||
-                        toolCardName.equals(toolCardNames[4-1].replace("/", " ")) ||
-                        toolCardName.equals(toolCardNames[12-1].replace("/", " "))){
-                    /*these toolcards can't be activated with an empty window*/
-                    playerAbleToActivateCard = false;
-                } else {
-                    playerAbleToActivateCard = true;
-                }
-            }else {
-                if (activePlayer.getSchemaCard().hasLessThanTwoDie() && (toolCardName.equals(toolCardNames[4-1].replace("/", " ")) ||
-                        toolCardName.equals(toolCardNames[12-1].replace("/", " ")))){
-                    /*these schema card can't be activated whit less than two dice*/
-                    playerAbleToActivateCard = false;
-                } else{
-                    playerAbleToActivateCard = true;
-                }
-            }
-        }
-        return playerAbleToActivateCard;
-    }
     private void setPlayerToolMoveDone(String username, Model model) {
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){

@@ -46,7 +46,5 @@ public interface ProjectObserver {
 
     void update(ToolCardErrorMessage toolCardErrorMessage);
 
-    void update(UpdateTurnMessage updateTurnMessage);
-
     void update(UseToolCardMove useToolCardMove);
 }

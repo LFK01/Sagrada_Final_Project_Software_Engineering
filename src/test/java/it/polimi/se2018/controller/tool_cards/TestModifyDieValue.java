@@ -12,11 +12,5 @@ public class TestModifyDieValue {
         Controller controller = new Controller();
         view.addObserver(controller);
         controller.addObserver(view);
-        controller.getModel().addObserver(view);
-        controller.getModel().addPlayer("a");
-        controller.getModel().addPlayer("b");
-        controller.getModel().extractRoundTrack();
-        controller.getModel().extractToolCards();
-        controller.getModel().extractPublicObjectiveCards();
     }
 }

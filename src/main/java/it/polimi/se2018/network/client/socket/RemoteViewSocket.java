@@ -9,6 +9,8 @@ import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
+import java.rmi.ConnectException;
+
 /**
  * @author Luciano
  */
@@ -18,11 +20,15 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     private String username;
     private boolean serverIsUp;
 
-    public RemoteViewSocket(String localhost, int port){
-        server = new NetworkHandler(localhost, port, this);
+    public RemoteViewSocket(String localhost, int port) throws java.net.ConnectException {
+        try {
+            server = new NetworkHandler(localhost, port, this);
+        } catch (java.net.ConnectException e) {
+            throw e;
+        }
     }
 
-    public RemoteViewSocket(String localhost, int port, String oldUsername){
+    public RemoteViewSocket(String localhost, int port, String oldUsername)throws java.net.ConnectException{
         System.out.println("Socket comeback: RemoteView created");
         server = new NetworkHandler(localhost, port, this, oldUsername);
     }
@@ -45,7 +51,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     public void notifyView(ErrorMessage errorMessage){
         if(errorMessage.getRecipient().equals(username) || server.getAddress().equals(errorMessage.getRecipient())){
             if(errorMessage.toString().equals("NotValidUsername")){
-                System.out.println("RemoteWSocket -> Client: error message not valid username");
+                System.out.println("RemoteWSocket -> Client: " + errorMessage.toString());
                 username = "";
                 setChanged();
                 notifyObservers(errorMessage);
@@ -81,11 +87,12 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     public void notifyView(SuccessMessage successMessage){
         if(successMessage.getRecipient().equals(username)){
-            System.out.println("RemoteWSocket -> Client: success message");
+            System.out.println("RemoteWSocket -> Client: " + successMessage.toString());
             setChanged();
             notifyObservers(successMessage);
         }
     }
+
     public void notifyView(RequestMessage requestMessage){
         if(requestMessage.getRecipient().equals(username)){
             System.out.println("RemoteWSocket -> Client: success message");
@@ -96,7 +103,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
         if(successCreatePlayerMessage.getRecipient().equals(username)){
-            System.out.println("RemoteWSocket -> Server: success create message");
+            System.out.println("RemoteWSocket -> Server: " + successCreatePlayerMessage);
             setChanged();
             notifyObservers(successCreatePlayerMessage);
         }
@@ -216,13 +223,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         System.out.println("RemoteWSocket -> Server: " + toolCardErrorMessage.toString());
         server.sendToServer(toolCardErrorMessage);
-    }
-
-
-    @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
-        System.out.println("RemoteWSocket -> Server: " + updateTurnMessage.toString());
-        server.sendToServer(updateTurnMessage);
     }
 
     @Override

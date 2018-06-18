@@ -1,5 +1,6 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
+import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Dice;
@@ -11,12 +12,16 @@ public class ExtractNewDie implements TCEffectInterface {
     boolean isDone = false;
 
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) {
+    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
         String[] words = values.split(" ");
         int diePosition = -1;
         for(int i = 0; i<words.length; i++){
             if(words[i].trim().equalsIgnoreCase("DiePosition:")){
                 diePosition = Integer.parseInt(words[i+1]);
+                if(diePosition<0 ||
+                        diePosition>model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()){
+                    throw new ExecutingEffectException();
+                }
             }
         }
         Dice replacingDie = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDice(diePosition);

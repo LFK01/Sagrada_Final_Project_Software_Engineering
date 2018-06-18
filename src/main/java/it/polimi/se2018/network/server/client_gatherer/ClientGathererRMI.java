@@ -32,7 +32,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
             VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient, server);
             server.getController().addObserver(newVirtualView);
             newVirtualView.addObserver(server.getController());
-            server.getController().getModel().addObserver(newVirtualView);
+            server.getController().addObserverToModel(newVirtualView);
             ServerRMIInterface remoteServerRef = null;
             try {
                 remoteServerRef = (ServerRMIInterface) UnicastRemoteObject.exportObject(newVirtualView.getVirtualClientRMI(), 0);
@@ -108,11 +108,6 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     @Override
     public void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
-    public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 

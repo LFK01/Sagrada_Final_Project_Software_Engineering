@@ -1,8 +1,8 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
 
+import it.polimi.se2018.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.SchemaCard;

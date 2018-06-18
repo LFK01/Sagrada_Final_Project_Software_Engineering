@@ -19,21 +19,8 @@ public class ViewTest {
     public void selectSchemaCardTest(){
         View view = new View();
         Controller controller = new Controller();
-
         view.addObserver(controller);
         view.setUsername("luca");
-        controller.getModel().addObserver(view);
-        controller.getModel().addPlayer("luca");
-        controller.getModel().addPlayer("username");
-        controller.getModel().addPlayer("fabio");
-        controller.getModel().addPlayer("biccu");
-        //view.setUsername("paolo");
-        //view.chooseSchemaWindow(1,1);
-
-        int n=0;
-        int sd=0;
-
-
     }
 
     @Test
@@ -42,14 +29,6 @@ public class ViewTest {
         Controller controller = new Controller();
         view.addObserver(controller);
         view.setUsername("luca");
-        controller.getModel().addObserver(view);
-        controller.getModel().addPlayer("luca");
-        controller.getModel().addPlayer("username");
-        controller.getModel().addPlayer("fabio");
-        controller.getModel().addPlayer("biccu");
-
-        //controller.getModel().sendPrivateObjectiveCard();
-
     }
 
     @Test

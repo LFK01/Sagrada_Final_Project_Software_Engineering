@@ -91,7 +91,6 @@ public class Server {
 
     public void addClient(Socket newClient){
         if(players.size()<4){
-            System.out.println("New socket client connection...");
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
             virtualClientSocket.start();
             this.addClient(virtualClientSocket.getVirtualViewSocket());

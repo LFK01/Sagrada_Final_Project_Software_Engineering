@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.exceptions;
+package it.polimi.se2018.exceptions;
 
 /**
  * Exception thrown when someone tries to access the Color field

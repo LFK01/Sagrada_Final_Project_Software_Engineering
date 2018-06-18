@@ -1,6 +1,8 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
+import it.polimi.se2018.controller.tool_cards.ToolCard;
+import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.game_equipment.Dice;
@@ -10,18 +12,6 @@ import java.util.ArrayList;
 
 public class ModifyDieValue implements TCEffectInterface {
 
-    private static final String[] toolCardNames = {"Pinza/Sgrossatrice",
-            "Pennello/per/Eglomise",
-            "Alesatore/per/lamina/di/rame",
-            "Lathekin",
-            "Taglierina/circolare",
-            "Pennello/per/Pasta/Salda",
-            "Martelletto",
-            "Tenaglia/a/Rotelle",
-            "Riga/in/Sughero",
-            "Tampone/Diamantato",
-            "Diluente/per/Pasta/Salda",
-            "Taglierina/Manuale"};
     private boolean isDone;
 
     public ModifyDieValue(){
@@ -29,14 +19,17 @@ public class ModifyDieValue implements TCEffectInterface {
     }
 
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) {
+    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
         String[] words = values.split(" ");
         int diePosition = -1;
         int newValue = -1;
         for(int i=0; i < words.length; i++){
             if(words[i].trim().equalsIgnoreCase("DiePosition:")){
                 /*gets die position from message values*/
-                diePosition = Integer.parseInt(values.split(" ")[0]);
+                diePosition = Integer.parseInt(words[i+1]);
+                if(diePosition>model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
+                    throw new ExecutingEffectException();
+                }
             }
             if(words[i].trim().equalsIgnoreCase("NewValue:")){
                 newValue = Integer.parseInt(words[i+1]);
@@ -44,7 +37,7 @@ public class ModifyDieValue implements TCEffectInterface {
         }
         ArrayList<Dice> diceList = model.getGameBoard().getRoundTrack().getRoundDice()[model.getGameBoard().getRoundTrack().getCurrentRound()].getDiceList();
         Dice dieToModify = diceList.get(diePosition);
-        if(toolCardName.equalsIgnoreCase(toolCardNames[1-1].replace("/", " "))){
+        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(1))){
             /*Pinza Sgrossatrice*/
             boolean increaseValue = false;
             for(int i=0; i < words.length; i++){
@@ -76,13 +69,11 @@ public class ModifyDieValue implements TCEffectInterface {
                 }
             }
         }
-        if(toolCardName.equalsIgnoreCase(toolCardNames[6-1].replace("/", " "))){
-            /*Pennello per pasta salda*
-            * rolls die*/
+        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(6))){
             model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].
                     getDiceList().get(diePosition).roll();
         }
-        if(toolCardName.equalsIgnoreCase(toolCardNames[10-1].replace("/", " "))){
+        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(10))){
             model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDice(diePosition).setValue(newValue);
         }
         isDone = true;

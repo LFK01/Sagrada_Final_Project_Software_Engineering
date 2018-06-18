@@ -6,14 +6,11 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.exceptions.FullCellException;
-import it.polimi.se2018.model.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.*;
-import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.View;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -155,18 +152,6 @@ public class TestModel {
         view2.setUsername("luca");
         view1.addObserver(controller);
         view2.addObserver(controller);
-        controller.getModel().addObserver(view1);
-        controller.getModel().addObserver(view2);
-        controller.getModel().addPlayer("lucio");
-        controller.getModel().addPlayer("luca");
-        controller.getModel().addPlayer("ciao");
-        //controller.getModel().extractToolCards();
-        controller.getModel().extractPublicObjectiveCards();
-        //controller.getModel().extractToolCards();
-
-
-        //controller.getModel().sendSchemaCard();
-        //controller.getModel().extractRoundTrack();
     }
 
     @Test
@@ -188,7 +173,6 @@ public class TestModel {
         model.updateTurnOfTheRound();
         model.updateTurnOfTheRound();
         assertEquals(0,model.getTurnOfTheRound());
-
     }
 
     @Test
@@ -200,6 +184,7 @@ public class TestModel {
         model.changeFirstPlayer();
         assertEquals("p2",model.getParticipants().get(0).getName());
     }
+
     @Test
     public void updateRoundTest(){
         Model model = new Model();
@@ -208,7 +193,6 @@ public class TestModel {
         model.addPlayer("p3");
         model.extractRoundTrack();
         model.updateRound();
-
         assertEquals(1,model.getRoundNumber());
     }
 
@@ -222,8 +206,6 @@ public class TestModel {
         model.extractPublicObjectiveCards();
         model.setSchemaCardPlayer(0,"Battlo");
         model.setSchemaCardPlayer(1,"Battlo");
-
     }
-
 
 }

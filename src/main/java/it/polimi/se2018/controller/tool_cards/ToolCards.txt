@@ -42,7 +42,7 @@ Number: 9
 Name: Riga/in/Sughero
 description: Dopo/aver/scelto/un/dado,/piazzalo/in/una/casella/che/non/sia/adiacente/a/un/altro/dado./Devi/rispettare/tutte/le/restrizioni/di/piazzamento
 effects: ModifyDieValue
-inputManager: INPUT_MODIFY_DIE_VALUE
+inputManager: INPUT_MOVE_DIE_ON_WINDOW
 Number: 10
 Name: Tampone/Diamantato
 description: Dopo/aver/scelto/un/dado,/giralo/sulla/faccia/opposta/6/diventa/1,/5/diventa/2,/4/diventa/3/ecc.
@@ -51,10 +51,10 @@ inputManager: INPUT_MODIFY_DIE_VALUE
 Number: 11
 Name: Diluente/per/Pasta/Salda
 description: Dopo/aver/scelto/un/dado,/riponilo/nel/Sacchetto,/poi/pescane/uno/dal/Sacchetto./Scegli/il/valore/del/nuovo/dado/e/piazzalo,/rispettando/tutte/le/restrizioni/di/piazzamento
-effects: ExtractNewDie/ModifyDieValue/PlaceDie
+effects: ExtractNewDie/ ModifyDieValue/PlaceDie
 inputManager: INPUT_CHOOSE_DIE/INPUT_CHOOSE_VALUE/INPUT_PLACE_DIE
 Number: 12
 Name: Taglierina/Manuale
-description: Muovi/fino/a/due/dadi/dello/stesso/colore/di/un/solo/dado/sul/Tracciato/dei/Round./Devi/rispettare/tutte/le/restrizioni/di/piazzamento7
+description: Muovi/fino/a/due/dadi/dello/stesso/colore/di/un/solo/dado/sul/Tracciato/dei/Round./Devi/rispettare/tutte/le/restrizioni/di/piazzamento
 effects: ExtractNewDie
 inputManager: INPUT_CHOOSE_DIE

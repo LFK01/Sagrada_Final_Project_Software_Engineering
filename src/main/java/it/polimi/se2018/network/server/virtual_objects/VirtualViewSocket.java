@@ -111,7 +111,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     @Override
     public void update(DiePlacementMessage diePlacementMessage) {
-
+        System.out.println("VWSocket -> VCSocket: " + diePlacementMessage.toString());
+        virtualClientSocket.notifyClient(diePlacementMessage);
     }
 
     @Override
@@ -146,7 +147,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     @Override
     public void update(SuccessMessage successMessage) {
-
+        System.out.println("VWSocket -> VCSocket: " + successMessage.toString());
+        virtualClientSocket.notifyClient(successMessage);
     }
 
     @Override
@@ -162,32 +164,33 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
-        System.out.println("VWSocket -> VCSocket: " + updateTurnMessage.toString());
-        virtualClientSocket.notifyClient(updateTurnMessage);
-    }
-
-    @Override
     public void update(UseToolCardMove useToolCardMove) {
         System.out.println("VWSocket -> VCSocket: " + useToolCardMove.toString());
         virtualClientSocket.notifyClient(useToolCardMove);
     }
 
     @Override
-    public void update(ChooseDiceMove chooseDiceMove) {}
+    public void update(ChooseDiceMove chooseDiceMove) {
+        System.out.println("VWSocket -> VCSocket: " + chooseDiceMove.toString());
+        virtualClientSocket.notifyClient(chooseDiceMove);}
 
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
-
+        System.out.println("VWSocket -> VCSocket: " + toolCardActivationMessage.toString());
+        virtualClientSocket.notifyClient(toolCardActivationMessage);
     }
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
+        System.out.println("VWSocket -> VCSocket: " + toolCardErrorMessage.toString());
+        virtualClientSocket.notifyClient(toolCardErrorMessage);
 
     }
 
     @Override
-    public void update(NoActionMove noActionMove){}
+    public void update(NoActionMove noActionMove){
+        System.out.println("VWSocket -> VCSocket: " + noActionMove.toString());
+        virtualClientSocket.notifyClient(noActionMove);}
 
     @Override
     public void update(RequestMessage requestMessage) {

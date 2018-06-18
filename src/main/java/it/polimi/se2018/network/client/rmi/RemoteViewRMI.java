@@ -40,11 +40,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(successCreatePlayerMessage.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI -> View: " + successCreatePlayerMessage.toString());
+    private void notifyView(ChooseSchemaMessage chooseSchemaMessage){
+        if(chooseSchemaMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + chooseSchemaMessage.toString());
             setChanged();
-            notifyObservers(successCreatePlayerMessage);
+            notifyObservers(chooseSchemaMessage);
         }
     }
 
@@ -62,12 +62,21 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(ChooseSchemaMessage chooseSchemaMessage){
-        if(chooseSchemaMessage.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI -> View: " + chooseSchemaMessage.toString());
+    private void notifyView(GameInitializationMessage gameInitializationMessage){
+        if(gameInitializationMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + gameInitializationMessage.toString());
             setChanged();
-            notifyObservers(chooseSchemaMessage);
+            notifyObservers(gameInitializationMessage);
         }
+    }
+
+    private void notifyView(RequestMessage requestMessage){
+        if(requestMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI - > view: " + requestMessage.toString());
+            setChanged();
+            notifyObservers(requestMessage);
+        }
+
     }
 
     private void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
@@ -77,20 +86,20 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(GameInitializationMessage gameInitializationMessage){
-        if(gameInitializationMessage.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI -> View: " + gameInitializationMessage.toString());
+    public void notifyView(SuccessCreatePlayerMessage successCreatePlayerMessage){
+        if(successCreatePlayerMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + successCreatePlayerMessage.toString());
             setChanged();
-            notifyObservers(gameInitializationMessage);
+            notifyObservers(successCreatePlayerMessage);
         }
     }
-    private void notifyView(RequestMessage requestMessage){
-        if(requestMessage.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI - > view: " + requestMessage.toString());
-            setChanged();
-            notifyObservers(requestMessage);
-        }
 
+    public void notifyView(SuccessMessage successMessage){
+        if(successMessage.getRecipient().equals(username)){
+            System.out.println("RemoteVRMI -> View: " + successMessage.toString());
+            setChanged();
+            notifyObservers(successMessage);
+        }
     }
 
     public void setServer(ServerRMIInterface server) {
@@ -317,18 +326,6 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             try{
                 System.out.println("RemoteVRMI -> Server: " + toolCardErrorMessage.toString());
                 server.sendToServer(toolCardErrorMessage);
-            } catch (RemoteException e){
-                serverIsUp = false;
-            }
-        }
-    }
-
-    @Override
-    public void update(UpdateTurnMessage updateTurnMessage) {
-        if(serverIsUp){
-            try{
-                System.out.println("RemoteVRMI -> Server: " + updateTurnMessage.toString());
-                server.sendToServer(updateTurnMessage);
             } catch (RemoteException e){
                 serverIsUp = false;
             }

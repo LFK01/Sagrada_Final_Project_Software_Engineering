@@ -24,7 +24,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         this.remoteView = remoteView;
         this.server = server;
         isConnected = true;
-        username = "defaultUsername";
+        username = this.toString();
     }
 
     public VirtualClientRMI(VirtualViewRMI virtualView, ClientRMIInterface remoteView, String username, Server server) throws RemoteException{
@@ -152,12 +152,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     public void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException {
         System.out.println("VirtualClientRMI -> Server: " + toolCardErrorMessage.toString());
         virtualView.updateServer(toolCardErrorMessage);
-    }
-
-    @Override
-    public void sendToServer(UpdateTurnMessage updateTurnMessage) throws RemoteException {
-        System.out.println("VirtualClientRMI -> Server: " + updateTurnMessage.toString());
-        virtualView.updateServer(updateTurnMessage);
     }
 
     public void notifyClient(Message message){

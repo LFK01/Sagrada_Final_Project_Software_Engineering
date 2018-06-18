@@ -8,69 +8,69 @@ Number: 2
 Name: Colori/Diversi/Riga
 Description: Righe/senza/colori/ripetuti
 Points: 6
-Effects:
+Effects: ColumnCardsCS
 Number: 3
 Name: Diagonali/Colorate
 Description: Numero/di/dadi/dello/stesso/colore/diagonalmente/adiacenti
 Points: 0
-Effects:
+Effects: ColumnCardsCS
 Number: 4
 Name: Sfumature/Chiare
 Description: Set di 1 & 2 ovunque
 Points: 2
-Effects:
+Effects: ColumnCardsCS
 Number: 5
 Name: Sfumature/Diverse
 Description: Set/di/dadi/di/ogni/valore/ovunque
 Points: 5
-Effects:
+Effects: ColumnCardsCS
 Number: 6
 Name: Sfumature/Diverse/Colonna
 Description: Colonne/senza/sfumature/ripetute
 Points: 4
-Effects:
+Effects: ColumnCardsCS
 Number: 7
 Name: Sfumature/Diverse/Riga
 Description: Righe/senza/sfumature/ripetute
 Points: 5
-Effects:
+Effects: ColumnCardsCS
 Number: 8
 Name: Sfumature/Medie
 Description: Set/di/3/&/4/ovunque
 Points: 2
-Effects:
+Effects: ColumnCardsCS
 Number: 9
 Name: Sfumature/Scure
 Description: Set/di/5/&/6/ovunque
 Points: 2
-Effects:
+Effects: ColumnCardsCS
 Number: 10
 Name: Varietà/di/Colore
 Description: Set/di/dadi/di/ogni/colore/ovunque
 Points: 0
-Effects:
+Effects: ColumnCardsCS
 PrivateObjectiveCards:
 Number: 1
 Name: Sfumature/Rosse
 Description: Somma/dei/valori/su/tutti/i/dadi/rossi
 Points: 0
 Effects: PrivateCardEffect
-Number:2
+Number: 2
 Name: Sfumature/Gialle
 Description: Somma/dei/valori/su/tutti/i/dadi/gialli
 Points: 0
 Effects: PrivateCardEffect
-Number:3
+Number: 3
 Name: Sfumature/Verdi
 Description: Somma/dei/valori/su/tutti/i/dadi/verdi
 Points: 0
 Effects: PrivateCardEffect
-Number:4
+Number: 4
 Name: Sfumature/Blu
 Description: Somma/dei/valori/su/tutti/i/dadi/blu
 Points: 0
 Effects: PrivateCardEffect
-Number:5
+Number: 5
 Name: Sfumature/Viola
 Description: Somma/dei/valori/su/tutti/i/dadi/viola
 Points: 0

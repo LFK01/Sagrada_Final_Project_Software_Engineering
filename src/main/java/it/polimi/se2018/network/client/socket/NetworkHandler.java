@@ -99,7 +99,6 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     @Override
     public void sendToServer(Message message) {
         try {
-            System.out.println("NetworkHandler -> Server: " + message.toString());
             outputStream.writeObject(message);
         } catch (IOException e){
             serverIsUp = false;

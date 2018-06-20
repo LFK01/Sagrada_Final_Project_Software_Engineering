@@ -55,17 +55,14 @@ public class ObjectiveCard {
                                 if(cardFound){
                                     if(words[i].trim().equalsIgnoreCase("Name:")){
                                         name = words[i+1].replace('/', ' ');
-                                        System.out.println("Nome: " + name );
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase("Description:")){
                                         description = words[i+1].replace('/',' ');
-                                        System.out.println("decrizione: " + description );
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase(("points:"))){
                                         points = Integer.parseInt(words[i+1].trim());
-                                        System.out.println("punti: " + points );
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase("Effects:")){
@@ -89,15 +86,11 @@ public class ObjectiveCard {
                         }
                     }
                     if(!isPrivate) {
-                        System.out.println("searching public");
                         if(words[i].trim().equalsIgnoreCase("PublicObjectiveCards:")){
-                            System.out.println("found public");
                             while (hasNextLine){
-                                System.out.println("reading: " + line);
                                 i = 0;
                                 words = line.split(" ");
                                 if (words[i].trim().equalsIgnoreCase("Number:")){
-                                    System.out.println("found number");
                                     if(cardNumber == Integer.parseInt(words[i+1])){
                                         cardFound = true;
                                         i++;
@@ -106,22 +99,18 @@ public class ObjectiveCard {
                                 if(cardFound){
                                     if(words[i].trim().equalsIgnoreCase("Name:")){
                                         name = words[i+1].replace('/', ' ');
-                                        System.out.println("found name");
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase("Description:")){
                                         description = words[i+1].replace('/',' ');
-                                        System.out.println("found desc");
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase(("Points:"))){
                                         points = Integer.parseInt(words[i+1].trim());
-                                        System.out.println("found point");
                                         i++;
                                     }
                                     if(words[i].trim().equalsIgnoreCase("Effects:")){
                                         effect = factory.assigneEffect(words[i+1].replace('/',' '));
-                                        System.out.println("found eff");
                                         i++;
                                         hasNextLine = false;
                                     }
@@ -175,6 +164,7 @@ public class ObjectiveCard {
     public ObjectiveCardEffectInterface getEffect() {
         return effect;
     }
+
     public void countPoints(Model model,String name, int points){
         effect.countPoints(model,name,points);
     }

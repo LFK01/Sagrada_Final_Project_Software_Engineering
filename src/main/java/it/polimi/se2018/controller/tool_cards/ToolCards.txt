@@ -2,7 +2,7 @@ Number: 1
 Name: Pinza/Sgrossatrice
 description: Dopo/aver/scelto/un/dado,/aumenta/o/dominuisci/il/valore/del/dado/scelto/di/1./Non/puoi/cambiare/un/6/in/1/o/un/1/in/6
 effects: ModifyDieValue
-inputManager: INPUT_MODIFY_DIE_VALUE
+inputManager: INPUT_INCREASE_DIE_VALUE
 Number: 2
 Name: Pennello/per/Eglomise
 description: Muovi/un/qualsiasi/dado/nella/tua/vetrata/ignorando/le/restrizioni/di/colore./Devi/rispettare/tutte/le/altre/restrizioni/di/piazzamento
@@ -12,7 +12,7 @@ Number: 4
 Name: Lathekin
 description: Muovi/esattamente/due/dadi,/rispettando/tutte/le/restrizioni/di/piazzamento
 effects: MoveDieOnWindow/MoveDieOnWindow
-inputManager: INPUT_MOVE_DIE_ON_WINDOW
+inputManager: INPUT_MOVE_DIE_ON_WINDOW/INPUT_MOVE_DIE_ON_WINDOW
 Number: 3
 Name: Alesatore/per/lamina/di/rame
 description: Muovi/un/qualsiasi/dado/nella/tua/vetrata/ignorando/le/restrizioni/di/valore./Devi/rispettare/tutte/le/altre/restrizioni/di/piazzamento
@@ -27,7 +27,7 @@ Number: 6
 Name: Pennello/per/Pasta/Salda
 description: Dopo/aver/scelto/un/dado,/tira/nuovamente/quel/dado./Se/non/puoi/piazzarlo,/riponilo/nella/Riserva
 effects: ModifyDieValue/PlaceDie
-inputManager: INPUT_CHOOSE_DIE/INPUT_PLACE_DIE
+inputManager: INPUT_MODIFY_DIE_VALUE/INPUT_PLACE_DIE
 Number: 7
 Name: Martelletto
 description: Tira/nuovamente/tutti/i/dadi/della/Riserva./Questa/carta/può/essera/usata/solo/durante/il/tuo/secondo/turno,/prima/di/scegliere/il/secondo/dado

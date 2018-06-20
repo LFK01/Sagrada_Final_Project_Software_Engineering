@@ -34,6 +34,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
 
     @Override
     public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+        System.out.println("MoveDieOnWindow is working");
         String words[] = values.split(" ");
         this.username = username;
         this.model = model;
@@ -47,30 +48,39 @@ public class MoveDieOnWindow implements TCEffectInterface {
         for(int i=0; i < words.length; i++){
             if(words[i].trim().equalsIgnoreCase("OldDieRow:")){
                 oldDieRow = Integer.parseInt(words[i+1]);
+                System.out.println("read oldDieRow: " + oldDieRow);
             }
             if(words[i].trim().equalsIgnoreCase("OldDieCol:")){
                 oldDieCol = Integer.parseInt(words[i+1]);
+                System.out.println("read oldDieCol: " + oldDieCol);
             }
             if(words[i].trim().equalsIgnoreCase("newDieRow:")){
                 newDieRow = Integer.parseInt(words[i+1]);
+                System.out.println("read newDieRow: " + newDieRow );
             }
             if(words[i].trim().equalsIgnoreCase("newDieCol:")){
                 newDieCol = Integer.parseInt(words[i+1]);
+                System.out.println("read newDieCol: " + newDieCol);
             }
             if(words[i].trim().equalsIgnoreCase("draftPoolPosition:")){
                 draftPoolPosition = Integer.parseInt(words[i+1]);
+                System.out.println("read newDieCol: " + newDieCol);
                 if(draftPoolPosition> model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()){
+                    System.out.println("Error");
                     throw new ExecutingEffectException();
                 }
             }
             if(words[i].trim().equalsIgnoreCase("roundTrackDiePosition:")){
                 roundTrackDiePosition = Integer.parseInt(words[i+1]);
+                System.out.println("read roundTrackDiePosition: " + roundTrackDiePosition);
                 if(roundTrackDiePosition>model.getGameBoard().getRoundDice()[roundNumber].getDiceList().size()){
+                    System.out.println("Error");
                     throw new ExecutingEffectException();
                 }
             }
             if(words[i].trim().equalsIgnoreCase("roundNumber:")){
                 roundNumber = Integer.parseInt(words[i + 1]);
+                System.out.println("read roundNumber: " + roundNumber);
                 if(roundNumber> model.getRoundNumber()){
                     throw new ExecutingEffectException();
                 }

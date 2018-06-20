@@ -157,6 +157,7 @@ public class Client {
                         comeback = true;
                         break;
                     }
+
                     default: {
                         System.out.println("Wrong input!");
                         correctChoice = false;

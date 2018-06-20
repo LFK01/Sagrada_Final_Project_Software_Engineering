@@ -92,6 +92,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 public void run() {
                     if(model.getParticipants().size()>1){
                         model.sendPrivateObjectiveCard();
+                        waitSchemaCards();
                     }
                     if(model.getParticipants().size()<2){
                         timer.cancel();
@@ -101,8 +102,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
         if(model.getParticipants().size()==4){
             timer.cancel();
-            model.sendPrivateObjectiveCard();
             waitSchemaCards();
+            model.sendPrivateObjectiveCard();
         }
     }
 
@@ -289,10 +290,15 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     private void waitSchemaCards(){
         timer = new Timer();
+        System.out.println("timer started");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 matchStarted = true;
+                System.out.println("match starting, player can't select new schema card");
+                model.extractPublicObjectiveCards();
+                model.extractToolCards();
+                model.extractRoundTrack();
                 model.updateGameboard();
                 waitMoves();
             }

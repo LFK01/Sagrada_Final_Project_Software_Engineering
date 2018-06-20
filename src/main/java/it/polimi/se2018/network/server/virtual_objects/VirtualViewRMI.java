@@ -44,7 +44,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     public void updateServer(Message message){
-        System.out.println("VirtualViewRMI -> Server: " + message.toString());
         setChanged();
         notifyObservers(message);
     }
@@ -65,36 +64,31 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         }
         if(correctUsername){
             virtualClientRMI.setUsername(createPlayerMessage.getPlayerName());
-            System.out.println("VirtualViewRMI -> Controller: " + createPlayerMessage.toString());
             setChanged();
             notifyObservers(createPlayerMessage);
         }
     }
 
     public void updateServer(ComebackSocketMessage message){
-        System.out.println("VirtualViewRMI -> Controller comeback doesn't notify");
+        /*to be implemented with comeback function*/
     }
 
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
-        System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(selectedSchemaMessage);
     }
 
     public void updateServer(ChooseDiceMove chooseDiceMove){
-        System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(chooseDiceMove);
     }
 
     public void updateServer(DiePlacementMessage diePlacementMessage){
-        System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(diePlacementMessage);
     }
 
     public void updateServer(NoActionMove noActionMove){
-        System.out.println("VirtualView -> Controller");
         setChanged();
         notifyObservers(noActionMove);
     }

@@ -79,6 +79,7 @@ public class Dice {
      */
     public void setValue(int value) {
             this.value = value;
+            this.face = faces[value-1];
     }
 
 
@@ -116,7 +117,7 @@ public class Dice {
     }
 
 
-    public static final String[] faces ={
+    private static final String[] faces ={
             /*"1",
             "2",
             "3",
@@ -132,10 +133,8 @@ public class Dice {
     };
 
     public void roll(){
-        int count = faces.length;
-        Random rand = new Random();
-        int index = rand.nextInt(count);
-        this.face = faces[index];
+        this.value = new Random().nextInt(faces.length);
+        this.face = faces[value-1];
     }
 
     public void turnDieFace(){
@@ -166,7 +165,4 @@ public class Dice {
             }
         }
     }
-
-
-
 }

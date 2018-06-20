@@ -6,20 +6,23 @@ import it.polimi.se2018.model.game_equipment.Dice;
 
 import java.util.ArrayList;
 
-public class RollDraftPoolDice  implements TCEffectInterface {
+public class RollDraftPoolDice implements TCEffectInterface {
 
     private boolean isDone;
 
-    public RollDraftPoolDice(){
-
+    public RollDraftPoolDice() {
+        this.isDone = false;
     }
 
     @Override
     public void doYourJob(String username, String toolCardName, String values, Model model) {
+        System.out.println("RollDraftPoolDice is working");
         ArrayList<Dice> diceList = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
         for(Dice die: diceList){
             die.roll();
         }
+        System.out.println("rolled dice");
+        isDone = true;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
+import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.exceptions.FullCellException;
@@ -18,22 +19,31 @@ import java.util.ArrayList;
 public class PlaceDie implements TCEffectInterface {
 
     private boolean isDone;
+
     private int draftPoolDiePosition;
     private int row;
     private int col;
 
+    public PlaceDie() {
+        isDone = false;
+    }
+
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) {
+    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+        System.out.println("PlaceDie is working");
         String[] words = values.split(" ");
         for(int i = 0; i<words.length; i++){
             if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
                 draftPoolDiePosition = Integer.parseInt(words[i+1]);
+                System.out.println("read draftPoolDiePosition:" + draftPoolDiePosition);
             }
             if(words[i].trim().equalsIgnoreCase("row:")){
                 row = Integer.parseInt(words[i+1]);
+                System.out.println("read row:" + row);
             }
             if(words[i].trim().equalsIgnoreCase("col:")){
                 col = Integer.parseInt(words[i+1]);
+                System.out.println("read col:" + col);
             }
         }
         ArrayList<Dice> diceList = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
@@ -43,12 +53,14 @@ public class PlaceDie implements TCEffectInterface {
                 try{
                     player.getSchemaCard().placeDie(die, row, col, false,
                             false, false);
+                    System.out.println("placed Die");
+
                 } catch (RestrictionsNotRespectedException e){
-                    model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPosition", InputManager.INPUT_CHOOSE_DIE));
+                    System.out.println("error");
+                    throw new ExecutingEffectException();
                 } catch (FullCellException e){
-                    model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "FullCell", InputManager.INPUT_CHOOSE_DIE));
+                    System.out.println("error");
+                    throw new ExecutingEffectException();
                 }
             }
         }

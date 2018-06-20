@@ -192,8 +192,10 @@ public class ToolCard {
                     if (effectsList.indexOf(effectToExecute) == effectsList.size() - 1) {
                         /*has done all effects in effectsList, resets all the effects and decreases player
                          * favor tokens as player has successfully used the tool card*/
+                        System.out.println("finished using the toolcard");
                         setAllEffectsNotDone();
                         decreasePlayerFavorTokens(username, model);
+                        System.out.println("decreased player favor tokens");
                         /*updates player moves*/
                         setPlayerToolMoveDone(username, model);
                         if (toolCardName.equals(ToolCard.searchNameByNumber(8))) {
@@ -204,21 +206,21 @@ public class ToolCard {
                          * every player gets an update of the gameboard*/
                         model.setChanged();
                         model.notifyObservers(new SuccessMessage("server", username, "SuccessfulMove"));
+                        System.out.println("sent success messsages");
                         model.updateGameboard();
                     }
                     else{
-                        if (effectsList.indexOf(effectToExecute) != 0) {
-                            model.updateGameboard();
-                            model.setChanged();
-                            model.notifyObservers(new RequestMessage("server", username, toolCardName,
-                                    inputManagerList.get(effectsList.indexOf(effectToExecute))));
-                        }
+                        model.updateGameboard();
+                        model.setChanged();
+                        System.out.println("sending new request message");
+                        model.notifyObservers(new RequestMessage("server", username, toolCardName,
+                                inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
                     }
                 } catch (ExecutingEffectException e){
                     model.setChanged();
                     model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName,
                             "WrongInputParameters",
-                            inputManagerList.get(effectsList.indexOf(effectToExecute)-1)));
+                            inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
                 }
             } else {
                 if (effectsList.indexOf(effectToExecute) < effectsList.size() - 1) {

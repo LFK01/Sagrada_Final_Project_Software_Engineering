@@ -1,4 +1,4 @@
-package it.polimi.se2018.controller.exceptions;
+package it.polimi.se2018.exceptions;
 
 /**
  * Exception to handle an invalid dice value

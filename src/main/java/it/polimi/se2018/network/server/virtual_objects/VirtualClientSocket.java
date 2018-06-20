@@ -69,7 +69,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                 if(message == null){
                     this.isConnected = false;
                 }else {
-                    System.out.println("VCSocket -> VWSocket: " + message.toString());
                     try {
                         Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
                         updateServer.invoke(virtualViewSocket, message);
@@ -85,7 +84,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(Message message){
-        System.out.println("VirtualClientSocket -> Client: " + message.toString());
         if(isConnected){
             try{
                 writer.writeObject(message);
@@ -97,7 +95,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
-        System.out.println("VirtualClientSocket -> Client: " + chooseSchemaMessage.toString());
         if(isConnected){
             try{
                 writer.writeObject(chooseSchemaMessage);
@@ -108,7 +105,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
     public void notifyClient(RequestMessage requestMessage){
-        System.out.println("VirtualClientSocket -> Client: " + requestMessage.toString());
         if(isConnected){
             try{
                 writer.writeObject(requestMessage);
@@ -120,7 +116,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(ErrorMessage errorMessage){
-        System.out.println("VirtualClientSocket -> Client: " + errorMessage.toString());
         if(isConnected){
             try{
                 writer.writeObject(errorMessage);
@@ -132,7 +127,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(GameInitializationMessage gameInitializationMessage){
-        System.out.println("VirtualClientSocket -> Client: " + gameInitializationMessage.toString());
         if(isConnected){
             try{
                 writer.writeObject(gameInitializationMessage);
@@ -144,7 +138,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
-        System.out.println("VirtualClientSocket -> Client: " + showPrivateObjectiveCardsMessage.toString());
         if(isConnected){
             try{
                 writer.writeObject(showPrivateObjectiveCardsMessage);
@@ -156,10 +149,8 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     }
 
     public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        System.out.println("VirtualClientSocket -> Client: " + successCreatePlayerMessage.toString());
         if(isConnected){
             try{
-                System.out.println("VirtualClientSocket sends message");
                 writer.writeObject(successCreatePlayerMessage);
             } catch (IOException e) {
                 isConnected = false;

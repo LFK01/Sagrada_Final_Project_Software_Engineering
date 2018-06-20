@@ -26,51 +26,18 @@ import java.util.Scanner;
 
 public class Server {
 
-    private static int portSocket = 1111;
-    private static int portRMI = 1099;
-    private static int timer;
     private ArrayList<VirtualViewInterface> players = new ArrayList<>();
     private final Controller controller;
 
     public Server() {
+        int portSocket = 1111;
+        int portRMI = 1099;
+        int timer;
 
-        Scanner inputFile = null;
-
-        try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\in.txt"));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("Timer:")){
-                        timer = Integer.parseInt(words[i+1]);
-                    }
-                    if(words[i].trim().equals("PortRMI:")){
-                        portRMI = Integer.parseInt(words[i+1]);
-                    }
-                    if(words[i].trim().equals("PortSocket:")){
-                        portSocket = Integer.parseInt(words[i+1]);
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
+        String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
+        timer = readFileTimer(fileAddress);
+        portSocket = readFilePortSocket(fileAddress);
+        portRMI = readFilePortRMI(fileAddress);
 
         controller = new Controller();
         controller.setTimer(timer);
@@ -87,6 +54,114 @@ public class Server {
         } catch (RemoteException | MalformedURLException e){
             e.printStackTrace();
         }
+    }
+
+    private int readFilePortRMI(String fileAddress) {
+        int filePort = -1;
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream(fileAddress));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("PortRMI:")){
+                        filePort = Integer.parseInt(words[i+1]);
+                        hasNextLine = false;
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return filePort;
+    }
+
+    private int readFilePortSocket(String fileAddress) {
+        int filePort = 1111;
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream(fileAddress));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("PortSocket:")){
+                        filePort = Integer.parseInt(words[i+1]);
+                        hasNextLine = false;
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return filePort;
+    }
+
+    private int readFileTimer(String fileAddress) {
+        int fileTimer = -1;
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream(fileAddress));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("Timer:")){
+                        fileTimer = Integer.parseInt(words[i+1]);
+                        hasNextLine = false;
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return fileTimer;
     }
 
     public void addClient(Socket newClient){

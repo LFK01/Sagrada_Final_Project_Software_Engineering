@@ -147,9 +147,6 @@ public class TestModel {
         Controller controller = new Controller();
         View view1 = new View();
         View view2 = new View();
-
-        view1.setUsername("lucio");
-        view2.setUsername("luca");
         view1.addObserver(controller);
         view2.addObserver(controller);
     }

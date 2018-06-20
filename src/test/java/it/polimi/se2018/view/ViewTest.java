@@ -20,7 +20,6 @@ public class ViewTest {
         View view = new View();
         Controller controller = new Controller();
         view.addObserver(controller);
-        view.setUsername("luca");
     }
 
     @Test
@@ -28,7 +27,6 @@ public class ViewTest {
         View view = new View();
         Controller controller = new Controller();
         view.addObserver(controller);
-        view.setUsername("luca");
     }
 
     @Test

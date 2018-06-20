@@ -28,21 +28,25 @@ public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterf
         for(int i = 0; i<words.length; i++){
             if(words[i].trim().equalsIgnoreCase("DraftPoolPosition:")){
                 draftPoolPosition = Integer.parseInt(words[i+1]);
+                System.out.println("read DraftPoolPosition: " + draftPoolPosition);
                 int maximumDraftPoolPosition = model.getGameBoard().getRoundDice()[model.getRoundNumber()].
                         getDiceList().size()-1;
                 if(draftPoolPosition>maximumDraftPoolPosition){
+                    System.out.println("error");
                     throw new ExecutingEffectException();
                 }
             }
             if(words[i].trim().equalsIgnoreCase("RoundNumber:")){
                 int maximumRoundNumber = model.getRoundNumber();
                 roundNumber = Integer.parseInt(words[i+1]);
+                System.out.println("read roundNumber: " + roundNumber);
                 if(roundNumber>maximumRoundNumber){
                     throw new ExecutingEffectException();
                 }
             }
             if(words[i].trim().equalsIgnoreCase("RoundTrackPosition:")){
                 roundTrackPosition = Integer.parseInt(words[i+1]);
+                System.out.println("read roundTrackPosition: " + roundTrackPosition);
                 int maximumTrackPosition = model.getGameBoard().getRoundTrack().
                         getRoundDice()[roundNumber].getDiceList().size();
                 if(roundTrackPosition > maximumTrackPosition){
@@ -54,7 +58,7 @@ public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterf
                 getDice(draftPoolPosition);
         Dice supportDie = model.getGameBoard().getRoundTrack().getRoundDice()[roundNumber].setDice(draftPoolDie, roundTrackPosition);
         model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].setDice(supportDie, draftPoolPosition);
-        model.updateGameboard();
+        System.out.println("swapped dice");
         isDone = true;
     }
 

@@ -20,29 +20,33 @@ public class ModifyDieValue implements TCEffectInterface {
 
     @Override
     public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+        System.out.println("modifyDieValue is working");
         String[] words = values.split(" ");
         int diePosition = -1;
         int newValue = -1;
         for(int i=0; i < words.length; i++){
+            System.out.println("reading: " + words[i]);
             if(words[i].trim().equalsIgnoreCase("DiePosition:")){
                 /*gets die position from message values*/
                 diePosition = Integer.parseInt(words[i+1]);
+                System.out.println("read die position: " + diePosition);
                 if(diePosition>model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
                     throw new ExecutingEffectException();
                 }
             }
             if(words[i].trim().equalsIgnoreCase("NewValue:")){
+                System.out.println("read new value: " + diePosition);
                 newValue = Integer.parseInt(words[i+1]);
             }
         }
-        ArrayList<Dice> diceList = model.getGameBoard().getRoundTrack().getRoundDice()[model.getGameBoard().getRoundTrack().getCurrentRound()].getDiceList();
+        ArrayList<Dice> diceList = model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList();
         Dice dieToModify = diceList.get(diePosition);
         if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(1))){
-            /*Pinza Sgrossatrice*/
             boolean increaseValue = false;
             for(int i=0; i < words.length; i++){
                 if(words[i].trim().equalsIgnoreCase("IncreaseValue:")){
                     /*gets player choice from message values*/
+                    System.out.println("read increase value: " + words[i+1]);
                     if(words[i+1].trim().equalsIgnoreCase("y")){
                         increaseValue = true;
                     }
@@ -54,27 +58,28 @@ public class ModifyDieValue implements TCEffectInterface {
             if(increaseValue){
                 if(dieToModify.getValue() == 6){
                     /*impossible to increase a die value above 6*/
-                    model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove", InputManager.INPUT_MODIFY_DIE_VALUE));
+                    throw new ExecutingEffectException();
                 } else {
                     dieToModify.setValue(dieToModify.getValue()+1);
+                    System.out.println("modified die value: " + dieToModify.getValue() + " " + dieToModify.toString());
                 }
             } else {
                 if(dieToModify.getValue() == 1){
                     /*impossible to decrease a die value below 1*/
-                    model.setChanged();
-                    model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName, "NotValidPinzaSgrossatriceMove", InputManager.INPUT_MODIFY_DIE_VALUE));
+                    throw new ExecutingEffectException();
                 } else {
                     dieToModify.setValue(dieToModify.getValue()-1);
+                    System.out.println("modified die value: " + dieToModify.getValue() + " " + dieToModify.toString());
                 }
             }
         }
         if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(6))){
-            model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].
-                    getDiceList().get(diePosition).roll();
+            dieToModify.roll();
+            System.out.println("modified die value: " + dieToModify.getValue());
         }
         if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(10))){
-            model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDice(diePosition).setValue(newValue);
+            dieToModify.setValue(newValue);
+            System.out.println("modified die value: " + dieToModify.getValue());
         }
         isDone = true;
     }

@@ -28,6 +28,9 @@ import java.util.logging.Logger;
 public class Model extends ProjectObservable implements Runnable{
 
     private int roundNumber;
+    public static final int MAXIMUM_ROUND_NUMBER = 10;
+    public static final int MAXIMUM_PLAYER_NUMBER = 4;
+    public static final int MAXIMUM_DIE_NUMBER = 6;
     public static final int TOOL_CARDS_NUMBER = 12;
     public static final int PUBLIC_OBJECTIVE_CARDS_NUMBER = 10;
     public static final int PRIVATE_OBJECTIVE_CARDS_NUMBER = 5;
@@ -35,6 +38,8 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int SCHEMA_CARDS_EXTRACT_NUMBER = 2;
     public static final int PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER = 3;
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
+    public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
+    public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -182,13 +187,16 @@ public class Model extends ProjectObservable implements Runnable{
 
     public void extractToolCards() {
         ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
-        for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
+        /*for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
             gameBoard.setToolCards(new ToolCard(cardIndex.get(i)), i);
-        }
+        }*/
+        gameBoard.setToolCards(new ToolCard(1), 0);
+        gameBoard.setToolCards(new ToolCard(6), 1);
+        gameBoard.setToolCards(new ToolCard(10), 2);
     }
 
     public void extractPublicObjectiveCards() {

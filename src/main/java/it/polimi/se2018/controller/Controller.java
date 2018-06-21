@@ -136,7 +136,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
+    public void update(SendGameboardMessage sendGameboardMessage) {
 
     }
 

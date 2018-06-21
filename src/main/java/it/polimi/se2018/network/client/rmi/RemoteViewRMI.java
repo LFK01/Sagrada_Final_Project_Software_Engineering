@@ -54,10 +54,10 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(GameInitializationMessage gameInitializationMessage){
-        if(gameInitializationMessage.getRecipient().equals(username)){
+    private void notifyView(SendGameboardMessage sendGameboardMessage){
+        if(sendGameboardMessage.getRecipient().equals(username)){
             setChanged();
-            notifyObservers(gameInitializationMessage);
+            notifyObservers(sendGameboardMessage);
         }
     }
 
@@ -184,10 +184,10 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
+    public void update(SendGameboardMessage sendGameboardMessage) {
         if(serverIsUp){
             try{
-                server.sendToServer(gameInitializationMessage);
+                server.sendToServer(sendGameboardMessage);
             } catch (RemoteException e){
                 serverIsUp = false;
             }

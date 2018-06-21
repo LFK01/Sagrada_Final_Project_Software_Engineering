@@ -122,7 +122,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException {
+    public void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 

@@ -7,5 +7,7 @@ public class ColoredDiagonals implements ObjectiveCardEffectInterface {
     @Override
     public void countPoints(Model model, String cardName, int point) {
 
+
+
     }
 }

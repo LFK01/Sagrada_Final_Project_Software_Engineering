@@ -115,8 +115,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-        virtualClientSocket.notifyClient(gameInitializationMessage);
+    public void update(SendGameboardMessage sendGameboardMessage) {
+        virtualClientSocket.notifyClient(sendGameboardMessage);
     }
 
     @Override

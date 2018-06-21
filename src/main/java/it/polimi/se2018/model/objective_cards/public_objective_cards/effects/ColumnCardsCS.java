@@ -3,6 +3,9 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
+/**
+ * @author giovanni
+ */
 public class ColumnCardsCS implements ObjectiveCardEffectInterface {
 
     @Override

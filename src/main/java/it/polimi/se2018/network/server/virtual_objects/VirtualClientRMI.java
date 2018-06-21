@@ -88,8 +88,8 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException{
-        virtualView.updateServer(gameInitializationMessage);
+    public void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException{
+        virtualView.updateServer(sendGameboardMessage);
     }
 
     @Override
@@ -158,10 +158,10 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(GameInitializationMessage gameInitializationMessage){
+    public void notifyClient(SendGameboardMessage sendGameboardMessage){
         if(isConnected){
             try{
-                remoteView.updateClient(gameInitializationMessage);
+                remoteView.updateClient(sendGameboardMessage);
             } catch (RemoteException e) {
                 System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
                 isConnected = false;

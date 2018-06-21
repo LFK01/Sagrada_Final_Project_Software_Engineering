@@ -10,12 +10,12 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 public class RowCardsCS implements ObjectiveCardEffectInterface {
     @Override
     public void countPoints(Model model, String cardName, int point) {
-        boolean isColor=false;
+        boolean searchColor=false;
         if(cardName.equals("Sfumature Diversi Riga")){
-            isColor = false;
+            searchColor = false;
         }
         else {
-            isColor = true ;
+            searchColor = true ;
         }
         for(int k =0; k<model.getParticipants().size(); k++){
             int n=0;
@@ -26,20 +26,22 @@ public class RowCardsCS implements ObjectiveCardEffectInterface {
                         n=1;
                     }
                     else
-                        if(!isColor){
-                            if(model.getParticipants().get(k).getSchemaCard().getCell(i,j).getAssignedDice().getValue()==(model.getParticipants().get(k).getSchemaCard().getCell(i,j+1).getAssignedDice().getValue())) {
-                            n = 1;
-                        }
-                        else{
-                                if(model.getParticipants().get(k).getSchemaCard().getCell(i,j).getAssignedDice().getDiceColor().equals((model.getParticipants().get(k).getSchemaCard().getCell(i,j+1).getAssignedDice().getDiceColor()))) {
-                                    n = 1;
-                                }
-
+                    if(model.getParticipants().get(k).getSchemaCard().getCell(i, j+1).isFull()) {
+                        if (searchColor) {
+                            if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getDiceColor().equals(model.getParticipants().get(k).getSchemaCard().getCell(i, j+1).getAssignedDice().getDiceColor())) {
+                                n = 1;
                             }
+                        }
+                        if (!searchColor) {
+                            if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getValue() == (model.getParticipants().get(k).getSchemaCard().getCell(i, j+1).getAssignedDice().getValue())) {
+                                n = 1;
+                            }
+                        }
                     }
+                    else n=1;
                 }
                 if(n==0){
-                    points = points + 5;
+                    points = points + point;
                 }
                 else {
                     n=0;

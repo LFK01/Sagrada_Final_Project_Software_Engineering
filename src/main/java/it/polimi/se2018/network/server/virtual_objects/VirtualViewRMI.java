@@ -129,8 +129,8 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-        virtualClientRMI.notifyClient(gameInitializationMessage);
+    public void update(SendGameboardMessage sendGameboardMessage) {
+        virtualClientRMI.notifyClient(sendGameboardMessage);
     }
 
 

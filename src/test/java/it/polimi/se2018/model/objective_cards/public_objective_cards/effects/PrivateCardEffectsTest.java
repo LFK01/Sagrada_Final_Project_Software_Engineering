@@ -11,10 +11,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class RowCardsCSTest {
+public class PrivateCardEffectsTest {
 
     @Test
-    public void countPointsTest() throws RestrictionsNotRespectedException, FullCellException {
+    public void countPoints() throws RestrictionsNotRespectedException, FullCellException {
         Model model = new Model();
         model.addPlayer("p1");
 
@@ -22,7 +22,7 @@ public class RowCardsCSTest {
         Dice dice2 = new Dice(Color.RED,5);
         Dice dice3 = new Dice(Color.YELLOW,6);
         Dice dice4 = new Dice(Color.GREEN,4);
-        Dice dice5 = new Dice(Color.PURPLE,3);
+        Dice dice5 = new Dice(Color.RED,3);
         SchemaCard schemaCard = new SchemaCard(1);
 
         schemaCard.placeDie(dice5,2,0,false,false,false);
@@ -33,11 +33,11 @@ public class RowCardsCSTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard);
 
 
-        ObjectiveCard card1 = new ObjectiveCard(false,2);
+        ObjectiveCard card1 = new ObjectiveCard(true,1);
         card1.countPoints(model,card1.getName(),card1.getPoints());
 
-        assertEquals(6,model.getParticipants().get(0).getPoints());
+        assertEquals(8,model.getParticipants().get(0).getPoints());
+
 
     }
-
 }

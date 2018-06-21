@@ -126,10 +126,11 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-    public void notifyClient(GameInitializationMessage gameInitializationMessage){
+    public void notifyClient(SendGameboardMessage sendGameboardMessage){
+        System.out.println("VirtualClientSocket -> Client: " + sendGameboardMessage.toString());
         if(isConnected){
             try{
-                writer.writeObject(gameInitializationMessage);
+                writer.writeObject(sendGameboardMessage);
             } catch (IOException e) {
                 System.out.println("Player #" + server.getPlayers().indexOf(virtualViewSocket) + " " + username + " disconnected");
                 isConnected = false;

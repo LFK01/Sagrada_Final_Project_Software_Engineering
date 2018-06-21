@@ -312,7 +312,7 @@ public class Model extends ProjectObservable implements Runnable{
         for(Player player: participants){
             sendingMessageThread = new Thread(this);
             try{
-                memorizeMessage(new GameInitializationMessage("model", player.getName(),
+                memorizeMessage(new SendGameboardMessage("model", player.getName(),
                         builderGameboard.toString()));
                 sendingMessageThread.start();
                 sendingMessageThread.join();
@@ -352,7 +352,7 @@ public class Model extends ProjectObservable implements Runnable{
         for(Player player: participants){
             sendingMessageThread = new Thread(this);
             try{
-                memorizeMessage(new GameInitializationMessage("model", player.getName(),
+                memorizeMessage(new SendGameboardMessage("model", player.getName(),
                         builderGameboard.toString()));
                 sendingMessageThread.start();
                 sendingMessageThread.join();

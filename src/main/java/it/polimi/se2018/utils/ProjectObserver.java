@@ -24,7 +24,7 @@ public interface ProjectObserver {
 
     void update(ErrorMessage errorMessage);
 
-    void update(GameInitializationMessage gameInitializationMessage);
+    void update(SendGameboardMessage sendGameboardMessage);
 
     void update(NewRoundMessage newRoundMessage);
 

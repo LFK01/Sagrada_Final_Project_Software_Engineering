@@ -30,7 +30,7 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(ErrorMessage errorMessage) throws RemoteException;
 
-    void sendToServer(GameInitializationMessage gameInitializationMessage) throws RemoteException;
+    void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException;
 
     void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException;
 

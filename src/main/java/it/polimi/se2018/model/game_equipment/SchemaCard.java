@@ -628,14 +628,14 @@ public class SchemaCard {
                 return true;
             }
         }
-        if (this.getCell(row-1, col).isFull()) {
-            if((this.getCell(row -1,col).getAssignedDice().getValue())!=value || !this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+        if (this.getCell(row, col-1).isFull()) {
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value || !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
                 return true;
             }
 
         }
-        if (this.getCell(row+1, col).isFull()) {
-            if((this.getCell(row +1,col).getAssignedDice().getValue())!=value || !this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+        if (this.getCell(row, col+1).isFull()) {
+            if((this.getCell(row ,col +1).getAssignedDice().getValue())!=value || !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
                 return true;
             }
         }

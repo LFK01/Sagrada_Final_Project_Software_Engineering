@@ -3,24 +3,26 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
+/**
+ * @author giovanni
+ */
 public class Shades implements ObjectiveCardEffectInterface {
     @Override
     public void countPoints(Model model, String cardName, int point) {
         int check1 = 0;
         int check2 = 0;
-        if (cardName.equals("Sfumature Chiare ")) {
+        if (cardName.equals("Sfumature Chiare")) {
             check1 = 1;
             check2 = 2;
         }
-        if (cardName.equals("Sfumature Medie ")) {
+        if (cardName.equals("Sfumature Medie")) {
             check1 = 3;
             check2 = 4;
         }
-        if (cardName.equals("Sfumature Scure ")) {
+        if (cardName.equals("Sfumature Scure")) {
             check1 = 5;
             check2 = 6;
         }
-
         for (int k = 0; k < model.getParticipants().size(); k++) {
             int n1 = 0;
             int n2 = 0;
@@ -36,7 +38,6 @@ public class Shades implements ObjectiveCardEffectInterface {
                         }
                     }
                 }
-
             }
             if (n1 < n2) {
                 points = point * n1;
@@ -45,6 +46,5 @@ public class Shades implements ObjectiveCardEffectInterface {
             }
             model.getParticipants().get(k).setPoints(points);
         }
-
     }
 }

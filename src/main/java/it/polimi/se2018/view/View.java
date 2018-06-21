@@ -178,10 +178,10 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
+    public void update(SendGameboardMessage sendGameboardMessage) {
         String playingPlayer=null;
         boolean alreadyRead = false;
-        String[] words = gameInitializationMessage.getGameboardInformation().split("/");
+        String[] words = sendGameboardMessage.getGameboardInformation().split("/");
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
             if (words[i].equalsIgnoreCase("PublicObjectiveCards:")) {

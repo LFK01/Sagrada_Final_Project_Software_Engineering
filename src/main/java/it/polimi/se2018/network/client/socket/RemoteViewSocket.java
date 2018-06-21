@@ -61,10 +61,10 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
 
-    public void notifyView(GameInitializationMessage gameInitializationMessage){
-        if(gameInitializationMessage.getRecipient().equals(username)){
+    public void notifyView(SendGameboardMessage sendGameboardMessage){
+        if(sendGameboardMessage.getRecipient().equals(username)){
             setChanged();
-            notifyObservers(gameInitializationMessage);
+            notifyObservers(sendGameboardMessage);
         }
     }
 
@@ -145,8 +145,8 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(GameInitializationMessage gameInitializationMessage) {
-        server.sendToServer(gameInitializationMessage);
+    public void update(SendGameboardMessage sendGameboardMessage) {
+        server.sendToServer(sendGameboardMessage);
     }
 
     @Override

@@ -312,7 +312,48 @@ public class Model extends ProjectObservable implements Runnable{
         for(Player player: participants){
             sendingMessageThread = new Thread(this);
             try{
-                memorizeMessage(new GameInitializationMessage("model", player.getName(),builderGameboard.toString()));
+                memorizeMessage(new GameInitializationMessage("model", player.getName(),
+                        builderGameboard.toString()));
+                sendingMessageThread.start();
+                sendingMessageThread.join();
+            } catch (InterruptedException e){
+                sendingMessageThread.interrupt();
+                Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
+            }
+        }
+    }
+
+    public void updateGameboardToolCard() {
+        Thread sendingMessageThread;
+        StringBuilder builderGameboard = new StringBuilder();
+        builderGameboard.append("PublicObjectiveCards:/");
+        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
+            builderGameboard.append("Name:/").append(gameBoard.getPublicObjectiveCardName(i)).append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getPublicObjectiveCardDescription(i)).append("/");
+        }
+        builderGameboard.append("ToolCards:/");
+        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
+            builderGameboard.append("Name:/").append(gameBoard.getToolCardName(i)).append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
+        }
+        builderGameboard.append("DiceList:/");
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
+        List<Dice> currentDiceList = currentRoundDice.getDiceList();
+        for(Dice die: currentDiceList){
+            builderGameboard.append(die.toString()).append("/");
+        }
+        builderGameboard.append("/");
+        builderGameboard.append("SchemaCard:/");
+        for (int i =participants.size()-1; i>=0;i--){
+            builderGameboard.append(participants.get(i).getName()).append("\n");
+            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
+        }
+        builderGameboard.append("schemaStop:/");
+        for(Player player: participants){
+            sendingMessageThread = new Thread(this);
+            try{
+                memorizeMessage(new GameInitializationMessage("model", player.getName(),
+                        builderGameboard.toString()));
                 sendingMessageThread.start();
                 sendingMessageThread.join();
             } catch (InterruptedException e){
@@ -338,10 +379,10 @@ public class Model extends ProjectObservable implements Runnable{
     public int getRoundNumber() {
         return roundNumber;
     }
-
     public void resetTurnOfTheRound() {
         this.turnOfTheRound = 0;
     }
+
     public void resetFirstDieOfDraft(){
         firstDraftOfDice =true;
     }

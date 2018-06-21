@@ -133,7 +133,7 @@ public class Dice {
     };
 
     public void roll(){
-        this.value = new Random().nextInt(faces.length);
+        this.value = new Random().nextInt(faces.length)+1;
         this.face = faces[value-1];
     }
 

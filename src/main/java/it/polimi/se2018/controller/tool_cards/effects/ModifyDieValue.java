@@ -78,7 +78,7 @@ public class ModifyDieValue implements TCEffectInterface {
             System.out.println("modified die value: " + dieToModify.getValue());
         }
         if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(10))){
-            dieToModify.setValue(newValue);
+            dieToModify.turnDieFace();
             System.out.println("modified die value: " + dieToModify.getValue());
         }
         isDone = true;

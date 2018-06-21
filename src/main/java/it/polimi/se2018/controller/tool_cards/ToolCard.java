@@ -10,9 +10,8 @@ import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * @author Luciano
@@ -25,6 +24,7 @@ public class ToolCard {
     private ArrayList<TCEffectInterface> effectsList = new ArrayList<>();
     private EffectsFactory effectsFactory = new EffectsFactory();
     private boolean firstUsage;
+    private int draftPoolDiePosition;
 
     /**
      * Constructor method for ToolCard. Reads toolcard information from ToolCard.txt and initializes a new
@@ -180,6 +180,7 @@ public class ToolCard {
      */
     public void activateToolCard(String username, String toolCardName, String values, Model model){
         boolean executingEffect = false;
+        readValues(values);
         TCEffectInterface effectToExecute = effectsList.get(0);
         while (!executingEffect) {
             /*searches for an undone effect*/
@@ -210,10 +211,13 @@ public class ToolCard {
                         model.updateGameboard();
                     }
                     else{
-                        model.updateGameboard();
+                        model.updateGameboardToolCard();
                         model.setChanged();
                         System.out.println("sending new request message");
-                        model.notifyObservers(new RequestMessage("server", username, toolCardName,
+                        StringBuilder builder = new StringBuilder();
+                        builder.append("ToolCardName: ").append(toolCardName).append(" ");
+                        builder.append("DraftPoolDiePosition: ").append(draftPoolDiePosition).append(" ");
+                        model.notifyObservers(new RequestMessage("server", username, builder.toString(),
                                 inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
                     }
                 } catch (ExecutingEffectException e){
@@ -230,6 +234,15 @@ public class ToolCard {
                     /*terminates while*/
                     executingEffect = true;
                 }
+            }
+        }
+    }
+
+    private void readValues(String values) {
+        ArrayList<String> words = new ArrayList<>(Arrays.asList(values.split(" ")));
+        for(String word: words){
+            if(word.equalsIgnoreCase("DraftPoolDiePosition:")){
+                draftPoolDiePosition = Integer.parseInt(words.get(words.indexOf(word)+1));
             }
         }
     }

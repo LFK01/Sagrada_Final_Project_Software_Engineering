@@ -31,7 +31,7 @@ public class ViewTest {
 
     @Test
     public void toolUsageInputVisualization(){
-        View view = new View();
+       /* View view = new View();
         String requestDescription = "Choose a die from your schema card:\n" +
                 "choose row: \n" +
                 "choose column: \n" +
@@ -39,5 +39,5 @@ public class ViewTest {
                 "choose row: \n" +
                 "choose column:";
         view.update(new RequestMessage("a", "b", "Alesatore Lamina di Rame", InputManager.INPUT_CHOOSE_MOVE));
-    }
+    */}
 }

@@ -107,7 +107,9 @@ public class Model extends ProjectObservable implements Runnable{
 
     /**
      * method to check if a player can place a die in a position on his/her schema card
-     *
+     *@param draftPoolPos Position of the die in the draftPool
+     * @param row Row where I want to insert the die
+     * @param col Col where I want to insert the die
      */
     public void doDiceMove(int draftPoolPos,int row,int col){
         try{
@@ -131,6 +133,10 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+
+    /** method that removes a draftpool die
+     * @param draftPoolPos position of the die to be removed
+     */
     private void removeDieFromDraftPool(int draftPoolPos) {
         gameBoard.getRoundDice()[roundNumber].removeDiceFromDraftPool(draftPoolPos);
     }
@@ -185,6 +191,9 @@ public class Model extends ProjectObservable implements Runnable{
         notifyObservers(new SuccessCreatePlayerMessage("server",name));
     }
 
+    /**
+     * method to extract and set ToolCard
+     */
     public void extractToolCards() {
         ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
         /*for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
@@ -199,9 +208,13 @@ public class Model extends ProjectObservable implements Runnable{
         gameBoard.setToolCards(new ToolCard(10), 2);
     }
 
+
+    /**
+     *method to extract and set PublicObjectiveCard
+     */
     public void extractPublicObjectiveCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(3);
-        for(int i = 1; i <= 3; i++){
+        ArrayList<Integer> cardIndex = new ArrayList<>();
+        for(int i = 1; i < 13; i++){
             System.out.println("added: " + i);
             cardIndex.add(i);
         }
@@ -219,6 +232,9 @@ public class Model extends ProjectObservable implements Runnable{
         getGameBoard().getRoundTrack().getRoundDice()[roundNumber] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
     }
 
+    /**
+     * method that extract and sends players the schemaCards to choose from
+     */
     public void sendSchemaCard(){
         Thread sendingMessageThread;
         int extractedCardIndex = 0;
@@ -250,6 +266,11 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+
+    /**give each player the chosen card
+     * @param playerPos  Position of the player in the ArrayList
+     * @param schemaName Schemacard chosen by the player
+     */
     public void setSchemaCardPlayer(int playerPos, String schemaName){
         SchemaCard schema = new SchemaCard(schemaName);
         participants.get(playerPos).setSchemaCard(schema);
@@ -259,6 +280,9 @@ public class Model extends ProjectObservable implements Runnable{
         player.setSchemaCard(schemaCard);
     }
 
+    /**
+     *method that extracts and sends each player his PrivateObjectivecard
+     */
     public void sendPrivateObjectiveCard(){
         ArrayList<Integer> cardIndex = new ArrayList<>(3);
         ArrayList<ObjectiveCard> privateObjectiveCard =new ArrayList<>();
@@ -281,6 +305,9 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
 
+    /**
+     * send the gameboard to all the players
+     */
     public void updateGameboard(){
         Thread sendingMessageThread;
         StringBuilder builderGameboard = new StringBuilder();
@@ -363,6 +390,9 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+    /**
+     * update the Round
+     */
     public void updateRound(){
         roundNumber = roundNumber +1;
         resetTurnOfTheRound();
@@ -371,6 +401,9 @@ public class Model extends ProjectObservable implements Runnable{
         extractRoundTrack();
     }
 
+    /**
+     * change the order of the players ArrayList
+     */
     public void changeFirstPlayer(){
         Player lastPlayer = participants.remove(0);
         participants.add(lastPlayer);
@@ -387,11 +420,26 @@ public class Model extends ProjectObservable implements Runnable{
         firstDraftOfDice =true;
     }
 
-
+    /**
+     * method that counts points of all players and sorts them according to the winner
+     */
     public void countPoints(){
         for(int i =0;i<3;i++){
             gameBoard.getPublicObjectiveCards()[i].countPoints(this,gameBoard.getPublicObjectiveCardName(i),gameBoard.getPublicObjectiveCardPoints(i));
         }
+        for(int k=0;k<participants.size();k++){
+            participants.get(k).getPrivateObjective().countPoints(this,participants.get(k).getPrivateObjective().getName(),participants.get(k).getPrivateObjective().getPoints());
+        }
+        Player actualWinner =null;
+        for(int j=0;j<participants.size()-1;j++){
+            if(participants.get(j).getPoints() > participants.get(j+1).getPoints()) {
+                actualWinner = participants.get(j);
+                participants.add(j, participants.get(j + 1));
+                participants.add(j + 1, actualWinner);
+            }
+        }
+        setChanged();
+        notifyObservers(new SendWinnerMessage("all","controller",participants.get(participants.size()).getName(),participants.get(participants.size()).getPoints()));
     }
 
     @Override

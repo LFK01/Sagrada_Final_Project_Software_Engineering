@@ -70,6 +70,9 @@ public class Player implements Serializable {
     public void setPoints(int points) {
         this.points = this.points + points;
     }
+    public void setDiagonalPoints(int points){
+        this.points = points;
+    }
 
     /**
      *method to decrease player's favor Tokens, also check if a player can use that card

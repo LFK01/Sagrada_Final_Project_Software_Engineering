@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.objective_cards.private_objective_cards;
+package it.polimi.se2018.model.objective_cards;
 
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;

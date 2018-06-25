@@ -6,7 +6,7 @@ import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 
 /**
  * Class meant to contain a Die and all the information about the placing restrictions
- * @author Giorgia
+ * @author Giovanni
  */
 
 public class Cell {

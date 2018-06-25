@@ -1,8 +1,5 @@
 package it.polimi.se2018.model.objective_cards.public_objective_cards;
-/**
- * @author Giovanni
- *
- */
+
 
 import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.ObjectiveCard;
@@ -21,10 +18,7 @@ public class SfumatureDiverseRiga {
         return thisInstance;
     }
 
-    /**
-     * @param schemaCard
-     * @return notifyView count points
-     */
+
     public int countPoints(SchemaCard schemaCard){
         int n=0;        //variabile che serve per il controllo
         int points=0;

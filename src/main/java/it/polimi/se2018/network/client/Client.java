@@ -28,7 +28,6 @@ public class Client {
 
     private static RemoteViewRMI remoteViewRMI;
     private static int portSocket = 1111;
-    private static final String host = "localhost";
     private static String serverIP;
     private static Scanner scanner = new Scanner(new InputStreamReader(System.in));
 
@@ -122,7 +121,7 @@ public class Client {
                         correctChoice = true;
                         if (!comeback) {
                             try {
-                                remoteViewSocket = new RemoteViewSocket(host, portSocket);
+                                remoteViewSocket = new RemoteViewSocket(serverIP, portSocket);
                                 view.addObserver(remoteViewSocket);
                                 remoteViewSocket.addObserver(view);
                                 System.out.println("Socket connection established");

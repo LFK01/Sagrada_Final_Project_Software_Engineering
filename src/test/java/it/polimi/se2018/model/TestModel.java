@@ -205,4 +205,29 @@ public class TestModel {
         model.setSchemaCardPlayer(1,"Battlo");
     }
 
+     @Test
+    public void countPointsTest() throws RestrictionsNotRespectedException, FullCellException {
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.extractPublicObjectiveCards();
+
+        Dice dice1 = new Dice(Color.RED,2);
+        Dice dice2 = new Dice(Color.GREEN,1);
+        Dice dice3 = new Dice(Color.BLUE,3);
+        Dice dice4 = new Dice(Color.YELLOW,6);
+        SchemaCard schemaCard1 = new SchemaCard(1);
+        SchemaCard schemaCard2 = new SchemaCard(14);
+
+        schemaCard2.placeDie(dice2,3,0,false,false,false);
+        schemaCard2.placeDie(dice1,2,0,false,false,false);
+         schemaCard2.placeDie(dice3,1,0,false,false,false);
+         schemaCard2.placeDie(dice4,0,0,false,false,false);
+        model.getParticipants().get(0).setSchemaCard(schemaCard1);
+        model.getParticipants().get(1).setSchemaCard(schemaCard2);
+
+        //model.countPoints();
+
+     }
+
 }

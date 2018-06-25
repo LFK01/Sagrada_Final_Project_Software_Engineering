@@ -18,14 +18,18 @@ public class ShadesTest {
         Model model = new Model();
         SchemaCard schemaCard1 = new SchemaCard(1);
         model.addPlayer("p1");
-        Dice dice1 = new Dice(Color.BLUE,1);
-        Dice dice2 = new Dice(Color.GREEN,2);
-
-        schemaCard1.placeDie(dice1,0,2,false,false,false);
-        schemaCard1.placeDie(dice2,0,3,false,false,false);
+        Dice dice1 = new Dice(Color.YELLOW,6);
+        Dice dice2 = new Dice(Color.BLUE,5);
+        Dice dice3 = new Dice(Color.GREEN,6);
+        Dice dice4 = new Dice(Color.RED,5);
+        schemaCard1.placeDie(dice1,0,0,false,false,false);
+        schemaCard1.placeDie(dice2,0,1,false,false,false);
+        schemaCard1.placeDie(dice3,1,1,false,false,false);
+        schemaCard1.placeDie(dice4,2,2,false,false,false);
         model.getParticipants().get(0).setSchemaCard(schemaCard1);
-        ObjectiveCard card1 = new ObjectiveCard(false,4);
+        ObjectiveCard card1 = new ObjectiveCard(false,9);
         card1.countPoints(model,card1.getName(),card1.getPoints());
+        assertEquals(4,model.getParticipants().get(0).getPoints());
     }
 
 }

@@ -1,7 +1,6 @@
-package it.polimi.se2018.model.objective_cards.private_objective_cards;
+package it.polimi.se2018.model.objective_cards;
 
 import it.polimi.se2018.model.objective_cards.public_objective_cards.effects.*;
-import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 public class OCEffectFactory {
 

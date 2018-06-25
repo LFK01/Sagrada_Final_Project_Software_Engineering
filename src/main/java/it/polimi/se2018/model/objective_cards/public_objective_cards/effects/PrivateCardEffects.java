@@ -27,18 +27,20 @@ public class PrivateCardEffects implements ObjectiveCardEffectInterface {
             color =Color.RED;
         }
         for(int k=0;k<model.getParticipants().size();k++){
-            int sum=0;
-            for(int i=0; i<4; i++){
-                for(int j=0; j<5 ; j++){
-                    if(model.getParticipants().get(k).getSchemaCard().getCell(i,j).isFull()) {
-                        if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getDiceColor().equals(color))
-                            sum = sum + model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getValue();
+            if(model.getParticipants().get(k).getPrivateObjective().getName().equals(cardName)) {
+                int sum = 0;
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 5; j++) {
+                        if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).isFull()) {
+                            if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getDiceColor().equals(color))
+                                sum = sum + model.getParticipants().get(k).getSchemaCard().getCell(i, j).getAssignedDice().getValue();
+                        }
                     }
+
                 }
 
+                model.getParticipants().get(k).setPoints(sum);
             }
-
-        model.getParticipants().get(k).setPoints(sum);
         }
     }
 }

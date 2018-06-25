@@ -38,27 +38,20 @@ public class TestSchemaCard {
 
    @Test
     public void testPlaceDie() throws RestrictionsNotRespectedException, FullCellException {
-        /*SchemaCard schemaCard = new SchemaCard(3);
-        Dice dice1 = new Dice(Color.RED,5);
-        Dice dice2 = new Dice(Color.RED,5);
-        schemaCard.placeDie(dice1,0,1,false,false,false);
-        assertEquals(5,schemaCard.getCell(0,1).getAssignedDice().getValue());
-        schemaCard.placeDie(dice2,0,0,false,false,false);
-        //assertEquals(false,schemaCard.getCell(0,1).isFull());
-       */
 
-        SchemaCard schemaCard = new SchemaCard(19);
-        Dice dice1 = new Dice(Color.RED,5);
+        SchemaCard schemaCard = new SchemaCard(1);
+        Dice dice1 = new Dice(Color.YELLOW,5);
         Dice dice2 = new Dice(Color.RED,4);
         Dice dice3 = new Dice(Color.YELLOW,3);
         Dice dice4 = new Dice(Color.BLUE,5);
+    try {
+        schemaCard.placeDie(dice1, 0, 0, false, false, false);
+    }
+    catch(RestrictionsNotRespectedException e){
+        fail();
+    }
 
-        schemaCard.placeDie(dice1,0,0,false,false,false);
-        //schemaCard.placeDie(dice4,1,2,false,false,false);
-        schemaCard.placeDie(dice2,0,1,false,false,false);
-        //schemaCard.placeDie(dice2,2,2,false,false,false);
-
-
+    assertEquals(5,schemaCard.getCell(0,0).getAssignedDice().getValue());
 
 
    }

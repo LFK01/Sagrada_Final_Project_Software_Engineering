@@ -168,6 +168,10 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         virtualClientSocket.notifyClient(toolCardErrorMessage);
     }
+    @Override
+    public void update(SendWinnerMessage sendWinnerMessage){
+        virtualClientSocket.notifyClient(sendWinnerMessage);
+    }
 
     @Override
     public void update(NoActionMove noActionMove){

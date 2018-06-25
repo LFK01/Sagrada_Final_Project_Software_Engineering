@@ -61,6 +61,7 @@ public class RoundDice {
      * @return the chosen dice
      */
     public Dice getDice(int index) {
+        System.out.println();
         return diceList.get(index);
     }
 

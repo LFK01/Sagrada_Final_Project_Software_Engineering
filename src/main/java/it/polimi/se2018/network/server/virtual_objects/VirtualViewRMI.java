@@ -187,6 +187,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
+    public void update(SendWinnerMessage sendWinnerMessage) {
+        virtualClientRMI.notifyClient(sendWinnerMessage);
+    }
+
+    @Override
     public void update(NoActionMove noActionMove){virtualClientRMI.notifyClient(noActionMove);}
 
     @Override

@@ -33,10 +33,10 @@ public class RowCardsCSTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard);
 
 
-        ObjectiveCard card1 = new ObjectiveCard(false,2);
+        ObjectiveCard card1 = new ObjectiveCard(false,7);
         card1.countPoints(model,card1.getName(),card1.getPoints());
 
-        assertEquals(6,model.getParticipants().get(0).getPoints());
+        assertEquals(5,model.getParticipants().get(0).getPoints());
 
     }
 

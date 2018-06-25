@@ -114,6 +114,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         int row=-1;
         int col = -1;
         int draftPoolPosition=-1;
+        System.out.println("è ARRIVATO QUESTO VALORE: " + diePlacementMessage);
         for(int i =0;i<words.length;i++){
             if(words[i].trim().equalsIgnoreCase("row:")){
                 row = Integer.parseInt(words[i+1]);
@@ -123,6 +124,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
             if(words[i].trim().equalsIgnoreCase("DraftPoolDiePosition:")){
                 draftPoolPosition=Integer.parseInt(words[i+1]);
+                System.out.println("è ARRIVATO QUESTO VALORE: " + draftPoolPosition);
             }
         }
         System.out.println(draftPoolPosition + " " + row + " "+ col);
@@ -171,7 +173,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         if(model.getTurnOfTheRound()<0){
             model.updateRound();
             if(model.getRoundNumber()==10){
-                //model.countPoints
+                model.countPoints();
             }
             else
             model.updateGameboard();
@@ -286,6 +288,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
         }
         waitMoves();
+    }
+
+    @Override
+    public void update(SendWinnerMessage sendWinnerMessage) {
+
     }
 
     private void waitSchemaCards(){

@@ -17,7 +17,6 @@ public class DifferentShades implements ObjectiveCardEffectInterface {
             int n4 = 0;
             int n5 = 0;
             int n6 =0;
-            int points = 0;
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 5; j++) {
                     if (model.getParticipants().get(k).getSchemaCard().getCell(i, j).isFull()) {
@@ -59,6 +58,5 @@ public class DifferentShades implements ObjectiveCardEffectInterface {
             }
             model.getParticipants().get(k).setPoints(point * sort[5]);
         }
-
     }
 }

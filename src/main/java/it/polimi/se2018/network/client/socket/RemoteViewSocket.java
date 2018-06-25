@@ -102,6 +102,10 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             notifyObservers(successCreatePlayerMessage);
         }
     }
+    public void notifyView(SendWinnerMessage sendWinnerMessage){
+        setChanged();
+        notifyView(sendWinnerMessage);
+    }
 
     @Override
     public void update(Message message) {
@@ -202,5 +206,10 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     @Override
     public void update(UseToolCardMove useToolCardMove) {
         server.sendToServer(useToolCardMove);
+    }
+
+    @Override
+    public void update(SendWinnerMessage sendWinnerMessage) {
+
     }
 }

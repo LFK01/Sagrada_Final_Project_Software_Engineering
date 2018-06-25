@@ -32,10 +32,10 @@ public class ColumnCardsCSTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard);
 
 
-        ObjectiveCard card1 = new ObjectiveCard(false,1);
+        ObjectiveCard card1 = new ObjectiveCard(false,6);
         card1.countPoints(model,card1.getName(),card1.getPoints());
 
-        assertEquals(5,model.getParticipants().get(0).getPoints());
+        assertEquals(4,model.getParticipants().get(0).getPoints());
 
     }
 

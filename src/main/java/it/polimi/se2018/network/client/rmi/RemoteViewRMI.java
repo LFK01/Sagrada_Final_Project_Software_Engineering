@@ -91,6 +91,13 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
+    public void notifyView(SendWinnerMessage sendWinnerMessage){
+        System.out.println("rmView -> view: " + sendWinnerMessage);
+            setChanged();
+            notifyObservers(sendWinnerMessage);
+    }
+
+
     public void setServer(ServerRMIInterface server) {
         this.server = server;
         serverIsUp = true;
@@ -314,6 +321,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
                 serverIsUp = false;
             }
         }
+    }
+
+    @Override
+    public void update(SendWinnerMessage sendWinnerMessage) {
+
     }
 
 }

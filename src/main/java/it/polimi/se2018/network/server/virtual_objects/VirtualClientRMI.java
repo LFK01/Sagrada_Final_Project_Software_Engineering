@@ -179,6 +179,16 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
             }
         }
     }
+    public void notifyClient(SendWinnerMessage sendWinnerMessage){
+        if(isConnected){
+            try{
+                remoteView.updateClient(sendWinnerMessage);
+            } catch (RemoteException e) {
+                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline.");
+                isConnected = false;
+            }
+        }
+    }
 
     public void notifyClient(ErrorMessage errorMessage){
         if(isConnected){

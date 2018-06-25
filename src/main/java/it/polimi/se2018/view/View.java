@@ -162,7 +162,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 inputThread.start();
             }
         }
-        if(errorMessage.toString().equals("You have already used all your moves in this round")){
+        if(errorMessage.toString().equals("DiceMoveAlreadyUsed")){
             System.out.println("You have already used all your moves in this round");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             synchronized (inputThread){
@@ -179,6 +179,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
+        System.out.println("Private Objective Card: " + privateObjectiveCardDescription);
         String playingPlayer=null;
         boolean alreadyRead = false;
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
@@ -278,7 +279,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         ArrayList<String> words = new ArrayList<>(Arrays.asList(requestMessage.getValues().split(" ")));
         for(String word: words){
             if(word.equalsIgnoreCase("DraftPoolDiePosition:")){
-                draftPoolDiceNumber = Integer.parseInt(words.get(words.indexOf(word)+1))+1;
+                draftPoolDiceNumber = Integer.parseInt(words.get(words.indexOf(word)+1));
             }
             if(word.equalsIgnoreCase("ToolCardName:")){
                 toolCardUsageName = words.get(words.indexOf(word)+1).replace("/", " ");
@@ -326,6 +327,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     @Override
     public void update(UseToolCardMove useToolCardMove) {
 
+    }
+
+    @Override
+    public void update(SendWinnerMessage sendWinnerMessage) {
+        System.out.println("The Winner is: " + sendWinnerMessage.getWinnerName());
+        System.out.println("with " + sendWinnerMessage.getWinnerScore()+ " points");
     }
 
     @Override

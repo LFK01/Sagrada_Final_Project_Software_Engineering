@@ -207,6 +207,7 @@ public class NotifyingThread extends Thread{
                                 wrongInput = true;
                             }
                         }
+                        System.out.println("HAI SCELTO QUESTO DADO" + diceOnRoundDice);
                         message = new ChooseDiceMove(username,"server",diceOnRoundDice);
                     }
                     if(choice == 2){

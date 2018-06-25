@@ -4,11 +4,6 @@ import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
 import static java.lang.Integer.parseInt;
-
-/**
- * @author Luciano
- * edited giovanni
- */
 public class ColoriDiversiRiga {
 
     private static ColoriDiversiRiga thisInstance = null; //tentativo
@@ -21,10 +16,6 @@ public class ColoriDiversiRiga {
         return thisInstance;
     }
 
-    /**
-     * @param schemaCard
-     * @return notifyView count points
-     */
 
     public int countPoints(SchemaCard schemaCard) {
         int n=0;        //variabile che serve per il controllo

@@ -205,7 +205,7 @@ public class Model extends ProjectObservable implements Runnable{
         }*/
         gameBoard.setToolCards(new ToolCard(1), 0);
         gameBoard.setToolCards(new ToolCard(6), 1);
-        gameBoard.setToolCards(new ToolCard(10), 2);
+        gameBoard.setToolCards(new ToolCard(7), 2);
     }
 
 
@@ -214,7 +214,7 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void extractPublicObjectiveCards() {
         ArrayList<Integer> cardIndex = new ArrayList<>();
-        for(int i = 1; i < 13; i++){
+        for(int i = 1; i <= PUBLIC_OBJECTIVE_CARDS_NUMBER; i++){
             System.out.println("added: " + i);
             cardIndex.add(i);
         }

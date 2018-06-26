@@ -5,6 +5,7 @@ package it.polimi.se2018.model;
  */
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.model.events.messages.SendWinnerMessage;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
@@ -229,5 +230,15 @@ public class TestModel {
         //model.countPoints();
 
      }
+     @Test
+     public void extractPublicObjectiveCardsTest(){
+        Model model = new Model();
+
+        model.extractPublicObjectiveCards();
+        for(int i =0; i<3;i++){
+            System.out.println(model.getGameBoard().getPublicObjectiveCardName(i));
+            System.out.println(model.getGameBoard().getPublicObjectiveCardDescription(i));
+        }
+    }
 
 }

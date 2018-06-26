@@ -377,21 +377,26 @@ public class SchemaCard {
      * @return
      */
     private boolean checkUpperLeftCorner(int row, int col, Color color,int value){
+        int n =0;
         if ((this.getCell(row, col + 1).isFull())) {
-            if((this.getCell(row,col+1).getAssignedDice().getValue())!=value && !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)) {
-                return true;
+            if((this.getCell(row,col+1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)) {
+                return false;
             }
+            else n=1;
+        }
+        if ((this.getCell(row + 1, col).isFull())){
+            if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n =1;
         }
         if (this.getCell(row + 1, col + 1).isFull()) {
             return true;
         }
-
-        if ((this.getCell(row + 1, col).isFull())){
-            if((this.getCell(row +1,col).getAssignedDice().getValue())!=value && !this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
+        if(n==1){
+            return true;
         }
-        return false;
+        else return false;
     }
 
     /**
@@ -402,21 +407,27 @@ public class SchemaCard {
      * @return
      */
     private boolean checkDownLeftCorner(int row, int col, Color color, int value){
+        int n =0;
         if (this.getCell(row - 1, col).isFull()) {
-            if((this.getCell(row -1,col).getAssignedDice().getValue())!=value && !this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
+            if((this.getCell(row -1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
             }
+            else n =1;
 
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            if((this.getCell(row ,col+1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n =1;
         }
         if (this.getCell(row - 1, col + 1).isFull()) {
             return true;
         }
-        if (this.getCell(row, col + 1).isFull()) {
-            if((this.getCell(row ,col+1).getAssignedDice().getValue())!=value && !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
+        if(n==1){
+            return true;
         }
-        return false;
+        else return false;
     }
 
     /**
@@ -427,29 +438,34 @@ public class SchemaCard {
      * @return
      */
     private boolean checkLeftColumn(int row, int col, Color color, int value){
+        int n =0;
+        if (this.getCell(row - 1, col).isFull()) {
+            if((this.getCell(row -1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+        if (this.getCell(row + 1, col).isFull()) {
+            if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+
+        }
         for (int i = 0; i < 3; i++) {  //CHECK
             if (this.getCell(row - 1 + i, col + 1).isFull()) {
-                if(row-1+i == row){
+                if(this.getCell(row,col +1).isFull()){
                     if((this.getCell(row ,col+1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
                         return false;
                     }
-
+                    n=1;
                 }
-                return true;
             }
         }
-        if (this.getCell(row - 1, col).isFull()) {
-            if((this.getCell(row -1,col).getAssignedDice().getValue())!=value && !this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-            }
-        if (this.getCell(row + 1, col).isFull()) {
-            if((this.getCell(row +1,col).getAssignedDice().getValue())!=value && !this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-
+        if(n==1){
+            return true;
         }
-        return false;
+        else return false;
     }
 
     /**
@@ -460,22 +476,27 @@ public class SchemaCard {
      * @return
      */
     private boolean checkUpperRightCorner(int row, int col, Color color, int value){
+        int n =0;
         if (this.getCell(row, col - 1).isFull()) {
-            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value && !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
             }
+            else n=1;
+        }
+        if (this.getCell(row + 1, col).isFull()) {
+            if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n =1;
+
         }
         if (this.getCell(row + 1, col - 1).isFull()) {
             return true;
         }
-
-        if (this.getCell(row + 1, col).isFull()) {
-            if((this.getCell(row +1,col).getAssignedDice().getValue())!=value && !this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-
+        if(n==1){
+            return true;
         }
-        return false;
+        else return false;
     }
 
     /**
@@ -486,23 +507,28 @@ public class SchemaCard {
      * @return
      */
     private boolean checkDownRightCorner(int row, int col, Color color, int value){
+        int n =0;
         if (this.getCell(row - 1, col).isFull()) {
-            if((this.getCell(row -1,col).getAssignedDice().getValue())!=value && !this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+            if((this.getCell(row -1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
                 return true;
             }
+            else n=1;
+
+        }
+        if (this.getCell(row, col - 1).isFull()) {
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
+                return true;
+            }
+            else n=1;
 
         }
         if (this.getCell(row - 1, col - 1).isFull()) {
             return true;
         }
-
-        if (this.getCell(row, col - 1).isFull()) {
-            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value && !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-
+        if(n==1){
+            return true;
         }
-        return false;
+        else return false;
     }
 
     /**
@@ -513,28 +539,33 @@ public class SchemaCard {
      * @return
      */
     private boolean checkRightColumn(int row, int col, Color color, int value){
+        int n =0;
+        if (this.getCell(row - 1, col).isFull()) {
+            if((this.getCell(row -1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+        if (this.getCell(row + 1, col).isFull()) {
+            if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
         for (int i = 0; i < 3; i++) { //CHECK
             if (this.getCell(row - 1 + i, col - 1).isFull()) {
-                if(row-1+i == row){
+                if(this.getCell(row,col-1).isFull()){
                     if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
                         return false;
                     }
-
                 }
-                return true;
+                else n=1;
             }
         }
-        if (this.getCell(row - 1, col).isFull()) {
-            if((this.getCell(row -1,col).getAssignedDice().getValue())!=value && !this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
+        if(n==1){
+            return true;
         }
-        if (this.getCell(row + 1, col).isFull()) {
-            if((this.getCell(row +1,col).getAssignedDice().getValue())!=value && !this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-        }
-        return false;
+        else return false;
     }
 
     /**
@@ -545,28 +576,33 @@ public class SchemaCard {
      * @return
      */
     private boolean checkUpperRow(int row, int col, Color color, int value){
+        int n =0;
+        if (this.getCell(row, col - 1).isFull()) {
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            if((this.getCell(row ,col + 1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
         for (int i = 0; i < 3; i++) { //CHECK
             if (this.getCell(row + 1, col - 1 + i).isFull()) {
-                if(col == col-1+i){
+                if(this.getCell(row+1,col).isFull()){
                     if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
                         return false;
                     }
+                    else n=1;
                 }
-                return true;
             }
         }
-        if (this.getCell(row, col - 1).isFull()) {
-            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value && !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-
+        if(n==1){
+            return true;
         }
-        if (this.getCell(row, col + 1).isFull()) {
-            if((this.getCell(row ,col + 1).getAssignedDice().getValue())!=value && !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-        }
-        return false;
+        else return false;
     }
 
     /**
@@ -577,28 +613,34 @@ public class SchemaCard {
      * @return
      */
     private boolean checkDownRow(int row, int col, Color color, int value){
+        int n=0;
+        if (this.getCell(row, col - 1).isFull()) {
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+        if (this.getCell(row, col + 1).isFull()) {
+            if((this.getCell(row ,col+1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+
         for (int i = 0; i < 3; i++) { //CHECK
             if (this.getCell(row - 1, col - 1 + i).isFull()) {
-                if(col-1+i == col){
+                if(this.getCell(row-1,col).isFull()){
                     if((this.getCell(row -1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
                         return false;
                     }
-
+                    else n=1;
                 }
-                return true;
             }
         }
-        if (this.getCell(row, col - 1).isFull()) {
-            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value || !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
+        if(n==1){
+            return true;
         }
-        if (this.getCell(row, col + 1).isFull()) {
-            if((this.getCell(row ,col+1).getAssignedDice().getValue())!=value || !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
-            }
-        }
-        return false;
+        else return false;
     }
 
     /**
@@ -609,37 +651,44 @@ public class SchemaCard {
      * @return
      */
     private boolean checkMiddelCells(int row, int col, Color color, int value){
-        for(int i=0; i<3; i++){  //CHECK
-            if (this.getCell(row-1, col-1+i).isFull()) {
-                if(col== col-1+i){
-                    if((this.getCell(row-1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            if (this.getCell(row+1, col-1+i).isFull()) {
-                if(col-1+i == col){
-                    if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
+        int n =0;
         if (this.getCell(row, col-1).isFull()) {
-            if((this.getCell(row ,col-1).getAssignedDice().getValue())!=value || !this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
+            if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
             }
+            else n=1;
 
         }
         if (this.getCell(row, col+1).isFull()) {
-            if((this.getCell(row ,col +1).getAssignedDice().getValue())!=value || !this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
-                return true;
+            if((this.getCell(row ,col +1).getAssignedDice().getValue())==value || this.getCell(row,col+1).getAssignedDice().getDiceColor().equals(color)){
+                return false;
+            }
+            else n=1;
+        }
+        for(int i=0; i<3; i++){  //CHECK
+            if (this.getCell(row-1, col-1+i).isFull()) {
+                if(this.getCell(row -1,col).isFull()){
+                    if((this.getCell(row-1,col).getAssignedDice().getValue())==value || this.getCell(row-1,col).getAssignedDice().getDiceColor().equals(color)){
+                        return false;
+                    }
+                    else n=1;
+                }
+
+            }
+
+            if (this.getCell(row+1, col-1+i).isFull()) {
+                if(this.getCell(row+1,col).isFull()){
+                    if((this.getCell(row +1,col).getAssignedDice().getValue())==value || this.getCell(row+1,col).getAssignedDice().getDiceColor().equals(color)){
+                        return false;
+                    }
+                    else n =1;
+                }
             }
         }
-        return false;
+        if(n==1){
+            return true;
+        }
+        else return false;
     }
 
     @Override

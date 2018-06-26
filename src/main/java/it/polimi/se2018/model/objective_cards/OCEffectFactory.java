@@ -7,7 +7,7 @@ public class OCEffectFactory {
     public ObjectiveCardEffectInterface assigneEffect(String effectName) {
         switch (effectName) {
 
-            default:  return new DefaultCase();
+            default:  return new ColoredDiagonals();
                     case "ColumnCardsCS":
                         return new ColumnCardsCS();
 

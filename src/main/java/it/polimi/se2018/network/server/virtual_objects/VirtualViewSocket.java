@@ -18,11 +18,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         this.virtualClientSocket = virtualClientSocket;
     }
 
-    public void updateServer(Message message){
-        setChanged();
-        notifyObservers(message);
-    }
-
     public void updateServer(CreatePlayerMessage createPlayerMessage){
         boolean correctUsername = true;
         if(virtualClientSocket.getServer().getPlayers().size()>1){
@@ -77,6 +72,16 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     public void updateServer(UseToolCardMove useToolCardMove){
         setChanged();
         notifyObservers(useToolCardMove);
+    }
+
+    public void updateServer(ToolCardActivationMessage toolCardActivationMessage){
+        setChanged();
+        notifyObservers(toolCardActivationMessage);
+    }
+
+    public void updateServer(ToolCardErrorMessage toolCardErrorMessage){
+        setChanged();
+        notifyObservers(toolCardErrorMessage);
     }
 
     @Override

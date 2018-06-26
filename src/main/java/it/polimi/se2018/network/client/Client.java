@@ -1,5 +1,6 @@
 package it.polimi.se2018.network.client;
 
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
 import it.polimi.se2018.network.client.socket.RemoteViewSocket;
@@ -8,6 +9,7 @@ import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 import it.polimi.se2018.view.View;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
@@ -32,13 +34,14 @@ public class Client {
     private static Scanner scanner = new Scanner(new InputStreamReader(System.in));
 
     public static void main(String args[]){
+        FileParser parser = new FileParser();
         boolean correctChoice = false;
         boolean correctInput = false;
         boolean comeback = false;
 
         String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
-        serverIP = readServerIP(fileAddress);
-        portSocket = readPortSocket(fileAddress);
+        serverIP = parser.readServerIP(fileAddress);
+        portSocket = parser.readPortSocket(fileAddress);
 
         RemoteViewSocket remoteViewSocket;
         ClientRMIInterface remoteRef;
@@ -47,7 +50,7 @@ public class Client {
         int choice = 0;
         String username = null;
         View view = new View();
-        while(!correctChoice && !correctInput){
+        while(!correctChoice && !correctInput && view.isStillPlaying()){
             if(!comeback){
                 System.out.print("Type 1 to choose RMI connection\nType 2 to choose Socket connection\nType 3 to connect to a previous match\n");
             }else{
@@ -116,7 +119,6 @@ public class Client {
                         }
                         break;
                     }
-
                     case 2: {
                         correctChoice = true;
                         if (!comeback) {
@@ -165,77 +167,6 @@ public class Client {
                 }
             }
         }
-    }
-
-    private static int readPortSocket(String fileAddress) {
-        int filePortSocket = 1099;
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(fileAddress));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("PortSocket:")){
-                        filePortSocket = Integer.parseInt(words[i+1]);
-                        hasNextLine = false;
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Impossible to find the file");
-        } finally {
-            inputFile.close();
-        }
-        return filePortSocket;
-    }
-
-    private static String readServerIP(String fileAddress){
-        String fileIP = "";
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(fileAddress));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("ServerIP:")){
-                        fileIP = words[i+1];
-                        hasNextLine = false;
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("Impossible to find the file");
-        } finally {
-            inputFile.close();
-        }
-        return fileIP;
+        System.out.println("client thread has terminated");
     }
 }

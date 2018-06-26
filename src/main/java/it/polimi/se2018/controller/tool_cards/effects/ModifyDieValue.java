@@ -19,7 +19,7 @@ public class ModifyDieValue implements TCEffectInterface {
     }
 
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+    public void doYourJob(String username, String effectParameter, String values, Model model) throws ExecutingEffectException {
         System.out.println("modifyDieValue is working");
         String[] words = values.split(" ");
         int diePosition = -1;
@@ -41,7 +41,8 @@ public class ModifyDieValue implements TCEffectInterface {
         }
         ArrayList<Dice> diceList = model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList();
         Dice dieToModify = diceList.get(diePosition);
-        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(1))){
+        if(effectParameter.equalsIgnoreCase("IncreaseDecrease")){
+            System.out.println("hashmap reading works");
             boolean increaseValue = false;
             for(int i=0; i < words.length; i++){
                 if(words[i].trim().equalsIgnoreCase("IncreaseValue:")){
@@ -73,12 +74,16 @@ public class ModifyDieValue implements TCEffectInterface {
                 }
             }
         }
-        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(6))){
+        if(effectParameter.equalsIgnoreCase("Roll")){
             dieToModify.roll();
             System.out.println("modified die value: " + dieToModify.getValue());
         }
-        if(toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(10))){
+        if(effectParameter.equalsIgnoreCase("TurnFace")){
             dieToModify.turnDieFace();
+            System.out.println("modified die value: " + dieToModify.getValue());
+        }
+        if(effectParameter.equalsIgnoreCase("SetValue")){
+            dieToModify.setValue(newValue);
             System.out.println("modified die value: " + dieToModify.getValue());
         }
         isDone = true;

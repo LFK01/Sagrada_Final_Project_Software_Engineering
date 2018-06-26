@@ -17,7 +17,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
     private Player activePlayer;
     private Dice dieToBeMoved;
     private Model model;
-    private String toolCardName;
+    private String effectParameter;
     private int newDieRow;
     private int newDieCol;
     private int oldDieRow;
@@ -33,12 +33,12 @@ public class MoveDieOnWindow implements TCEffectInterface {
     }
 
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+    public void doYourJob(String username, String effectParameter, String values, Model model) throws ExecutingEffectException {
         System.out.println("MoveDieOnWindow is working");
         String words[] = values.split(" ");
         this.username = username;
         this.model = model;
-        this.toolCardName = toolCardName;
+        this.effectParameter = effectParameter;
         oldDieRow = -1;
         oldDieCol = -1;
         newDieRow = -1;
@@ -95,21 +95,21 @@ public class MoveDieOnWindow implements TCEffectInterface {
             }
         }
         dieToBeMoved = activePlayer.getSchemaCard().getCell(oldDieRow, oldDieCol).removeDieFromCell();
-        if(toolCardName.equals(ToolCard.searchNameByNumber(2))){
+        if(effectParameter.equals("NoColorRestrictions")){
             placeDieWithToolCard(true, false, false);
         }
-        if(toolCardName.equals(ToolCard.searchNameByNumber(3))){
+        if(effectParameter.equals("NoValueRestrictions")){
             placeDieWithToolCard(false, true, false);
         }
-        if(toolCardName.equals(ToolCard.searchNameByNumber(4))){
+        if(effectParameter.equals("AllRestrictions")){
             placeDieWithToolCard(false, false, false);
         }
-        if(toolCardName.equals(ToolCard.searchNameByNumber(9))){
+        if(effectParameter.equals("NoNearnessRestriction")){
             int currentRound = model.getRoundNumber();
             dieToBeMoved = model.getGameBoard().getRoundDice()[currentRound].getDice(draftPoolPosition);
             placeDieWithToolCard(false, false, true);
         }
-        if(toolCardName.equals(ToolCard.searchNameByNumber(12))){
+        if(effectParameter.equals("SameColorDice")){
             if(usingTaglierinaManuale) {
                 if (checkSameColorDice()) {
                     placeDieWithToolCard(false, false, false);
@@ -144,7 +144,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
             }
             model.setChanged();
             model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    toolCardName, "ValueRestrictionNotRespected", InputManager.INPUT_CHOOSE_DIE));
+                    effectParameter, "ValueRestrictionNotRespected", InputManager.INPUT_CHOOSE_DIE));
         } catch (FullCellException e){
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
@@ -154,7 +154,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
             }
             model.setChanged();
             model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    toolCardName, "FullCell", InputManager.INPUT_CHOOSE_DIE));
+                    effectParameter, "FullCell", InputManager.INPUT_CHOOSE_DIE));
         }
     }
 

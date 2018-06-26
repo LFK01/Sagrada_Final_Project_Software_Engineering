@@ -8,6 +8,8 @@ import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
+import it.polimi.se2018.model.player.ToolCardMove;
+import it.polimi.se2018.model.player.Turn;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
@@ -71,12 +73,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
-
+        /*should never be called here*/
     }
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-
+        /*should never be called here*/
     }
 
     public void update(ComebackSocketMessage message){
@@ -212,6 +214,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         timer.cancel();
         System.out.println("toolCardActivaton: " + toolCardActivationMessage.getToolCardName()
         + "\nvalues: " + toolCardActivationMessage.getValues());
+        System.out.println("toolcard name: " + toolCardActivationMessage.getToolCardName());
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
             if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName().replace("/", " "))){
                 /*finds active tool card*/
@@ -232,7 +235,31 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
-        /*shouldn't be called here*/
+        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
+            if(toolCard.getName().equals(toolCardErrorMessage.getToolCardName().replace("/", " "))){
+                /*finds active tool card*/
+                for (Player player: model.getParticipants()) {
+                    if(player.getName().equals(toolCardErrorMessage.getSender())){
+                        /*finds active player*/
+                        if(toolCard.isThereAnyEffectDone()){
+                            /*tool cards has been partially used so
+                            * player tokens will be decreased anyway*/
+                            player.decreaseFavorTokens(toolCard.isFirstUsage());
+                            ToolCardMove toolCardMove;
+                            if(model.isFirstDraftOfDice()){
+                                toolCardMove = player.getPlayerTurns()[model.getRoundNumber()].getTurn1().getToolMove();
+                            } else {
+                                toolCardMove = player.getPlayerTurns()[model.getRoundNumber()].getTurn2().getToolMove();
+                            }
+                            toolCardMove.setBeenUsed(true);
+                        }
+                        toolCard.setAllEffectsNotDone();
+                        model.updateGameboard();
+                        waitMoves();
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -275,7 +302,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         model.getRoundNumber(), model.isFirstDraftOfDice())){
                     setChanged();
                     notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
-                            activeToolCard.getName().replace(" ", "/"),
+                            "ToolCardName: " + activeToolCard.getName().replace(" ", "/"),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();
@@ -317,8 +344,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(),
-                        "server"));
+                setChanged();
+                Player activePlayer = model.getPlayer(model.getTurnOfTheRound());
+                notifyObservers(new ErrorMessage("server", activePlayer.getName(), "TimeElapsed"));
+                model.updateTurnOfTheRound();
+                model.updateGameboard();
+                waitMoves();
             }
         }, time*1000L);
     }

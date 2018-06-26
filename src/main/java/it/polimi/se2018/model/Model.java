@@ -1,6 +1,7 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.controller.tool_cards.ToolCard;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.*;
@@ -195,19 +196,20 @@ public class Model extends ProjectObservable implements Runnable{
      * method to extract and set ToolCard
      */
     public void extractToolCards() {
-        ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
-        /*for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
+        /*ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
+        for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < 3; i++) {
-            gameBoard.setToolCards(new ToolCard(cardIndex.get(i)), i);
+            gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
-        gameBoard.setToolCards(new ToolCard(1), 0);
-        gameBoard.setToolCards(new ToolCard(6), 1);
-        gameBoard.setToolCards(new ToolCard(7), 2);
+        String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
+        FileParser parser = new FileParser();
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 1), 0);
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 6), 1);
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 10), 2);
     }
-
 
     /**
      *method to extract and set PublicObjectiveCard
@@ -219,7 +221,7 @@ public class Model extends ProjectObservable implements Runnable{
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++) {
             System.out.println("extracted: " + cardIndex.get(i));
             gameBoard.setPublicObjectiveCards(new ObjectiveCard(false,cardIndex.get(i)), i);
         }

@@ -1,10 +1,10 @@
 package it.polimi.se2018.model.player;
 
-public class UseToolCardMove {
+public class ToolCardMove {
 
     private boolean beenUsed;
 
-    public UseToolCardMove(){
+    public ToolCardMove(){
         beenUsed = false;
     }
 

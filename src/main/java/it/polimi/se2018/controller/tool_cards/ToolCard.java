@@ -1,6 +1,7 @@
 package it.polimi.se2018.controller.tool_cards;
 
 import it.polimi.se2018.exceptions.ExecutingEffectException;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.RequestMessage;
 import it.polimi.se2018.model.events.messages.SuccessMessage;
@@ -8,9 +9,6 @@ import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -19,123 +17,37 @@ import java.util.*;
 public class ToolCard {
 
     private String name;
+    private String identificationName;
     private String description;
-    private ArrayList<InputManager> inputManagerList = new ArrayList<>();
-    private ArrayList<TCEffectInterface> effectsList = new ArrayList<>();
-    private EffectsFactory effectsFactory = new EffectsFactory();
+    private ArrayList<InputManager> inputManagerList;
+    private ArrayList<TCEffectInterface> effectsList;
+    private ArrayList<String> specificEffectsList;
     private boolean firstUsage;
     private int draftPoolDiePosition;
 
-    /**
-     * Constructor method for ToolCard. Reads toolcard information from ToolCard.txt and initializes a new
-     * ToolCard instance.
-     * @param toolCardNumber Determines which tool card to initialize.
-     */
-    public ToolCard(int toolCardNumber){
-        /**/
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
-            String line = "";
-            boolean hasNextLine = true;
-            boolean cardFound = false;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equalsIgnoreCase("number:")){
-                        if(toolCardNumber == Integer.parseInt(words[i+1])){
-                            cardFound = true;
-                            i++;
-                        }
-                    }
-                    if(cardFound){
-                        if(words[i].trim().equalsIgnoreCase("name:")){
-                            name = words[i+1].replace('/', ' ');
-                            i++;
-                        }
-                        if(words[i].trim().equalsIgnoreCase("description:")){
-                            description = words[i+1].replace('/', ' ');
-                            i++;
-                        }
-                        if(words[i].trim().equalsIgnoreCase("effects:")){
-                            String[] effectsNamesList = words[i+1].split("/");
-                            for(String effectName: effectsNamesList){
-                                effectsList.add(effectsFactory.getThisEffect(effectName));
-                            }
-                            i++;
-                        }
-                        if(words[i].trim().equalsIgnoreCase("inputManager:")){
-                            String[] inputsList = words[i+1].split("/");
-                            for(String inputName: inputsList) {
-                                inputManagerList.add(InputManager.valueOf(inputName));
-                            }
-                            hasNextLine = false;
-                        }
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
-        firstUsage = true;
+
+    public ToolCard(String name, String identificationName, String description,
+                    ArrayList<InputManager> inputManagerList,
+                    ArrayList<TCEffectInterface> effectsList,
+                    ArrayList<String> specificEffectsList, boolean firstUsage) {
+        this.name = name;
+        this.identificationName = identificationName;
+        this.description = description;
+        this.inputManagerList = inputManagerList;
+        this.specificEffectsList = specificEffectsList;
+        this.effectsList = effectsList;
+        System.out.println("tool card create. specific effect list is:");
+        specificEffectsList.stream().forEach(
+                s -> System.out.println(s)
+        );
+        this.firstUsage = firstUsage;
     }
 
     public static String searchNameByNumber(int toolCardNumber){
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
-            String line = "";
-            boolean hasNextLine = true;
-            boolean cardFound = false;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equalsIgnoreCase("number:")){
-                        if(toolCardNumber == Integer.parseInt(words[i+1])){
-                            cardFound = true;
-                            i++;
-                        }
-                    }
-                    if(cardFound){
-                        if(words[i].trim().equalsIgnoreCase("name:")){
-                            return words[i+1].replace('/', ' ');
-                        }
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
-        return "";
+        FileParser parser = new FileParser();
+        return parser.searchNameByNumber(toolCardNumber);
     }
+
     /**
      *
      * @return Name of the tool card
@@ -188,8 +100,10 @@ public class ToolCard {
                 /*executes effect*/
                 System.out.println("executing effect: " + effectToExecute.toString());
                 try {
-                    effectToExecute.doYourJob(username, toolCardName, values, model);
+                    System.out.println(specificEffectsList.get(effectsList.indexOf(effectToExecute)));
                     executingEffect = true;
+                    effectToExecute.doYourJob(username, specificEffectsList.get(effectsList.indexOf(effectToExecute)),
+                            values, model);
                     if (effectsList.indexOf(effectToExecute) == effectsList.size() - 1) {
                         /*has done all effects in effectsList, resets all the effects and decreases player
                          * favor tokens as player has successfully used the tool card*/
@@ -224,7 +138,7 @@ public class ToolCard {
                     model.setChanged();
                     model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName,
                             "WrongInputParameters",
-                            inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
+                            inputManagerList.get(effectsList.indexOf(effectToExecute))));
                 }
             } else {
                 if (effectsList.indexOf(effectToExecute) < effectsList.size() - 1) {
@@ -395,7 +309,7 @@ public class ToolCard {
         }
     }
 
-    private void setAllEffectsNotDone() {
+    public void setAllEffectsNotDone() {
         for(TCEffectInterface effect: effectsList){
             effect.setDone(false);
         }
@@ -405,4 +319,12 @@ public class ToolCard {
         return inputManagerList;
     }
 
+    public boolean isThereAnyEffectDone() {
+        for(TCEffectInterface effect: effectsList){
+            if(effect.isDone()){
+                return true;
+            }
+        }
+        return false;
+    }
 }

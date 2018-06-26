@@ -2,11 +2,11 @@ package it.polimi.se2018.model.player;
 
 public class Turn {
 
-    private UseToolCardMove toolMove;
+    private ToolCardMove toolMove;
     private PlaceDieMove dieMove;
 
     public Turn(){
-        toolMove = new UseToolCardMove();
+        toolMove = new ToolCardMove();
         dieMove = new PlaceDieMove();
     }
 
@@ -14,7 +14,7 @@ public class Turn {
         return dieMove;
     }
 
-    public UseToolCardMove getToolMove() {
+    public ToolCardMove getToolMove() {
         return toolMove;
     }
 

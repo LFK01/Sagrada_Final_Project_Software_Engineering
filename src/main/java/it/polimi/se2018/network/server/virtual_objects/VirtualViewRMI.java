@@ -92,6 +92,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         setChanged();
         notifyObservers(noActionMove);
     }
+    
+    public void updateServer(ToolCardErrorMessage toolCardErrorMessage){
+        setChanged();
+        notifyObservers(toolCardErrorMessage);
+    }
 
     @Override
     public void update(Message message) {

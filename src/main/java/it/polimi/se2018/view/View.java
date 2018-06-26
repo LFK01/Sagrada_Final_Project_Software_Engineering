@@ -1,7 +1,6 @@
 package it.polimi.se2018.view;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.ToolCardActivationMessage;
-import it.polimi.se2018.model.events.MovingDieMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -11,32 +10,31 @@ import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 /**
  * @author giovanni
  */
 public class View extends ProjectObservable implements ProjectObserver, ThreadCompleteListener{
 
+    private boolean stillPlaying;
+
     private String username;
     private NotifyingThread inputThread;
-
     private InputManager inputManager;
 
     private String[] schemaName = new String[4];
 
     private String[] toolCardNames;
-    private String privateObjectiveCardDescription;
-    private String toolCardUsageName;
 
+    private String privateObjectiveCardDescription;
 
     /**
      * Initializes view
      */
     public View(){
+        stillPlaying = true;
         toolCardNames = new String[Model.TOOL_CARDS_EXTRACT_NUMBER];
     }
 
@@ -45,7 +43,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      */
     public void createPlayer(){
         inputManager = InputManager.INPUT_PLAYER_NAME;
-        inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
+        inputThread = new NotifyingThread(inputManager, username);
         inputThread.addListener(this);
         inputThread.start();
     }
@@ -68,14 +66,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             schemaName[i]= chooseSchemaMessage.getSchemaCards(i).split("\n")[0];
         }
         inputManager = InputManager.INPUT_SCHEMA_CARD;
-        synchronized (inputThread){
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
-            inputThread = new NotifyingThread(inputManager, username, toolCardUsageName, schemaName);
-            inputThread.addListener(this);
-            inputThread.start();
+        if(inputThread.isAlive()){
+            inputThread.interrupt();
         }
+        inputThread = new NotifyingThread(inputManager, username, schemaName);
+        inputThread.addListener(this);
+        inputThread.start();
     }
 
     @Override
@@ -114,14 +110,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
             System.out.println("Professor Oak says that it's not the time to use that!");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            synchronized (inputThread){
-                if(inputThread.isAlive()){
-                    inputThread.interrupt();
-                }
-                inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-                inputThread.addListener(this);
-                inputThread.start();
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
             }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("UsernameNotFound")){
             System.out.println("Username not found");
@@ -129,50 +123,51 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
             System.out.println("You need more tokens to activate this card!");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            synchronized (inputThread){
-                if(inputThread.isAlive()){
-                    inputThread.interrupt();
-                }
-                inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-                inputThread.addListener(this);
-                inputThread.start();
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
             }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
             System.out.println("Posizione già occupata");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            synchronized (inputThread){
-                if(inputThread.isAlive()){
-                    inputThread.interrupt();
-                }
-                inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-                inputThread.addListener(this);
-                inputThread.start();
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
             }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
             System.out.println("Posizione non valida");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            synchronized (inputThread){
-                if(inputThread.isAlive()){
-                    inputThread.interrupt();
-                }
-                inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-                inputThread.addListener(this);
-                inputThread.start();
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
             }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equals("DiceMoveAlreadyUsed")){
             System.out.println("You have already used all your moves in this round");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            synchronized (inputThread){
-                if(inputThread.isAlive()){
-                    inputThread.interrupt();
-                }
-                inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-                inputThread.addListener(this);
-                inputThread.start();
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
             }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
+        }
+        if(errorMessage.toString().equalsIgnoreCase("TimeElapsed")){
+            inputManager = InputManager.INPUT_NEW_CONNECTION;
+            if(inputThread.isAlive()){
+                inputThread.interrupt();
+            }
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
     }
 
@@ -244,14 +239,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 playingPlayer = words[i+1];
                 if(playingPlayer.equals(username)){
                     inputManager = InputManager.INPUT_CHOOSE_MOVE;
-                    synchronized (inputThread){
-                        if(inputThread.isAlive()){
-                            inputThread.interrupt();
-                        }
-                        inputThread = new NotifyingThread(inputManager, username, toolCardUsageName, toolCardNames);
-                        inputThread.addListener(this);
-                        inputThread.start();
+                    if(inputThread.isAlive()){
+                        inputThread.interrupt();
                     }
+                    inputThread = new NotifyingThread(inputManager, username, toolCardNames);
+                    inputThread.addListener(this);
+                    inputThread.start();
                 }else{
                     System.out.println("It's not your turn!");
                 }
@@ -288,14 +281,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         System.out.println("requestMessage values: " + requestMessage.getValues());
         inputManager = requestMessage.getInputManager();
         System.out.println(inputManager.toString());
-        synchronized (inputThread){
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
-            inputThread = new NotifyingThread(inputManager, username, toolCardUsageName, draftPoolDiceNumber);
-            inputThread.addListener(this);
-            inputThread.start();
+        if(inputThread.isAlive()){
+            inputThread.interrupt();
         }
+        inputThread = new NotifyingThread(inputManager, username, toolCardUsageName, draftPoolDiceNumber);
+        inputThread.addListener(this);
+        inputThread.start();
     }
 
     @Override
@@ -348,19 +339,31 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         inputManager = toolCardErrorMessage.getInputManager();
-        synchronized (inputThread){
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
-            inputThread = new NotifyingThread(inputManager, username, toolCardUsageName);
-            inputThread.addListener(this);
-            inputThread.start();
+        System.out.println("Wrong Input Parameters! Choose different values:");
+        if(inputThread.isAlive()){
+            inputThread.interrupt();
         }
+        inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardName());
+        inputThread.addListener(this);
+        inputThread.start();
     }
 
     @Override
     public void notifyOfThreadComplete(Thread thread, Message message) {
         setChanged();
-        notifyObservers(message);
+        if(!message.getSender().equalsIgnoreCase("quit")){
+            notifyObservers(message);
+        } else {
+            stillPlaying = false;
+        }
+    }
+
+    @Override
+    public void quit(){
+        stillPlaying = false;
+    }
+
+    public boolean isStillPlaying() {
+        return stillPlaying;
     }
 }

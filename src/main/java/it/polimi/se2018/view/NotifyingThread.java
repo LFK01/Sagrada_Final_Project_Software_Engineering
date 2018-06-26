@@ -2,10 +2,7 @@ package it.polimi.se2018.view;
 
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.ToolCardActivationMessage;
-import it.polimi.se2018.model.events.messages.CreatePlayerMessage;
-import it.polimi.se2018.model.events.messages.DiePlacementMessage;
-import it.polimi.se2018.model.events.messages.Message;
-import it.polimi.se2018.model.events.messages.SelectedSchemaMessage;
+import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
@@ -27,25 +24,23 @@ public class NotifyingThread extends Thread{
     private String[] schemaNames;
     private String[] toolCardNames;
 
-
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageName,
-                           String[] names) {
-        scanner = new Scanner(new InputStreamReader(System.in));
-        this.inputManager = inputManager;
-        this.username = username;
-        this.schemaNames = names;
-        this.toolCardNames = names;
-        this.toolCardUsageName = toolCardUsageName;
-        this.draftPoolDiceNumber = -1;
-    }
-
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageName) {
+    public NotifyingThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
         this.schemaNames = null;
         this.toolCardNames = null;
-        this.toolCardUsageName = toolCardUsageName;
+        this.toolCardUsageName = "";
+        this.draftPoolDiceNumber = -1;
+    }
+
+    public NotifyingThread(InputManager inputManager, String username, String[] names) {
+        scanner = new Scanner(new InputStreamReader(System.in));
+        this.inputManager = inputManager;
+        this.username = username;
+        this.schemaNames = names;
+        this.toolCardNames = names;
+        this.toolCardUsageName = "";
         this.draftPoolDiceNumber = -1;
     }
 
@@ -58,6 +53,16 @@ public class NotifyingThread extends Thread{
         this.toolCardNames = null;
         this.toolCardUsageName = toolCardUsageName;
         this.draftPoolDiceNumber = draftPoolDiceNumber;
+    }
+
+    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageName) {
+        scanner = new Scanner(new InputStreamReader(System.in));
+        this.inputManager = inputManager;
+        this.username = username;
+        this.schemaNames = null;
+        this.toolCardNames = null;
+        this.toolCardUsageName = toolCardUsageName;
+        this.draftPoolDiceNumber = -1;
     }
 
     public void addListener(final ThreadCompleteListener listener){
@@ -76,6 +81,10 @@ public class NotifyingThread extends Thread{
         Message inputMessage = null;
         try{
             switch (inputManager){
+                case INPUT_NEW_CONNECTION:{
+                    inputMessage = readNewConnectionChoice();
+                    break;
+                }
                 case INPUT_PLAYER_NAME:{
                     inputMessage = readPlayerName();
                     break;
@@ -94,6 +103,10 @@ public class NotifyingThread extends Thread{
                 }
                 case INPUT_PLACE_DIE:{
                     inputMessage = readPositions();
+                    break;
+                }
+                case INPUT_TOOL_PLACE_DIE:{
+                    inputMessage = readToolPositions();
                     break;
                 }
                 case INPUT_MODIFY_DIE_VALUE:{
@@ -122,6 +135,39 @@ public class NotifyingThread extends Thread{
             }
         } finally {
             notifyListeners(inputMessage);
+        }
+    }
+
+    private Message readNewConnectionChoice() {
+        String input;
+        boolean wrongInput = true;
+        int choice = -1;
+        System.out.println("You've been banned from the match due to inactivity, choose what to do:\n" +
+                "1 Reconnect to the game\n" +
+                "2 Quit");
+        while(wrongInput){
+            System.out.print("choice: ");
+            input = scanner.nextLine();
+            try{
+                choice = Integer.parseInt(input);
+                if(choice<1||choice>2){
+                    System.out.println("Wrong input!");
+                    wrongInput = true;
+                } else {
+                    wrongInput = false;
+                }
+            } catch (NumberFormatException e){
+                wrongInput = true;
+                System.out.println("Wrong input!");
+            }
+        }
+        if(choice==1){
+            return new ComebackMessage(username, "server", username);
+        } else {
+            for(ThreadCompleteListener listener: listeners){
+                listener.quit();
+            }
+            return new ErrorMessage("quit", "quit", "quit");
         }
     }
 
@@ -207,8 +253,7 @@ public class NotifyingThread extends Thread{
                                 wrongInput = true;
                             }
                         }
-                        System.out.println("HAI SCELTO QUESTO DADO" + diceOnRoundDice);
-                        message = new ChooseDiceMove(username,"server",diceOnRoundDice);
+                        message = new ChooseDiceMove(username,"server", diceOnRoundDice);
                     }
                     if(choice == 2){
                         System.out.println("Tool card number: ");
@@ -325,15 +370,86 @@ public class NotifyingThread extends Thread{
         return new DiePlacementMessage(username,"server", builder.toString());
     }
 
+    private Message readToolPositions(){
+        StringBuilder builder = new StringBuilder();
+        boolean wrongInput = true;
+        String input;
+        int row = -1;
+        System.out.println("Type \"quit\" anytime to interrupt the move\n"
+                + "Choose die position:");
+        while (wrongInput) {
+            try {
+                System.out.print("Row: ");
+                input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
+                row = Integer.parseInt(input);
+                if (row < 1 || row > Model.SCHEMA_CARD_ROWS_NUMBER) {
+                    wrongInput = true;
+                    System.out.println("Wrong Input!");
+                } else {
+                    row = row-1;
+                    wrongInput = false;
+                    builder.append("row: ").append(row).append(" ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Wrong Input!");
+                wrongInput = true;
+            }
+        }
+        wrongInput = true;
+        int col = -1;
+        while (wrongInput) {
+            System.out.print("readPositions thread) Column: ");
+            try {
+                input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
+                col = Integer.parseInt(input);
+                if (col < 1 || col > Model.SCHEMA_CARD_COLUMNS_NUMBER) {
+                    System.out.println("Wrong Input!");
+                    wrongInput = true;
+                } else {
+                    col = col-1;
+                    wrongInput = false;
+                    builder.append("col: ").append(col).append(" ");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Wrong Input!");
+                wrongInput = true;
+            }
+        }
+        builder.append("DraftPoolDiePosition: ");
+        builder.append(draftPoolDiceNumber);
+        System.out.println(builder.toString());
+        return new ToolCardActivationMessage(username, "server",
+                toolCardUsageName.replace(" ", "/"), builder.toString());
+    }
+
     private Message readDieToModify() {
         boolean wrongInput = true;
         String input;
         int choice = -1;
         while (wrongInput){
-            System.out.print("readDieToModify) Choose a die from the draft pool to change its values: " +
+            System.out.print("Type \" quit \" anytime to interrupt the move\n"
+                    + "Choose a die from the draft pool to change its values: " +
                     "\nDie position number: ");
             try{
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice > Model.MAXIMUM_PLAYER_NUMBER*2+1){
                     wrongInput = true;
@@ -357,10 +473,17 @@ public class NotifyingThread extends Thread{
         int choice = -1;
         boolean wrongInput = true;
         while (wrongInput){
-            System.out.print("Choose a die from the draft pool to change its values: " +
+            System.out.print("Type \"quit\" anytime to interrupt the move\n"
+                    + "Choose a die from the draft pool to change its values: " +
                     "\nDie position number: ");
             try{
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
                     wrongInput = true;
@@ -379,10 +502,17 @@ public class NotifyingThread extends Thread{
         System.out.println("Do you want to increase the die value? (Y/N)");
         while (wrongInput){
             input = scanner.nextLine();
+            input.replace("\"", "");
+            input.trim();
+            if(input.equalsIgnoreCase("quit")){
+                return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                        "InputQuit", null);
+            }
             if(input.equalsIgnoreCase("y")||input.equalsIgnoreCase("n")){
                 wrongInput = false;
                 builder.append("IncreaseValue: ").append(input);
             } else {
+                System.out.println("Wrong input!");
                 wrongInput = true;
             }
         }
@@ -401,6 +531,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Row: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
                     wrongInput = true;
@@ -418,6 +554,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Column: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice>Model.SCHEMA_CARD_COLUMNS_NUMBER){
                     wrongInput = true;
@@ -435,6 +577,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Row: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
                     wrongInput = true;
@@ -452,6 +600,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Column: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice>Model.SCHEMA_CARD_COLUMNS_NUMBER){
                     wrongInput = true;
@@ -473,11 +627,18 @@ public class NotifyingThread extends Thread{
         int choice = -1;
         String input;
         StringBuilder builder = new StringBuilder();
-        System.out.println("Choose a value for your die:");
+        System.out.println("Type \"quit\" anytime to interrupt the move\n"
+                + "Choose a value for your die:");
         while (wrongInput){
             System.out.print("Value: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 choice = Integer.parseInt(input);
                 if(choice<1 || choice >Model.MAXIMUM_DIE_NUMBER){
                     wrongInput = true;
@@ -500,11 +661,18 @@ public class NotifyingThread extends Thread{
         int draftPoolPosition = -1;
         int roundNumber = -1;
         int roundTrackPosition = -1;
-        System.out.println("Choose a die from the draft pool: ");
+        System.out.println("Type \"quit\" anytime to interrupt the move\n"
+                + "Choose a die from the draft pool: ");
         while (wrongInput){
             System.out.print("Position: ");
             try{
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 draftPoolPosition = Integer.parseInt(input);
                 if(draftPoolPosition<1 || draftPoolPosition>draftPoolDiceNumber){
                     wrongInput = true;
@@ -523,6 +691,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Round: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 roundNumber = Integer.parseInt(input);
                 if(roundNumber<1 || roundNumber>Model.MAXIMUM_ROUND_NUMBER){
                     wrongInput = true;
@@ -541,6 +715,12 @@ public class NotifyingThread extends Thread{
             System.out.print("Position: ");
             try {
                 input = scanner.nextLine();
+                input.replace("\"", "");
+                input.trim();
+                if(input.equalsIgnoreCase("quit")){
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                            "InputQuit", null);
+                }
                 roundTrackPosition = Integer.parseInt(input);
                 if(roundTrackPosition<1 || roundTrackPosition>Model.MAXIMUM_PLAYER_NUMBER*2+1){
                     wrongInput = true;

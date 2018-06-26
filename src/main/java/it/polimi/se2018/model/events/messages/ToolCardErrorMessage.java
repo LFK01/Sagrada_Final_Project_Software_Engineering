@@ -8,7 +8,8 @@ public class ToolCardErrorMessage extends Message {
     private String toolCardName;
     private InputManager inputManager;
 
-    public ToolCardErrorMessage(String sender, String recipient, String toolCardName, String errorInformation,InputManager inputManager) {
+    public ToolCardErrorMessage(String sender, String recipient, String toolCardName,
+                                String errorInformation, InputManager inputManager) {
         super(sender, recipient);
         this.errorInformation = errorInformation;
         this.toolCardName = toolCardName;

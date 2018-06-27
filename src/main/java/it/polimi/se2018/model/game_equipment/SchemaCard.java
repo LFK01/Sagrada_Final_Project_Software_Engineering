@@ -311,7 +311,7 @@ public class SchemaCard {
         }
         else{
             if(this.isEmpty()){
-                throw (new RestrictionsNotRespectedException("Il dado deve essere piazzato lungo il bordo"));                
+                throw (new RestrictionsNotRespectedException("NotAlongTheEdges"));
             }
             else{
                 boolean hasADieNear = this.hasADieNear(row, col,die.getDiceColor(),die.getValue());

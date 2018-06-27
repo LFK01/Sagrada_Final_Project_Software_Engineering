@@ -87,7 +87,6 @@ public class FileParser {
     }
 
     public ToolCard createToolCard(String fileAddress, int toolCardNumber){
-        boolean firstUsage;
         String name = "";
         String identificationName = "";
         String description = "";
@@ -162,16 +161,12 @@ public class FileParser {
         } finally {
             inputFile.close();
         }
-        firstUsage = true;
-        System.out.println("about to create the toolcard. specific List is: ");
-        specificEffectsList.stream().forEach(
-                s -> System.out.println(s)
-        );
+        System.out.println("about to create the toolcard. ID is: " + identificationName);
         return new ToolCard(name, identificationName, description, inputManagerList,
-                effectsList, specificEffectsList, firstUsage);
+                effectsList, specificEffectsList, true);
     }
 
-    public String searchNameByNumber(int toolCardNumber){
+    public String searchIDByNumber(int toolCardNumber){
         Scanner inputFile = null;
         try{
             inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
@@ -194,8 +189,8 @@ public class FileParser {
                         }
                     }
                     if(cardFound){
-                        if(words[i].trim().equalsIgnoreCase("name:")){
-                            return words[i+1].replace('/', ' ');
+                        if(words[i].trim().equalsIgnoreCase("ID:")){
+                            return words[i+1];
                         }
                     }
                     i++;

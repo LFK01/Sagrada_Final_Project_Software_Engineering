@@ -7,9 +7,7 @@ import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.model.player.Player;
-import it.polimi.se2018.model.objective_cards.private_objective_cards.*;
 import it.polimi.se2018.model.player.ToolCardMove;
-import it.polimi.se2018.model.player.Turn;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
@@ -212,11 +210,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
         timer.cancel();
-        System.out.println("toolCardActivaton: " + toolCardActivationMessage.getToolCardName()
+        System.out.println("toolCardActivaton: " + toolCardActivationMessage.getToolCardID()
         + "\nvalues: " + toolCardActivationMessage.getValues());
-        System.out.println("toolcard name: " + toolCardActivationMessage.getToolCardName());
+        System.out.println("toolcard name: " + toolCardActivationMessage.getToolCardID());
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getName().equals(toolCardActivationMessage.getToolCardName().replace("/", " "))){
+            if(toolCard.getIdentificationName().equals(toolCardActivationMessage.getToolCardID().replace("/", " "))){
                 /*finds active tool card*/
                 System.out.println("found tool card");
                 for (Player player: model.getParticipants()) {
@@ -225,7 +223,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         String values = toolCardActivationMessage.getValues();
                         System.out.println("activating tc: " + toolCard.getName() +
                         "\nvalues: " + values);
-                        toolCard.activateToolCard(player.getName(), toolCard.getName(), values, model);
+                        toolCard.activateToolCard(player.getName(), toolCard.getIdentificationName(), values, model);
                     }
                 }
             }
@@ -236,7 +234,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getName().equals(toolCardErrorMessage.getToolCardName().replace("/", " "))){
+            if(toolCard.getIdentificationName().equals(toolCardErrorMessage.getToolCardID().replace("/", " "))){
                 /*finds active tool card*/
                 for (Player player: model.getParticipants()) {
                     if(player.getName().equals(toolCardErrorMessage.getSender())){
@@ -267,7 +265,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         timer.cancel();
         ToolCard activeToolCard = null;
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(useToolCardMove.getToolCardName().replace("/", " ").equals(toolCard.getName())){
+            if(useToolCardMove.getToolCardID().equals(toolCard.getIdentificationName())){
                 activeToolCard = toolCard;
             }
         }
@@ -279,13 +277,13 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
         if(activeToolCard.isFirstUsage()){
             if(activePlayer.getFavorTokens()>=1){
-                if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getName(),
+                if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getIdentificationName(),
                         model.getRoundNumber(), model.isFirstDraftOfDice())) {
                     System.out.println("player can use tool card");
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
                     notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
-                            "ToolCardName: " + activeToolCard.getName().replace(" ", "/"),
+                            "ToolCardName: " + activeToolCard.getIdentificationName(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();
@@ -298,11 +296,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
         } else {
             if(activePlayer.getFavorTokens()>=2){
-                if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getName(),
+                if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getIdentificationName(),
                         model.getRoundNumber(), model.isFirstDraftOfDice())){
                     setChanged();
                     notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
-                            "ToolCardName: " + activeToolCard.getName().replace(" ", "/"),
+                            "ToolCardName: " + activeToolCard.getIdentificationName(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();
@@ -347,8 +345,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 setChanged();
                 Player activePlayer = model.getPlayer(model.getTurnOfTheRound());
                 notifyObservers(new ErrorMessage("server", activePlayer.getName(), "TimeElapsed"));
-                model.updateTurnOfTheRound();
-                model.updateGameboard();
+                activePlayer.setConnected(false);
+                model.updatePlayerDisconnected(activePlayer);
                 waitMoves();
             }
         }, time*1000L);

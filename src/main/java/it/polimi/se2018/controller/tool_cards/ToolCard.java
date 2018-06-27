@@ -17,14 +17,15 @@ import java.util.*;
 public class ToolCard {
 
     private String name;
+
     private String identificationName;
+
     private String description;
     private ArrayList<InputManager> inputManagerList;
     private ArrayList<TCEffectInterface> effectsList;
     private ArrayList<String> specificEffectsList;
     private boolean firstUsage;
     private int draftPoolDiePosition;
-
 
     public ToolCard(String name, String identificationName, String description,
                     ArrayList<InputManager> inputManagerList,
@@ -36,16 +37,12 @@ public class ToolCard {
         this.inputManagerList = inputManagerList;
         this.specificEffectsList = specificEffectsList;
         this.effectsList = effectsList;
-        System.out.println("tool card create. specific effect list is:");
-        specificEffectsList.stream().forEach(
-                s -> System.out.println(s)
-        );
         this.firstUsage = firstUsage;
     }
 
-    public static String searchNameByNumber(int toolCardNumber){
+    public static String searchIDByNumber(int toolCardNumber){
         FileParser parser = new FileParser();
-        return parser.searchNameByNumber(toolCardNumber);
+        return parser.searchIDByNumber(toolCardNumber);
     }
 
     /**
@@ -100,7 +97,6 @@ public class ToolCard {
                 /*executes effect*/
                 System.out.println("executing effect: " + effectToExecute.toString());
                 try {
-                    System.out.println(specificEffectsList.get(effectsList.indexOf(effectToExecute)));
                     executingEffect = true;
                     effectToExecute.doYourJob(username, specificEffectsList.get(effectsList.indexOf(effectToExecute)),
                             values, model);
@@ -113,7 +109,7 @@ public class ToolCard {
                         System.out.println("decreased player favor tokens");
                         /*updates player moves*/
                         setPlayerToolMoveDone(username, model);
-                        if (toolCardName.equals(ToolCard.searchNameByNumber(8))) {
+                        if (toolCardName.equals(ToolCard.searchIDByNumber(8))) {
                             /*after placing two consecutive dice player can't place another die*/
                             setNextRoundDieMoveDone(username, model);
                         }
@@ -195,7 +191,7 @@ public class ToolCard {
                     playerAbleToActivateCard = checkSpecificCardsWithoutAPlacedDie(activePlayer, toolCardName);
                 }
             }
-            if(toolCardName.equals(ToolCard.searchNameByNumber(7))){
+            if(toolCardName.equals(ToolCard.searchIDByNumber(7))){
                 /*this toolcard can't be activated on the first draft of dice*/
                 playerAbleToActivateCard = false;
             }
@@ -211,14 +207,14 @@ public class ToolCard {
                 } else{
                     playerAbleToActivateCard = checkSpecificCardsWithoutAPlacedDie(activePlayer, toolCardName);
                 }
-                if(toolCardName.equals(ToolCard.searchNameByNumber(8))){
+                if(toolCardName.equals(ToolCard.searchIDByNumber(8))){
                     /*this tool card can be used only on the first draft of dice*/
                     playerAbleToActivateCard = false;
                 }
             }
         }
-        if(roundNumber<2 && (toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(12))
-                || toolCardName.equalsIgnoreCase(ToolCard.searchNameByNumber(5))
+        if(roundNumber<2 && (toolCardName.equalsIgnoreCase(ToolCard.searchIDByNumber(12))
+                || toolCardName.equalsIgnoreCase(ToolCard.searchIDByNumber(5))
                 )){
             /*these toolcards require at least a die placed on the roundTrack*/
             playerAbleToActivateCard = false;
@@ -228,15 +224,15 @@ public class ToolCard {
 
     private boolean checkSpecificCardsWithAPlacedDie(Player activePlayer, String toolCardName) {
         boolean playerAbleToActivateCard;
-        if(toolCardName.equals(ToolCard.searchNameByNumber(6)) ||
-                toolCardName.equals(ToolCard.searchNameByNumber(9)) ||
-                toolCardName.equals(ToolCard.searchNameByNumber(11))){
+        if(toolCardName.equals(ToolCard.searchIDByNumber(6)) ||
+                toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
+                toolCardName.equals(ToolCard.searchIDByNumber(11))){
             /*these toolcards can't be used if a die has already been placed*/
             playerAbleToActivateCard = false;
         } else{
             if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
-                if(toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
-                        toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                if(toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(12))){
                     /*these schema card can't be activated whit less than two dice*/
                     playerAbleToActivateCard = false;
                 } else {
@@ -251,15 +247,15 @@ public class ToolCard {
 
     private boolean checkSpecificCardsWithoutAPlacedDie(Player activePlayer, String toolCardName){
         boolean playerAbleToActivateCard = false;
-        if(toolCardName.equals(ToolCard.searchNameByNumber(8))){
+        if(toolCardName.equals(ToolCard.searchIDByNumber(8))){
             /*player has to place a die before using this card*/
             playerAbleToActivateCard = false;
         } else {
             if(activePlayer.getSchemaCard().isEmpty()){
-                if(toolCardName.equals(ToolCard.searchNameByNumber(2)) ||
-                        toolCardName.equals(ToolCard.searchNameByNumber(3)) ||
-                        toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
-                        toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                if(toolCardName.equals(ToolCard.searchIDByNumber(2)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(3)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(12))){
                     /*these toolcards can't be activated with an empty window*/
                     playerAbleToActivateCard = false;
                 } else {
@@ -267,8 +263,8 @@ public class ToolCard {
                 }
             } else {
                 if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
-                    if(toolCardName.equals(ToolCard.searchNameByNumber(4)) ||
-                            toolCardName.equals(ToolCard.searchNameByNumber(12))){
+                    if(toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                            toolCardName.equals(ToolCard.searchIDByNumber(12))){
                         /*these schema card can't be activated whit less than two dice*/
                         playerAbleToActivateCard = false;
                     } else {
@@ -326,5 +322,9 @@ public class ToolCard {
             }
         }
         return false;
+    }
+
+    public String getIdentificationName() {
+        return identificationName;
     }
 }

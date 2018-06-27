@@ -35,15 +35,15 @@ public class PlaceDie implements TCEffectInterface {
         for(int i = 0; i<words.length; i++){
             if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
                 draftPoolDiePosition = Integer.parseInt(words[i+1]);
-                System.out.println("read draftPoolDiePosition:" + draftPoolDiePosition);
+                System.out.println("read draftPoolDiePosition: " + draftPoolDiePosition);
             }
             if(words[i].trim().equalsIgnoreCase("row:")){
                 row = Integer.parseInt(words[i+1]);
-                System.out.println("read row:" + row);
+                System.out.println("read row: " + row);
             }
             if(words[i].trim().equalsIgnoreCase("col:")){
                 col = Integer.parseInt(words[i+1]);
-                System.out.println("read col:" + col);
+                System.out.println("read col: " + col);
             }
         }
         ArrayList<Dice> diceList = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
@@ -51,15 +51,16 @@ public class PlaceDie implements TCEffectInterface {
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
                 try{
+                    System.out.println("trying to place die w/" + die.toString());
                     player.getSchemaCard().placeDie(die, row, col, false,
                             false, false);
                     System.out.println("placed Die");
-
+                    model.removeDieFromDraftPool(draftPoolDiePosition);
                 } catch (RestrictionsNotRespectedException e){
-                    System.out.println("error");
+                    System.out.println("error restrictions");
                     throw new ExecutingEffectException();
                 } catch (FullCellException e){
-                    System.out.println("error");
+                    System.out.println("error fullcell");
                     throw new ExecutingEffectException();
                 }
             }

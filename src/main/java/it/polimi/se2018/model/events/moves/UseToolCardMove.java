@@ -8,15 +8,15 @@ import it.polimi.se2018.model.events.messages.Message;
 
 public class UseToolCardMove extends Message {
 
-    private String toolCardName;
+    private String toolCardID;
 
-    public UseToolCardMove(String sender, String recipient, String toolCardName) {
+    public UseToolCardMove(String sender, String recipient, String toolCardID) {
         super(sender, recipient);
-        this.toolCardName = toolCardName;
+        this.toolCardID = toolCardID;
     }
 
-    public String getToolCardName() {
-        return toolCardName;
+    public String getToolCardID() {
+        return toolCardID;
     }
 
 }

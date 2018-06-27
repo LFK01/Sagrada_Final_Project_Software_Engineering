@@ -27,6 +27,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     private String[] schemaName = new String[4];
 
     private String[] toolCardNames;
+    private String[] toolCardIDs;
 
     private String privateObjectiveCardDescription;
 
@@ -36,6 +37,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public View(){
         stillPlaying = true;
         toolCardNames = new String[Model.TOOL_CARDS_EXTRACT_NUMBER];
+        toolCardIDs = new String[Model.TOOL_CARDS_EXTRACT_NUMBER];
     }
 
     /**
@@ -174,9 +176,10 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-        System.out.println("Private Objective Card: " + privateObjectiveCardDescription);
-        String playingPlayer=null;
+        System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
+        String playingPlayer;
         boolean alreadyRead = false;
+        System.out.println(sendGameboardMessage.getGameboardInformation());
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
@@ -203,8 +206,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 i++;
                 while (!alreadyRead) {
                     if (words[i].equalsIgnoreCase("Name:")) {
-                        System.out.println("ToolCards #" + cardNumber + ": " + words[i + 1]);
+                        System.out.println("ToolCards #" + cardNumber + " name: " + words[i + 1]);
                         toolCardNames[cardNumber-1]= "Name: " + words[i+1].replace(" ", "/") + " ";
+                        i+=2;
+                    }
+                    if(words[i].equalsIgnoreCase("ID:")){
+                        toolCardIDs[cardNumber-1] = words[i+1];
                         cardNumber++;
                         i+=2;
                     }
@@ -212,9 +219,17 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                         System.out.println("Description: : " + words[i + 1] + "\n");
                         i+=2;
                     }
-                    if(words[i].equalsIgnoreCase("DiceList:")){
+                    if(words[i].equalsIgnoreCase("SchemaCards:")){
                         alreadyRead = true;
                     }
+                }
+            }
+            if(words[i].equalsIgnoreCase("SchemaCards:")){
+                System.out.println("reading schema cards");
+                while(!words[i].equalsIgnoreCase("schemaStop:")){
+                    System.out.println("loop");
+                    System.out.println(words[i]);
+                    i++;
                 }
             }
             alreadyRead=false;
@@ -223,17 +238,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 while (!alreadyRead) {
                     System.out.print(words[i + 1] + " ");
                     i++;
-                    if(words[i+1].equalsIgnoreCase("SchemaCard:")){
+                    if(words[i+1].equalsIgnoreCase("DiceStop")){
                         alreadyRead = true;
                     }
                 }
             }
-            if(words[i].equalsIgnoreCase("SchemaCard:")){
-                System.out.println("\n");
-                while(!words[i].equalsIgnoreCase("schemaStop:")){
-                    System.out.println(words[i]);
-                    i++;
-                }
+            if(words[i].equalsIgnoreCase("FavorTokens:")){
+                System.out.println("\n\nYou have " + words[i+1] + " favor tokens left\n");
             }
             if(words[i].equalsIgnoreCase("playingPlayer:")){
                 playingPlayer = words[i+1];
@@ -242,7 +253,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                     if(inputThread.isAlive()){
                         inputThread.interrupt();
                     }
-                    inputThread = new NotifyingThread(inputManager, username, toolCardNames);
+                    inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
                     inputThread.addListener(this);
                     inputThread.start();
                 }else{
@@ -343,7 +354,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(inputThread.isAlive()){
             inputThread.interrupt();
         }
-        inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardName());
+        inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardID());
         inputThread.addListener(this);
         inputThread.start();
     }

@@ -11,6 +11,7 @@ public class TestToolCards {
         model.extractToolCards();
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
             System.out.println(toolCard.getName());
+            System.out.println(toolCard.getIdentificationName());
             System.out.println(toolCard.getDescription());
             System.out.println(toolCard.getInputManagerList().get(0));
         }

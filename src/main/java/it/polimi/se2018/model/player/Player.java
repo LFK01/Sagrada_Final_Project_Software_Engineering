@@ -1,4 +1,5 @@
 package it.polimi.se2018.model.player;
+import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 
@@ -10,9 +11,8 @@ import java.io.Serializable;
 
 public class Player implements Serializable {
 
-    private static final int GAME_ROUNDS_NUMBER = 10;
     private String name;
-    private boolean state;
+    private boolean isConnected;
     private int favorTokens;
     private ObjectiveCard privateObjective;
     private SchemaCard schemaCard;
@@ -21,12 +21,12 @@ public class Player implements Serializable {
 
     public Player(String name){
         this.name = name;
-        this.state = true;
+        this.isConnected = true;
         this.favorTokens=0;
         this.privateObjective = null;
         this.schemaCard = null;
         this.points=0;
-        this.playerTurns = new Round[GAME_ROUNDS_NUMBER];
+        this.playerTurns = new Round[Model.MAXIMUM_ROUND_NUMBER];
         for(int i =0; i<10;i++){
             playerTurns[i] = new Round();
         }
@@ -34,8 +34,8 @@ public class Player implements Serializable {
 
     public String getName(){ return name; }
 
-    public boolean getState(){
-        return this.state;
+    public boolean getConnected(){
+        return this.isConnected;
     }
 
     public int getFavorTokens() {
@@ -61,7 +61,7 @@ public class Player implements Serializable {
     public void setPrivateObjectiveCard(ObjectiveCard privateObjective){
         this.privateObjective = privateObjective;
     }
-    
+
     public void setSchemaCard(SchemaCard schema){
         this.schemaCard = schema;
         this.favorTokens = schema.getDifficultyLevel();
@@ -70,8 +70,13 @@ public class Player implements Serializable {
     public void setPoints(int points) {
         this.points = this.points + points;
     }
+
     public void setDiagonalPoints(int points){
         this.points = points;
+    }
+
+    public void setConnected(boolean connected) {
+        this.isConnected = connected;
     }
 
     /**

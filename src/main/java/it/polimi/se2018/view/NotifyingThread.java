@@ -19,18 +19,18 @@ public class NotifyingThread extends Thread{
     private final InputManager inputManager;
     private Scanner scanner;
     private final String username;
-    private final String toolCardUsageName;
+    private final String toolCardUsageID;
     private final int draftPoolDiceNumber;
     private String[] schemaNames;
-    private String[] toolCardNames;
+    private String[] toolCardIDs;
 
     public NotifyingThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
         this.schemaNames = null;
-        this.toolCardNames = null;
-        this.toolCardUsageName = "";
+        this.toolCardIDs = null;
+        this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
     }
 
@@ -39,29 +39,29 @@ public class NotifyingThread extends Thread{
         this.inputManager = inputManager;
         this.username = username;
         this.schemaNames = names;
-        this.toolCardNames = names;
-        this.toolCardUsageName = "";
+        this.toolCardIDs = names;
+        this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
     }
 
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageName,
+    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
                            int draftPoolDiceNumber) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
         this.schemaNames = null;
-        this.toolCardNames = null;
-        this.toolCardUsageName = toolCardUsageName;
+        this.toolCardIDs = null;
+        this.toolCardUsageID = toolCardUsageID;
         this.draftPoolDiceNumber = draftPoolDiceNumber;
     }
 
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageName) {
+    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
         this.schemaNames = null;
-        this.toolCardNames = null;
-        this.toolCardUsageName = toolCardUsageName;
+        this.toolCardIDs = null;
+        this.toolCardUsageID = toolCardUsageID;
         this.draftPoolDiceNumber = -1;
     }
 
@@ -266,11 +266,9 @@ public class NotifyingThread extends Thread{
                             } else {
                                 wrongInput = false;
                                 System.out.println("decided to use: " +
-                                        toolCardNames[toolCardNumber-1].split(" ")[1].replace("/", " "));
-                                if(toolCardNames[toolCardNumber-1].split(" ")[0].equals("Name:")){
-                                    message = new UseToolCardMove(username, "server",
-                                            toolCardNames[toolCardNumber-1].split(" ")[1].replace("/", " "));
-                                }
+                                        toolCardIDs[toolCardNumber-1]);
+                                message = new UseToolCardMove(username, "server",
+                                        toolCardIDs[toolCardNumber-1]);
                             }
                         } catch (NumberFormatException e){
                             System.out.println("Wrong input!");
@@ -309,7 +307,7 @@ public class NotifyingThread extends Thread{
                     wrongInput = false;
                     builder.append("Position: ").append(choice-1);
                     message = new ToolCardActivationMessage(username, "server",
-                            toolCardUsageName.replace(" ", "/"), builder.toString());
+                            toolCardUsageID, builder.toString());
                 }
             } catch (NumberFormatException e){
                 System.out.println("Wrong Input!");
@@ -384,7 +382,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 row = Integer.parseInt(input);
@@ -410,7 +408,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 col = Integer.parseInt(input);
@@ -431,7 +429,7 @@ public class NotifyingThread extends Thread{
         builder.append(draftPoolDiceNumber);
         System.out.println(builder.toString());
         return new ToolCardActivationMessage(username, "server",
-                toolCardUsageName.replace(" ", "/"), builder.toString());
+                toolCardUsageID, builder.toString());
     }
 
     private Message readDieToModify() {
@@ -447,7 +445,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -465,7 +463,7 @@ public class NotifyingThread extends Thread{
         StringBuilder builder = new StringBuilder();
         builder.append("DiePosition: ").append(choice-1).append(" ");
         return new ToolCardActivationMessage(username, "server",
-                toolCardUsageName.replace(" ", "/"), builder.toString());
+                toolCardUsageID, builder.toString());
     }
 
     private Message readDieToModifyAndIncreaseChoice(){
@@ -481,7 +479,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -505,7 +503,7 @@ public class NotifyingThread extends Thread{
             input.replace("\"", "");
             input.trim();
             if(input.equalsIgnoreCase("quit")){
-                return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                         "InputQuit", null);
             }
             if(input.equalsIgnoreCase("y")||input.equalsIgnoreCase("n")){
@@ -517,7 +515,7 @@ public class NotifyingThread extends Thread{
             }
         }
         return new ToolCardActivationMessage(username, "server",
-                toolCardUsageName.replace(" ", "/"), builder.toString());
+                toolCardUsageID, builder.toString());
     }
 
     private Message readMultiplePositions(){
@@ -534,7 +532,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -557,7 +555,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -580,7 +578,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -603,7 +601,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -619,7 +617,7 @@ public class NotifyingThread extends Thread{
             }
         }
         return new ToolCardActivationMessage(username, "server",
-                toolCardUsageName.replace(" ", "/"), builder.toString());
+                toolCardUsageID, builder.toString());
     }
 
     private Message readValue(){
@@ -636,7 +634,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 choice = Integer.parseInt(input);
@@ -652,7 +650,7 @@ public class NotifyingThread extends Thread{
             }
         }
         builder.append("NewValue: ").append(choice).append(" ");
-        return new ToolCardActivationMessage(username, "server", toolCardUsageName, builder.toString());
+        return new ToolCardActivationMessage(username, "server", toolCardUsageID, builder.toString());
     }
 
     private Message readDraftPoolRoundTrackPositions(){
@@ -670,7 +668,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 draftPoolPosition = Integer.parseInt(input);
@@ -694,7 +692,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 roundNumber = Integer.parseInt(input);
@@ -718,7 +716,7 @@ public class NotifyingThread extends Thread{
                 input.replace("\"", "");
                 input.trim();
                 if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageName,
+                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                             "InputQuit", null);
                 }
                 roundTrackPosition = Integer.parseInt(input);
@@ -738,6 +736,6 @@ public class NotifyingThread extends Thread{
         builder.append("RoundNumber: ").append(roundNumber-1).append(" ");
         builder.append("RoundTrackPosition: ").append(roundTrackPosition-1).append(" ");
         return new ToolCardActivationMessage(username, "server",
-                toolCardUsageName.replace(" ", "/"), builder.toString());
+                toolCardUsageID, builder.toString());
     }
 }

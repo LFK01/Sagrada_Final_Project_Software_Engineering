@@ -5,14 +5,14 @@ import it.polimi.se2018.view.comand_line.InputManager;
 public class ToolCardErrorMessage extends Message {
 
     private String errorInformation;
-    private String toolCardName;
+    private String toolCardID;
     private InputManager inputManager;
 
-    public ToolCardErrorMessage(String sender, String recipient, String toolCardName,
+    public ToolCardErrorMessage(String sender, String recipient, String toolCardID,
                                 String errorInformation, InputManager inputManager) {
         super(sender, recipient);
         this.errorInformation = errorInformation;
-        this.toolCardName = toolCardName;
+        this.toolCardID = toolCardID;
         this.inputManager = inputManager;
     }
 
@@ -20,8 +20,8 @@ public class ToolCardErrorMessage extends Message {
         return errorInformation;
     }
 
-    public String getToolCardName() {
-        return toolCardName;
+    public String getToolCardID() {
+        return toolCardID;
     }
 
     public InputManager getInputManager() {

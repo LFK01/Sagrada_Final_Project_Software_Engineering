@@ -138,7 +138,7 @@ public class Model extends ProjectObservable implements Runnable{
     /** method that removes a draftpool die
      * @param draftPoolPos position of the die to be removed
      */
-    private void removeDieFromDraftPool(int draftPoolPos) {
+    public void removeDieFromDraftPool(int draftPoolPos) {
         gameBoard.getRoundDice()[roundNumber].removeDiceFromDraftPool(draftPoolPos);
     }
 
@@ -312,33 +312,14 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void updateGameboard(){
         Thread sendingMessageThread;
-        StringBuilder builderGameboard = new StringBuilder();
-        builderGameboard.append("PublicObjectiveCards:/");
-        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/").append(gameBoard.getPublicObjectiveCardName(i)).append("/");
-            builderGameboard.append("Description:/").append(gameBoard.getPublicObjectiveCardDescription(i)).append("/");
-        }
-        builderGameboard.append("ToolCards:/");
-        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/").append(gameBoard.getToolCardName(i)).append("/");
-            builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
-        }
-        builderGameboard.append("DiceList:/");
-        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
-        List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(Dice die: currentDiceList){
-            builderGameboard.append(die.toString()).append("/");
-        }
-        builderGameboard.append("/");
-        builderGameboard.append("SchemaCard:/");
-        for (int i =participants.size()-1; i>=0;i--){
-            builderGameboard.append(participants.get(i).getName()).append("\n");
-            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
-        }
-        builderGameboard.append("schemaStop:/");
-        builderGameboard.append("playingPlayer:/");
-        builderGameboard.append(participants.get(turnOfTheRound).getName());
+        StringBuilder builderGameboard;
         for(Player player: participants){
+            builderGameboard = buildMessage();
+            StringBuilder personalBuilder = new StringBuilder();
+            personalBuilder.append("FavorTokens:/" + player.getFavorTokens()).append("/");
+            personalBuilder.append("playingPlayer:/")
+                    .append(participants.get(turnOfTheRound).getName()).append("/");
+            builderGameboard.append(personalBuilder.toString());
             sendingMessageThread = new Thread(this);
             try{
                 memorizeMessage(new SendGameboardMessage("model", player.getName(),
@@ -354,30 +335,7 @@ public class Model extends ProjectObservable implements Runnable{
 
     public void updateGameboardToolCard() {
         Thread sendingMessageThread;
-        StringBuilder builderGameboard = new StringBuilder();
-        builderGameboard.append("PublicObjectiveCards:/");
-        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/").append(gameBoard.getPublicObjectiveCardName(i)).append("/");
-            builderGameboard.append("Description:/").append(gameBoard.getPublicObjectiveCardDescription(i)).append("/");
-        }
-        builderGameboard.append("ToolCards:/");
-        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
-            builderGameboard.append("Name:/").append(gameBoard.getToolCardName(i)).append("/");
-            builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
-        }
-        builderGameboard.append("DiceList:/");
-        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
-        List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(Dice die: currentDiceList){
-            builderGameboard.append(die.toString()).append("/");
-        }
-        builderGameboard.append("/");
-        builderGameboard.append("SchemaCard:/");
-        for (int i =participants.size()-1; i>=0;i--){
-            builderGameboard.append(participants.get(i).getName()).append("\n");
-            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
-        }
-        builderGameboard.append("schemaStop:/");
+        StringBuilder builderGameboard = buildMessage();
         for(Player player: participants){
             sendingMessageThread = new Thread(this);
             try{
@@ -391,6 +349,57 @@ public class Model extends ProjectObservable implements Runnable{
             }
         }
     }
+
+    public void updatePlayerDisconnected(Player disconnectedPlayer){
+        Thread sendingMessageThread;
+        StringBuilder builderGameboard = buildMessage();
+        for(Player player: participants){
+            if(player.getName()!=disconnectedPlayer.getName()){
+                sendingMessageThread = new Thread(this);
+                try{
+                    memorizeMessage(new SendGameboardMessage("model", player.getName(),
+                            builderGameboard.toString()));
+                    sendingMessageThread.start();
+                    sendingMessageThread.join();
+                } catch (InterruptedException e){
+                    sendingMessageThread.interrupt();
+                    Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
+                }
+            }
+        }
+    }
+
+    private StringBuilder buildMessage(){
+        StringBuilder builderGameboard = new StringBuilder();
+        builderGameboard.append("PublicObjectiveCards:/");
+        for(int i=0; i<PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++){
+            builderGameboard.append("Name:/").append(gameBoard.getPublicObjectiveCardName(i)).append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getPublicObjectiveCardDescription(i)).append("/");
+        }
+        builderGameboard.append("ToolCards:/");
+        for (int i=0; i<TOOL_CARDS_EXTRACT_NUMBER; i++){
+            builderGameboard.append("Name:/").append(gameBoard.getToolCardName(i)).append("/");
+            builderGameboard.append("ID:/").append(gameBoard.getToolCards()[i].getIdentificationName())
+                    .append("/");
+            builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
+        }
+        builderGameboard.append("SchemaCards:/");
+        for (int i =participants.size()-1; i>=0;i--){
+            builderGameboard.append(participants.get(i).getName()).append("\n");
+            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
+        }
+        builderGameboard.append("schemaStop:/");
+        builderGameboard.append("DiceList:/");
+        RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
+        List<Dice> currentDiceList = currentRoundDice.getDiceList();
+        for(Dice die: currentDiceList){
+            builderGameboard.append(die.toString()).append("/");
+        }
+        builderGameboard.append("DiceStop/");
+        return builderGameboard;
+    }
+
+
 
     /**
      * update the Round

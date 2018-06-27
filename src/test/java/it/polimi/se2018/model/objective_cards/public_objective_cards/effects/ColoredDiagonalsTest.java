@@ -32,7 +32,7 @@ public class ColoredDiagonalsTest {
         Dice dice9 = new Dice(Color.YELLOW,4);
         Dice dice10 = new Dice(Color.GREEN,6);
         Dice dice11 = new Dice(Color.YELLOW,4);
-        Dice dice12 = new Dice(Color.GREEN,3);
+        Dice dice12 = new Dice(Color.GREEN,5);
         Dice dice13 = new Dice(Color.GREEN,1);
 
         schemaCard.placeDie(dice1,0,0,false,false,false);

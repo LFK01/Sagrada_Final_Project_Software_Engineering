@@ -460,6 +460,7 @@ public class SchemaCard {
                     }
                     n=1;
                 }
+                else n=1;
             }
         }
         if(n==1){
@@ -557,7 +558,7 @@ public class SchemaCard {
                 if(this.getCell(row,col-1).isFull()){
                     if((this.getCell(row ,col-1).getAssignedDice().getValue())==value || this.getCell(row,col-1).getAssignedDice().getDiceColor().equals(color)){
                         return false;
-                    }
+                    }else n=1;
                 }
                 else n=1;
             }
@@ -597,6 +598,7 @@ public class SchemaCard {
                     }
                     else n=1;
                 }
+                else n=1;
             }
         }
         if(n==1){
@@ -634,7 +636,7 @@ public class SchemaCard {
                         return false;
                     }
                     else n=1;
-                }
+                } else n =1;
             }
         }
         if(n==1){
@@ -673,7 +675,7 @@ public class SchemaCard {
                     }
                     else n=1;
                 }
-
+                else n =1;
             }
 
             if (this.getCell(row+1, col-1+i).isFull()) {
@@ -682,7 +684,7 @@ public class SchemaCard {
                         return false;
                     }
                     else n =1;
-                }
+                }else n=1;
             }
         }
         if(n==1){

@@ -206,9 +206,9 @@ public class Model extends ProjectObservable implements Runnable{
         }*/
         String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 1), 0);
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 6), 1);
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 10), 2);
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 3), 0);
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 2), 1);
+        gameBoard.setToolCards(parser.createToolCard(fileAddress, 1), 2);
     }
 
     /**

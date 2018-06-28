@@ -50,6 +50,42 @@ public class FileParser {
         return filePortSocket;
     }
 
+    public int readPortRMI(String fileAddress){
+        int filePort = -1;
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream(fileAddress));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("PortRMI:")){
+                        filePort = Integer.parseInt(words[i+1]);
+                        hasNextLine = false;
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return filePort;
+    }
+
     public String readServerIP(String fileAddress){
         String fileIP = "";
         Scanner inputFile = null;
@@ -84,6 +120,42 @@ public class FileParser {
             inputFile.close();
         }
         return fileIP;
+    }
+
+    public int readTimer(String fileAddress){
+        int fileTimer = -1;
+        Scanner inputFile = null;
+        try{
+            inputFile = new Scanner(new FileInputStream(fileAddress));
+            String line = "";
+            boolean hasNextLine = true;
+            try{
+                line = inputFile.nextLine();
+            } catch (NoSuchElementException e){
+                hasNextLine = false;
+            }
+            while(hasNextLine){
+                String[] words = line.split(" ");
+                int i = 0;
+                while(i<words.length){
+                    if(words[i].trim().equals("Timer:")){
+                        fileTimer = Integer.parseInt(words[i+1]);
+                        hasNextLine = false;
+                    }
+                    i++;
+                }
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            inputFile.close();
+        }
+        return fileTimer;
     }
 
     public ToolCard createToolCard(String fileAddress, int toolCardNumber){
@@ -166,10 +238,10 @@ public class FileParser {
                 effectsList, specificEffectsList, true);
     }
 
-    public String searchIDByNumber(int toolCardNumber){
+    public String searchIDByNumber(String fileAddress, int toolCardNumber){
         Scanner inputFile = null;
         try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt"));
+            inputFile = new Scanner(new FileInputStream(fileAddress));
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;

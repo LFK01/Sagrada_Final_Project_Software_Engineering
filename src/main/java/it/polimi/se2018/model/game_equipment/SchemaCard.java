@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 public class SchemaCard {
 
+    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\SchemaCards.txt";
     private String name;
     private Cell[][] cells = new Cell[4][5];
     private int difficultyLevel;
@@ -26,8 +27,7 @@ public class SchemaCard {
     public SchemaCard(int schemaCardIndex) {
         Scanner inputFile = null;
         try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java" +
-                    "\\it\\polimi\\se2018\\SchemaCards.txt"));
+            inputFile = new Scanner(new FileInputStream(FILE_ADDRESS));
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -290,12 +290,14 @@ public class SchemaCard {
     }
 
     public boolean hasLessThanTwoDie(){
+        System.out.println("checking if less than two dice:");
         int counter = 0;
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[i].length; j++) {
                 if (cells[i][j].isFull()) {
                     counter++;
-                    if(counter>2){
+                    System.out.println("found die!");
+                    if(counter>=2){
                         return false;
                     }
                 }

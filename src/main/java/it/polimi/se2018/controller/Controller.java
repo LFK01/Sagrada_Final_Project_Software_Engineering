@@ -1,5 +1,7 @@
 package it.polimi.se2018.controller;
 import it.polimi.se2018.controller.tool_cards.ToolCard;
+import it.polimi.se2018.controller.tool_cards.effects.MoveDieOnWindow;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
@@ -21,6 +23,7 @@ import java.util.*;
 
 public class Controller extends ProjectObservable implements ProjectObserver {
 
+    private static final String TOOL_CARD_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
     private Model model;
     private int time;
     private Timer timer;
@@ -214,7 +217,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         + "\nvalues: " + toolCardActivationMessage.getValues());
         System.out.println("toolcard name: " + toolCardActivationMessage.getToolCardID());
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getIdentificationName().equals(toolCardActivationMessage.getToolCardID().replace("/", " "))){
+            if(toolCard.getIdentificationName().equals(toolCardActivationMessage.getToolCardID())){
                 /*finds active tool card*/
                 System.out.println("found tool card");
                 for (Player player: model.getParticipants()) {
@@ -223,7 +226,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         String values = toolCardActivationMessage.getValues();
                         System.out.println("activating tc: " + toolCard.getName() +
                         "\nvalues: " + values);
-                        toolCard.activateToolCard(player.getName(), toolCard.getIdentificationName(), values, model);
+                        toolCard.activateToolCard(player.getName(), toolCard.getIdentificationName(),
+                                values, model);
                     }
                 }
             }
@@ -234,26 +238,35 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getIdentificationName().equals(toolCardErrorMessage.getToolCardID().replace("/", " "))){
+            if(toolCard.getIdentificationName().equals(toolCardErrorMessage.getToolCardID())){
                 /*finds active tool card*/
                 for (Player player: model.getParticipants()) {
                     if(player.getName().equals(toolCardErrorMessage.getSender())){
                         /*finds active player*/
-                        if(toolCard.isThereAnyEffectDone()){
-                            /*tool cards has been partially used so
-                            * player tokens will be decreased anyway*/
-                            player.decreaseFavorTokens(toolCard.isFirstUsage());
-                            ToolCardMove toolCardMove;
-                            if(model.isFirstDraftOfDice()){
-                                toolCardMove = player.getPlayerTurns()[model.getRoundNumber()].getTurn1().getToolMove();
-                            } else {
-                                toolCardMove = player.getPlayerTurns()[model.getRoundNumber()].getTurn2().getToolMove();
+                        if(toolCard.getIdentificationName().equals(
+                                new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 4)
+                        )){
+                            MoveDieOnWindow backupEffect = (MoveDieOnWindow) toolCard.getEffectsList().get(0);
+                            backupEffect.backupTwoDicePositions();
+                        } else{
+                            if(toolCard.isThereAnyEffectDone()){
+                                /*tool cards has been partially used so
+                                 * player tokens will be decreased anyway*/
+                                player.decreaseFavorTokens(toolCard.isFirstUsage());
+                                ToolCardMove toolCardMove;
+                                if(model.isFirstDraftOfDice()){
+                                    toolCardMove = player.getPlayerTurns()[model.getRoundNumber()]
+                                            .getTurn1().getToolMove();
+                                } else {
+                                    toolCardMove = player.getPlayerTurns()[model.getRoundNumber()]
+                                            .getTurn2().getToolMove();
+                                }
+                                toolCardMove.setBeenUsed(true);
                             }
-                            toolCardMove.setBeenUsed(true);
+                            toolCard.setAllEffectsNotDone();
+                            model.updateGameboard();
+                            waitMoves();
                         }
-                        toolCard.setAllEffectsNotDone();
-                        model.updateGameboard();
-                        waitMoves();
                     }
                 }
             }
@@ -291,6 +304,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             "PlayerUnableToUseToolCard"));
                 }
             } else {
+                System.out.println("player favor tokens: " + activePlayer.getFavorTokens() +
+                        "\nneeds at least 1 favor tokens");
                 setChanged();
                 notifyObservers(new ErrorMessage("server", activePlayer.getName(),"NotEnoughFavorTokens"));
             }

@@ -41,6 +41,7 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
     public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
+    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -204,11 +205,10 @@ public class Model extends ProjectObservable implements Runnable{
         for(int i = 0; i < 3; i++) {
             gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
-        String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 3), 0);
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 2), 1);
-        gameBoard.setToolCards(parser.createToolCard(fileAddress, 1), 2);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 2), 0);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 3), 1);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 4), 2);
     }
 
     /**

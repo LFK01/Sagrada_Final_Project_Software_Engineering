@@ -224,9 +224,9 @@ public class NotifyingThread extends Thread{
         boolean wrongInput = true;
         while(wrongInput){
             try{
+                System.out.print("Choice: ");
                 input = scanner.nextLine();
                 choice = Integer.parseInt(input);
-                System.out.println("choice = " + choice);
                 if(choice<1 || choice>3){
                     System.out.println("Wrong Input");
                     wrongInput = true;
@@ -256,27 +256,32 @@ public class NotifyingThread extends Thread{
                         message = new ChooseDiceMove(username,"server", diceOnRoundDice);
                     }
                     if(choice == 2){
-                        System.out.println("Tool card number: ");
-                        try{
-                            input = scanner.nextLine();
-                            toolCardNumber = Integer.parseInt(input);
-                            if(toolCardNumber<1 || toolCardNumber >Model.TOOL_CARDS_EXTRACT_NUMBER){
+                        wrongInput = true;
+                        while (wrongInput){
+                            System.out.print("Tool card number: ");
+                            try{
+                                input = scanner.nextLine();
+                                System.out.println("choose: " + input);
+                                toolCardNumber = Integer.parseInt(input);
+                                System.out.println("read: " + toolCardNumber);
+                                if(toolCardNumber < 1 || toolCardNumber > Model.TOOL_CARDS_EXTRACT_NUMBER){
+                                    System.out.println("Wrong input!");
+                                    wrongInput = true;
+                                } else {
+                                    wrongInput = false;
+                                    System.out.println("decided to use: " +
+                                            toolCardIDs[toolCardNumber-1]);
+                                    message = new UseToolCardMove(username, "server",
+                                            toolCardIDs[toolCardNumber-1]);
+                                }
+                            } catch (NumberFormatException e){
                                 System.out.println("Wrong input!");
                                 wrongInput = true;
-                            } else {
-                                wrongInput = false;
-                                System.out.println("decided to use: " +
-                                        toolCardIDs[toolCardNumber-1]);
-                                message = new UseToolCardMove(username, "server",
-                                        toolCardIDs[toolCardNumber-1]);
                             }
-                        } catch (NumberFormatException e){
-                            System.out.println("Wrong input!");
-                            wrongInput = true;
                         }
                     }
                     if (choice == 3){
-                        System.out.println("Ho deciso di passare il turno");
+                        System.out.println("You have chose to forfeit this turn");
                         message = new NoActionMove(username,"server");
                     }
                 }
@@ -285,6 +290,7 @@ public class NotifyingThread extends Thread{
                 wrongInput = true;
             }
         }
+        if(message==null) System.out.println();
         return message;
     }
 
@@ -540,7 +546,7 @@ public class NotifyingThread extends Thread{
                     wrongInput = true;
                 } else {
                     wrongInput = false;
-                    builder.append("oldDieRow: ").append(choice).append("\n");
+                    builder.append("OldDieRow: ").append(choice-1).append(" ");
                     positionIndex++;
                 }
             } catch (NumberFormatException e){
@@ -563,7 +569,7 @@ public class NotifyingThread extends Thread{
                     wrongInput = true;
                 } else {
                     wrongInput = false;
-                    builder.append("oldDieCol: ").append(choice).append("\n");
+                    builder.append("OldDieCol: ").append(choice-1).append(" ");
                     positionIndex++;
                 }
             } catch (NumberFormatException e){
@@ -571,6 +577,7 @@ public class NotifyingThread extends Thread{
             }
         }
         System.out.println("Choose a new position where to place the selected die:");
+        wrongInput = true;
         while(wrongInput){
             System.out.print("Row: ");
             try {
@@ -585,11 +592,11 @@ public class NotifyingThread extends Thread{
                 if(choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
                     wrongInput = true;
                 } else {
+                    builder.append("newDieRow: ").append(choice-1).append(" ");
                     wrongInput = false;
                 }
             } catch (NumberFormatException e){
                 wrongInput = true;
-                builder.append("newDieRow: ").append(choice).append("\n");
                 positionIndex++;
             }
         }
@@ -609,7 +616,7 @@ public class NotifyingThread extends Thread{
                     wrongInput = true;
                 } else {
                     wrongInput = false;
-                    builder.append("newDieCol: ").append(choice).append("\n");
+                    builder.append("newDieCol: ").append(choice-1).append(" ");
                     positionIndex++;
                 }
             } catch (NumberFormatException e){

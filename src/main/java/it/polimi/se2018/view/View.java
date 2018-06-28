@@ -103,19 +103,18 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             this.createPlayer();
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){
-            //TODO waiting lobby
-            System.out.print("Impossibile connettersi");
+            System.out.print("Maximum player number reached, impossible to connect");
         }
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughPlayer")){
             System.out.println("Minimum players number not reached.");
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
-            System.out.println("Professor Oak says that it's not the time to use that!");
+            System.out.println("Professor Oak: \"it's not the time to use that!\"");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             if(inputThread.isAlive()){
                 inputThread.interrupt();
             }
-            inputThread = new NotifyingThread(inputManager, username);
+            inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
@@ -179,7 +178,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
         String playingPlayer;
         boolean alreadyRead = false;
-        System.out.println(sendGameboardMessage.getGameboardInformation());
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
@@ -227,7 +225,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             if(words[i].equalsIgnoreCase("SchemaCards:")){
                 System.out.println("reading schema cards");
                 while(!words[i].equalsIgnoreCase("schemaStop:")){
-                    System.out.println("loop");
                     System.out.println(words[i]);
                     i++;
                 }

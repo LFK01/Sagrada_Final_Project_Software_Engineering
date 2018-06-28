@@ -4,6 +4,7 @@ package it.polimi.se2018.network.server;
  */
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererRMI;
 import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
@@ -26,18 +27,17 @@ import java.util.Scanner;
 
 public class Server {
 
+    private final static String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
     private ArrayList<VirtualViewInterface> players = new ArrayList<>();
     private final Controller controller;
+    private FileParser fileParser;
 
     public Server() {
-        int portSocket = 1111;
-        int portRMI = 1099;
-        int timer;
+        fileParser = new FileParser();
 
-        String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
-        timer = readFileTimer(fileAddress);
-        portSocket = readFilePortSocket(fileAddress);
-        portRMI = readFilePortRMI(fileAddress);
+        int timer = fileParser.readTimer(FILE_ADDRESS);
+        int portSocket = fileParser.readPortSocket(FILE_ADDRESS);
+        int portRMI = fileParser.readPortRMI(FILE_ADDRESS);
 
         controller = new Controller();
         controller.setTimer(timer);
@@ -54,42 +54,6 @@ public class Server {
         } catch (RemoteException | MalformedURLException e){
             e.printStackTrace();
         }
-    }
-
-    private int readFilePortRMI(String fileAddress) {
-        int filePort = -1;
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(fileAddress));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("PortRMI:")){
-                        filePort = Integer.parseInt(words[i+1]);
-                        hasNextLine = false;
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
-        return filePort;
     }
 
     private int readFilePortSocket(String fileAddress) {
@@ -126,42 +90,6 @@ public class Server {
             inputFile.close();
         }
         return filePort;
-    }
-
-    private int readFileTimer(String fileAddress) {
-        int fileTimer = -1;
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(fileAddress));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("Timer:")){
-                        fileTimer = Integer.parseInt(words[i+1]);
-                        hasNextLine = false;
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
-        return fileTimer;
     }
 
     public void addClient(Socket newClient){

@@ -28,6 +28,7 @@ import java.util.Scanner;
  */
 public class Client {
 
+    private final static String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
     private static RemoteViewRMI remoteViewRMI;
     private static int portSocket = 1111;
     private static String serverIP;
@@ -39,9 +40,8 @@ public class Client {
         boolean correctInput = false;
         boolean comeback = false;
 
-        String fileAddress = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
-        serverIP = parser.readServerIP(fileAddress);
-        portSocket = parser.readPortSocket(fileAddress);
+        serverIP = parser.readServerIP(FILE_ADDRESS);
+        portSocket = parser.readPortSocket(FILE_ADDRESS);
 
         RemoteViewSocket remoteViewSocket;
         ClientRMIInterface remoteRef;

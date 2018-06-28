@@ -11,6 +11,8 @@ import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
 
+import java.util.ArrayList;
+
 public class MoveDieOnWindow implements TCEffectInterface {
 
     private boolean isDone;
@@ -18,13 +20,16 @@ public class MoveDieOnWindow implements TCEffectInterface {
     private Dice dieToBeMoved;
     private Model model;
     private String effectParameter;
+    private ArrayList<Integer> backupRows = new ArrayList<>();
+    private ArrayList<Integer> backupColumns = new ArrayList<>();
+    private int firstPlacedDieRow;
+    private int firstPlacedDieCol;
     private int newDieRow;
     private int newDieCol;
     private int oldDieRow;
     private int oldDieCol;
     private String username;
     private int roundNumber;
-    private int draftPoolPosition;
     private int roundTrackDiePosition;
     private boolean usingTaglierinaManuale;
 
@@ -33,25 +38,30 @@ public class MoveDieOnWindow implements TCEffectInterface {
     }
 
     @Override
-    public void doYourJob(String username, String effectParameter, String values, Model model) throws ExecutingEffectException {
+    public void doYourJob(String username, String effectParameter, String values, Model model)
+            throws ExecutingEffectException {
         System.out.println("MoveDieOnWindow is working");
         String words[] = values.split(" ");
+        System.out.println("words lenght: " + words.length);
         this.username = username;
         this.model = model;
         this.effectParameter = effectParameter;
+        int draftPoolPosition = -1;
         oldDieRow = -1;
         oldDieCol = -1;
         newDieRow = -1;
         newDieCol = -1;
-        draftPoolPosition = -1;
         roundTrackDiePosition = -1;
         for(int i=0; i < words.length; i++){
             if(words[i].trim().equalsIgnoreCase("OldDieRow:")){
                 oldDieRow = Integer.parseInt(words[i+1]);
                 System.out.println("read oldDieRow: " + oldDieRow);
+                backupRows.add(oldDieRow);
+                System.out.println("read oldDieRow: " + oldDieRow);
             }
             if(words[i].trim().equalsIgnoreCase("OldDieCol:")){
                 oldDieCol = Integer.parseInt(words[i+1]);
+                backupColumns.add(oldDieCol);
                 System.out.println("read oldDieCol: " + oldDieCol);
             }
             if(words[i].trim().equalsIgnoreCase("newDieRow:")){
@@ -65,7 +75,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
             if(words[i].trim().equalsIgnoreCase("draftPoolPosition:")){
                 draftPoolPosition = Integer.parseInt(words[i+1]);
                 System.out.println("read newDieCol: " + newDieCol);
-                if(draftPoolPosition> model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()){
+                if(draftPoolPosition > model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()){
                     System.out.println("Error");
                     throw new ExecutingEffectException();
                 }
@@ -103,6 +113,8 @@ public class MoveDieOnWindow implements TCEffectInterface {
         }
         if(effectParameter.equals("AllRestrictions")){
             placeDieWithToolCard(false, false, false);
+            firstPlacedDieRow = newDieRow;
+            firstPlacedDieCol = newDieCol;
         }
         if(effectParameter.equals("NoNearnessRestriction")){
             int currentRound = model.getRoundNumber();
@@ -134,7 +146,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
         try {
             activePlayer.getSchemaCard().placeDie(dieToBeMoved, newDieRow, newDieCol,
                     avoidColorRestrictions, avoidValueRestrictions, avoidNearnessRestrictions);
-            model.updateGameboard();
         } catch (RestrictionsNotRespectedException e) {
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
@@ -166,5 +177,18 @@ public class MoveDieOnWindow implements TCEffectInterface {
     @Override
     public void setDone(boolean b) {
         isDone = b;
+    }
+
+    public void backupTwoDicePositions(){
+        for(Player player: model.getParticipants()){
+            if(player.getName().equals(username)){
+                activePlayer = player;
+            }
+        }
+        dieToBeMoved = activePlayer.getSchemaCard().getCell(firstPlacedDieRow, firstPlacedDieCol)
+                .removeDieFromCell();
+        newDieRow = backupRows.get(0);
+        newDieCol = backupColumns.get(0);
+        placeDieWithToolCard(true, true, true);
     }
 }

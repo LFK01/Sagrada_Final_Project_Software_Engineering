@@ -91,6 +91,16 @@ public class ToolCard {
     public void activateToolCard(String username, String toolCardName, String values, Model model){
         boolean executingEffect = false;
         readValues(values);
+        System.out.println("EffectList: ");
+        effectsList.stream().forEach(
+                e -> System.out.println(e.toString())
+        );
+        System.out.println("effects to do: ");
+        effectsList.stream().filter(
+                e -> !e.isDone()
+        ).forEach(
+                e -> System.out.println(e.toString())
+        );
         TCEffectInterface effectToExecute = effectsList.get(0);
         while (!executingEffect) {
             /*searches for an undone effect*/
@@ -224,7 +234,7 @@ public class ToolCard {
                 }
             }
         }
-        if(roundNumber<2 && (toolCardName.equalsIgnoreCase(ToolCard.searchIDByNumber(12))
+        if(roundNumber<1 && (toolCardName.equalsIgnoreCase(ToolCard.searchIDByNumber(12))
                 || toolCardName.equalsIgnoreCase(ToolCard.searchIDByNumber(5)))){
             /*these toolcards require at least a die placed on the roundTrack*/
             System.out.println("these toolcards require at least a die placed on the roundTrack");
@@ -236,7 +246,6 @@ public class ToolCard {
     private boolean checkSpecificCardsWithAPlacedDie(Player activePlayer, String toolCardName) {
         boolean playerAbleToActivateCard;
         if(toolCardName.equals(ToolCard.searchIDByNumber(6)) ||
-                toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
                 toolCardName.equals(ToolCard.searchIDByNumber(11))){
             /*these toolcards can't be used if a die has already been placed*/
             System.out.println("these toolcards can't be used if a die has already been placed");
@@ -244,6 +253,7 @@ public class ToolCard {
         } else{
             if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
                 if(toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
                         toolCardName.equals(ToolCard.searchIDByNumber(12))){
                     System.out.println("these schema card can't be activated whit less than two dice");
                     /*these schema card can't be activated whit less than two dice*/
@@ -269,6 +279,7 @@ public class ToolCard {
                 if(toolCardName.equals(ToolCard.searchIDByNumber(2)) ||
                         toolCardName.equals(ToolCard.searchIDByNumber(3)) ||
                         toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                        toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
                         toolCardName.equals(ToolCard.searchIDByNumber(12))){
                     /*these toolcards can't be activated with an empty window*/
                     System.out.println("these toolcards can't be activated with an empty window");
@@ -279,6 +290,7 @@ public class ToolCard {
             } else {
                 if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
                     if(toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
+                            toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
                             toolCardName.equals(ToolCard.searchIDByNumber(12))){
                         System.out.println("these schema card can't be activated whit less than two dice");
                         /*these schema card can't be activated whit less than two dice*/

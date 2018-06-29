@@ -27,13 +27,12 @@ import java.util.Scanner;
 
 public class Server {
 
-    private final static String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
+    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
     private ArrayList<VirtualViewInterface> players = new ArrayList<>();
     private final Controller controller;
-    private FileParser fileParser;
 
     public Server() {
-        fileParser = new FileParser();
+        FileParser fileParser = new FileParser();
 
         int timer = fileParser.readTimer(FILE_ADDRESS);
         int portSocket = fileParser.readPortSocket(FILE_ADDRESS);

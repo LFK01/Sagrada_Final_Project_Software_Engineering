@@ -78,8 +78,8 @@ public class Dice {
      *              the controller.
      */
     public void setValue(int value) {
-            this.value = value;
-            this.face = faces[value-1];
+        this.value = value;
+        this.face = faces[value-1];
     }
 
 

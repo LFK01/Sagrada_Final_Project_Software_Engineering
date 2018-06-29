@@ -321,7 +321,7 @@ public class SchemaCard {
                     this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
                 }
                 else{
-                    throw (new RestrictionsNotRespectedException("Il dado deve avere un altro dado vicino!"));
+                    throw (new RestrictionsNotRespectedException("NoNearDieFound"));
                 }
             }
         }

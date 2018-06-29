@@ -206,9 +206,9 @@ public class Model extends ProjectObservable implements Runnable{
             gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 2), 0);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 3), 1);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 4), 2);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 9), 0);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 11), 1);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 12), 2);
     }
 
     /**

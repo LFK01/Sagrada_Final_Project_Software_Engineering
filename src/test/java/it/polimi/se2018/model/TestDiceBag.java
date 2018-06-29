@@ -28,7 +28,7 @@ public class TestDiceBag {
         }
 
         assertNotNull(diceBag);
-        assertEquals(90, diceBag.getDiceBag().size());
+        assertEquals(90, diceBag.getDiceList().size());
 
     }
 
@@ -41,7 +41,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         int n = 0;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getDiceColor() == Color.RED)
                 n++;
@@ -64,7 +64,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         int n = 0;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getDiceColor() == Color.YELLOW)
                 n++;
@@ -87,7 +87,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         int n = 0;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getDiceColor() == Color.GREEN)
                 n++;
@@ -110,7 +110,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         int n = 0;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getDiceColor() == Color.BLUE)
                 n++;
@@ -133,7 +133,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         int n = 0;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getDiceColor() == Color.PURPLE)
                 n++;
@@ -156,7 +156,7 @@ public class TestDiceBag {
         DiceBag diceBag = new DiceBag();
         boolean invalidValue = false;
 
-        for(int i = 0; i < diceBag.getDiceBag().size(); i++) {
+        for(int i = 0; i < diceBag.getDiceList().size(); i++) {
 
             if(diceBag.getDice(i).getValue() > 6 || diceBag.getDice(i).getValue() < 1)
                 invalidValue = true;

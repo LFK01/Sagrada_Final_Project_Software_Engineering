@@ -5,6 +5,7 @@ import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Dice;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class ExtractNewDie implements TCEffectInterface {
@@ -21,7 +22,7 @@ public class ExtractNewDie implements TCEffectInterface {
         String[] words = values.split(" ");
         int diePosition = -1;
         for(int i = 0; i<words.length; i++){
-            if(words[i].trim().equalsIgnoreCase("DiePosition:")){
+            if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
                 diePosition = Integer.parseInt(words[i+1]);
                 System.out.println("read die position: " + diePosition);
                 if(diePosition<0 ||
@@ -30,19 +31,23 @@ public class ExtractNewDie implements TCEffectInterface {
                 }
             }
         }
-        Dice replacingDie = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDice(diePosition);
-        model.getGameBoard().getDiceBag().getDiceBag().add(replacingDie);
+        ArrayList<Dice> draftPool = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
+        Dice replacingDie = draftPool.get(diePosition);
+        draftPool.remove(replacingDie);
+        ArrayList<Dice> diceBag = model.getGameBoard().getDiceBag().getDiceList();
+        diceBag.add(replacingDie);
         System.out.println("added die: " + replacingDie.toString() + " to dice bag");
-        int randomDie = new Random().nextInt(model.getGameBoard().getDiceBag().getDiceBag().size());
-        Dice newDie = model.getGameBoard().getDiceBag().getDiceBag().get(randomDie);
+        int randomDie = new Random().nextInt(model.getGameBoard().getDiceBag().getDiceList().size()-1);
+        Dice newDie = diceBag.get(randomDie);
+        diceBag.remove(newDie);
         System.out.println("drafted new die: " + newDie.toString());
-        model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().add(newDie);
+        draftPool.add(diePosition, newDie);
         isDone = true;
     }
 
     @Override
     public boolean isDone() {
-        return false;
+        return isDone;
     }
 
     @Override

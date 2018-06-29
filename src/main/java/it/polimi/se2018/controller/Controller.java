@@ -8,6 +8,7 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.player.ToolCardMove;
 import it.polimi.se2018.utils.ProjectObservable;
@@ -276,6 +277,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     @Override
     public void update(UseToolCardMove useToolCardMove) {
         timer.cancel();
+        StringBuilder valuesBuilder = new StringBuilder();
         ToolCard activeToolCard = null;
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
             if(useToolCardMove.getToolCardID().equals(toolCard.getIdentificationName())){
@@ -293,10 +295,25 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getIdentificationName(),
                         model.getRoundNumber(), model.isFirstDraftOfDice())) {
                     System.out.println("player can use tool card");
+                    valuesBuilder.append("ToolCardName: ")
+                            .append(activeToolCard.getIdentificationName())
+                            .append(" ");
+                    if(activeToolCard.getIdentificationName().equals(
+                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 5)) ||
+                            activeToolCard.getIdentificationName().equals(
+                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 12))
+                            ){
+                        valuesBuilder.append("RoundTrack: ");
+                        for(int i=0; i<model.getRoundNumber(); i++){
+                            valuesBuilder.append(model.getGameBoard().getRoundDice()[i].toString())
+                                    .append(" ");
+                        }
+                        valuesBuilder.append("DiceStop ");
+                    }
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
                     notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
-                            "ToolCardName: " + activeToolCard.getIdentificationName(),
+                            valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();

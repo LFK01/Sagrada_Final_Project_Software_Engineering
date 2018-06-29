@@ -26,7 +26,7 @@ public class ModifyDieValue implements TCEffectInterface {
         int newValue = -1;
         for(int i=0; i < words.length; i++){
             System.out.println("reading: " + words[i]);
-            if(words[i].trim().equalsIgnoreCase("DiePosition:")){
+            if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
                 /*gets die position from message values*/
                 diePosition = Integer.parseInt(words[i+1]);
                 System.out.println("read die position: " + diePosition);
@@ -35,7 +35,7 @@ public class ModifyDieValue implements TCEffectInterface {
                 }
             }
             if(words[i].trim().equalsIgnoreCase("NewValue:")){
-                System.out.println("read new value: " + diePosition);
+                System.out.println("read new value: " + newValue);
                 newValue = Integer.parseInt(words[i+1]);
             }
         }

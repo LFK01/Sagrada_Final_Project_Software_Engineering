@@ -9,6 +9,7 @@ public enum InputManager implements Serializable{
     INPUT_SCHEMA_CARD,
     INPUT_CHOOSE_MOVE,
     INPUT_CHOOSE_DIE,
+    INPUT_CHOOSE_DIE_PLACE_DIE,
     INPUT_PLACE_DIE,
     INPUT_TOOL_PLACE_DIE,
     INPUT_MODIFY_DIE_VALUE,

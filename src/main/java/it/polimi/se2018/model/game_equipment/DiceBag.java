@@ -51,10 +51,8 @@ public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colo
      * DiceBag getter
      * @return the diceBag instance
      */
-    public ArrayList<Dice> getDiceBag() {
-
+    public ArrayList<Dice> getDiceList() {
         return diceBag;
-
     }
 
 }

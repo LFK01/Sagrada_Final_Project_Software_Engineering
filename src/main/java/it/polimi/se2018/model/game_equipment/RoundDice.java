@@ -1,6 +1,4 @@
 package it.polimi.se2018.model.game_equipment;
-import it.polimi.se2018.model.game_equipment.Dice;
-import it.polimi.se2018.model.game_equipment.DiceBag;
 
 import java.util.*;
 
@@ -33,7 +31,7 @@ public class RoundDice {
 
         for(int i = 0; i < (this.participantsNumber *2+1); i++) {
             diceList.add(diceBag.getDice(i));  //prendo e rimuovo sempre
-            diceBag.getDiceBag().remove(i); //rimuovo il dado dalla dicebag
+            diceBag.getDiceList().remove(i); //rimuovo il dado dalla dicebag
         }
         this.round = currentRound;
 
@@ -93,7 +91,7 @@ public class RoundDice {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for(Dice die: diceList){
-            builder.append(die.toString());
+            builder.append(die.toString()).append(" ");
         }
         return builder.toString();
     }

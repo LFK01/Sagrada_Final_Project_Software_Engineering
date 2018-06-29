@@ -1,7 +1,6 @@
 package it.polimi.se2018.controller.tool_cards.effects;
 
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
-import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
@@ -117,8 +116,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
             firstPlacedDieCol = newDieCol;
         }
         if(effectParameter.equals("NoNearnessRestriction")){
-            int currentRound = model.getRoundNumber();
-            dieToBeMoved = model.getGameBoard().getRoundDice()[currentRound].getDice(draftPoolPosition);
             placeDieWithToolCard(false, false, true);
         }
         if(effectParameter.equals("SameColorDice")){
@@ -155,7 +152,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
             }
             model.setChanged();
             model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    effectParameter, "ValueRestrictionNotRespected", InputManager.INPUT_CHOOSE_DIE));
+                    effectParameter, "ValueRestrictionNotRespected", InputManager.INPUT_CHOOSE_DIE_PLACE_DIE));
         } catch (FullCellException e){
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
@@ -165,7 +162,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
             }
             model.setChanged();
             model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    effectParameter, "FullCell", InputManager.INPUT_CHOOSE_DIE));
+                    effectParameter, "FullCell", InputManager.INPUT_CHOOSE_DIE_PLACE_DIE));
         }
     }
 

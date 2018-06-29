@@ -62,8 +62,8 @@ public class TestDice {
         //System.out.println(redString)
         DiceBag  diceBag = new DiceBag();
         int j=0;
-        for(int i=0;i < diceBag.getDiceBag().size();i++){
-            System.out.print(diceBag.getDiceBag().get(i).toString());
+        for(int i = 0; i < diceBag.getDiceList().size(); i++){
+            System.out.print(diceBag.getDiceList().get(i).toString());
             j++;
             if(j==9){
                 System.out.print("\n");

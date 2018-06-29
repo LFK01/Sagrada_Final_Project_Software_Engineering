@@ -127,27 +127,27 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             if(inputThread.isAlive()){
                 inputThread.interrupt();
             }
-            inputThread = new NotifyingThread(inputManager, username);
+            inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
-            System.out.println("Posizione già occupata");
+            System.out.println("You can't place a die over another die!");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
             if(inputThread.isAlive()){
                 inputThread.interrupt();
             }
-            inputThread = new NotifyingThread(inputManager, username);
+            inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
-            System.out.println("Posizione non valida");
+            System.out.println("Selected die doesn't respect cell's restrictions");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
             if(inputThread.isAlive()){
                 inputThread.interrupt();
             }
-            inputThread = new NotifyingThread(inputManager, username);
+            inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
@@ -157,7 +157,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             if(inputThread.isAlive()){
                 inputThread.interrupt();
             }
-            inputThread = new NotifyingThread(inputManager, username);
+            inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
@@ -277,13 +277,29 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         for(String name: toolCardNames){
             System.out.println(name);
         }
+        System.out.println(requestMessage.getValues());
         ArrayList<String> words = new ArrayList<>(Arrays.asList(requestMessage.getValues().split(" ")));
         for(String word: words){
+            if(word.equalsIgnoreCase("RoundTrack:")){
+                int i=1;
+                int roundNumber=1;
+                System.out.println("RoundTrack:\n" +
+                        "Round #" + roundNumber + " : ");
+                while(!words.get(words.indexOf(word)+i).equalsIgnoreCase("DiceStop")){
+                    if(words.get(words.indexOf(word)+i).equals("\n")){
+                        System.out.println("\nRound #" + roundNumber + " : ");
+                    } else {
+                        System.out.print(words.get(words.indexOf(word)+i) + " ");
+                    }
+                    i++;
+                }
+                System.out.println("\n");
+            }
             if(word.equalsIgnoreCase("DraftPoolDiePosition:")){
                 draftPoolDiceNumber = Integer.parseInt(words.get(words.indexOf(word)+1));
             }
             if(word.equalsIgnoreCase("ToolCardName:")){
-                toolCardUsageName = words.get(words.indexOf(word)+1).replace("/", " ");
+                toolCardUsageName = words.get(words.indexOf(word)+1);
             }
         }
         System.out.println("requestMessage values: " + requestMessage.getValues());

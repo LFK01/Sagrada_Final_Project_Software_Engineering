@@ -1,5 +1,7 @@
 package it.polimi.se2018.model.game_equipment;
 
+import it.polimi.se2018.model.Model;
+
 /**
  * @author Giorgia
  * modified Luciano 13/05/2018
@@ -7,7 +9,6 @@ package it.polimi.se2018.model.game_equipment;
  */
 public class RoundTrack {
 
-    public static final int ROUND_NUMBER = 10;
     private int currentRound;/*integer value of the current Round*/
 
     private RoundDice[] roundDice;
@@ -19,7 +20,7 @@ public class RoundTrack {
      */
     public RoundTrack() {
         this.currentRound = 0;
-        roundDice = new RoundDice[ROUND_NUMBER];
+        roundDice = new RoundDice[Model.MAXIMUM_ROUND_NUMBER];
     }
 
     /**

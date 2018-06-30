@@ -25,7 +25,7 @@ public class PrivateCardEffectsTest {
         Dice dice4 = new Dice(Color.GREEN,4);
         Dice dice5 = new Dice(Color.RED,3);
         Dice dice6 = new Dice(Color.PURPLE,2);
-        SchemaCard schemaCard = new SchemaCard(1);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
 
         schemaCard.placeDie(dice5,2,0,false,false,false);
         schemaCard.placeDie(dice1,2,1,false,false,false);

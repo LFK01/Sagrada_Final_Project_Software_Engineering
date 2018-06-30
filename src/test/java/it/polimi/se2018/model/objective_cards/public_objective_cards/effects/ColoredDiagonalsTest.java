@@ -10,8 +10,6 @@ import it.polimi.se2018.model.game_equipment.SchemaCard;
 import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 import org.junit.Test;
 
-import javax.xml.validation.Schema;
-
 import static org.junit.Assert.*;
 
 public class ColoredDiagonalsTest {
@@ -21,7 +19,7 @@ public class ColoredDiagonalsTest {
         FileParser parser = new FileParser();
         Model model = new Model();
         model.addPlayer("p1");
-        SchemaCard schemaCard = new SchemaCard(14);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
 
         Dice dice1 = new Dice(Color.YELLOW,1);
         Dice dice2 = new Dice(Color.GREEN,2);

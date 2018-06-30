@@ -117,11 +117,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(Message message) {
-        server.sendToServer(message);
-    }
-
-    @Override
     public void update(ChooseDiceMove chooseDiceMove) {
         server.sendToServer(chooseDiceMove);
     }

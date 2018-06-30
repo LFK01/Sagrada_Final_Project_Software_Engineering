@@ -85,11 +85,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(Message message) {
-        virtualClientSocket.notifyClient(message);
-    }
-
-    @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
         virtualClientSocket.notifyClient(chooseSchemaMessage);
     }

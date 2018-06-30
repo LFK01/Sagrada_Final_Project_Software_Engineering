@@ -26,6 +26,7 @@ public class NotifyingThread extends Thread{
     private final int draftPoolDiceNumber;
     private String[] schemaNames;
     private String[] toolCardIDs;
+    private boolean usingTapWheel;
 
     public NotifyingThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
@@ -35,6 +36,7 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = null;
         this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
+        this.usingTapWheel = false;
     }
 
     public NotifyingThread(InputManager inputManager, String username, String[] names) {
@@ -45,10 +47,11 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = names;
         this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
+        this.usingTapWheel = false;
     }
 
     public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
-                           int draftPoolDiceNumber) {
+                           int draftPoolDiceNumber, boolean usingTapWheel) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -56,6 +59,7 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = null;
         this.toolCardUsageID = toolCardUsageID;
         this.draftPoolDiceNumber = draftPoolDiceNumber;
+        this.usingTapWheel = usingTapWheel;
     }
 
     public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID) {
@@ -66,6 +70,7 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = null;
         this.toolCardUsageID = toolCardUsageID;
         this.draftPoolDiceNumber = -1;
+        this.usingTapWheel = false;
     }
 
     public void addListener(final ThreadCompleteListener listener){
@@ -483,7 +488,6 @@ public class NotifyingThread extends Thread{
                 } else {
                     wrongInput = false;
                     builder.append("OldDieRow: ").append(choice-1).append(" ");
-                    positionIndex++;
                 }
             } catch (NumberFormatException e){
                 wrongInput = true;
@@ -506,7 +510,6 @@ public class NotifyingThread extends Thread{
                 } else {
                     wrongInput = false;
                     builder.append("OldDieCol: ").append(choice-1).append(" ");
-                    positionIndex++;
                 }
             } catch (NumberFormatException e){
                 wrongInput = true;
@@ -533,7 +536,6 @@ public class NotifyingThread extends Thread{
                 }
             } catch (NumberFormatException e){
                 wrongInput = true;
-                positionIndex++;
             }
         }
         wrongInput = true;
@@ -553,11 +555,13 @@ public class NotifyingThread extends Thread{
                 } else {
                     wrongInput = false;
                     builder.append("newDieCol: ").append(choice-1).append(" ");
-                    positionIndex++;
                 }
             } catch (NumberFormatException e){
                 wrongInput = true;
             }
+        }
+        if(usingTapWheel){
+            builder.append("TapWheel: true ");
         }
         return new ToolCardActivationMessage(username, "server",
                 toolCardUsageID, builder.toString());

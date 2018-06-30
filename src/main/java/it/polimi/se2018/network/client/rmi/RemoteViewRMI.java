@@ -113,18 +113,6 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(Message message) {
-        if(serverIsUp){
-            try{
-                server.sendToServer(message);
-            } catch (RemoteException e){
-                e.printStackTrace();
-                serverIsUp = false;
-            }
-        }
-    }
-
-    @Override
     public void update(ChooseDiceMove chooseDiceMove) {
         if(serverIsUp){
             try{

@@ -2,15 +2,20 @@ package it.polimi.se2018.controller.tool_cards.effects;
 
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.exceptions.ExecutingEffectException;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
+import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.player.Player;
+import it.polimi.se2018.model.player.Round;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MoveDieOnWindow implements TCEffectInterface {
 
@@ -30,7 +35,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
     private String username;
     private int roundNumber;
     private int roundTrackDiePosition;
-    private boolean usingTaglierinaManuale;
+    private Color firstDieMovingColor;
 
     public MoveDieOnWindow(){
         isDone = false;
@@ -94,9 +99,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
                     throw new ExecutingEffectException();
                 }
             }
-            if(words[i].trim().equalsIgnoreCase("TaglierinaManuale:")){
-                usingTaglierinaManuale = true;
-            }
         }
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
@@ -119,23 +121,41 @@ public class MoveDieOnWindow implements TCEffectInterface {
             placeDieWithToolCard(false, false, true);
         }
         if(effectParameter.equals("SameColorDice")){
-            if(usingTaglierinaManuale) {
+            FileParser parser = new FileParser();
+            if(parser.getTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS)) {
                 if (checkSameColorDice()) {
                     placeDieWithToolCard(false, false, false);
-                    usingTaglierinaManuale = false;
+                } else {
+                    throw new ExecutingEffectException();
                 }
             } else{
-                placeDieWithToolCard(false, false, false);
-                usingTaglierinaManuale = true;
+                firstDieMovingColor = dieToBeMoved.getDiceColor();
+                boolean foundSameColor = false;
+                for(RoundDice roundDice: model.getGameBoard().getRoundDice()){
+                    if(Arrays.asList(model.getGameBoard().getRoundDice()).indexOf(roundDice)<model.getRoundNumber()){
+                        for (Dice die: roundDice.getDiceList()){
+                            if(die.getDiceColor().equals(firstDieMovingColor)){
+                                foundSameColor = true;
+                            }
+                        }
+                    }
+                }
+                if(!foundSameColor){
+                    throw new ExecutingEffectException();
+                } else {
+                    parser.writeTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS, true);
+                    parser.writeTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS, firstDieMovingColor);
+                    placeDieWithToolCard(false, false, false);
+                }
             }
         }
         isDone = true;
     }
 
     private boolean checkSameColorDice() {
-        Dice activePlayerDie = activePlayer.getSchemaCard().getCell(oldDieRow, oldDieCol).getAssignedDice();
-        Dice roundTrackDie = model.getGameBoard().getRoundDice()[roundNumber].getDice(roundTrackDiePosition);
-        return (activePlayerDie.getDiceColor() == roundTrackDie.getDiceColor());
+        FileParser parser = new FileParser();
+        firstDieMovingColor = parser.getTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS);
+        return (dieToBeMoved.getDiceColor().equals(firstDieMovingColor));
     }
 
     private void placeDieWithToolCard(boolean avoidColorRestrictions, boolean avoidValueRestrictions,

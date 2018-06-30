@@ -20,7 +20,7 @@ public class ColorVarietyTest {
         Model model = new Model();
         model.addPlayer("p1");
 
-        SchemaCard schemaCard = new SchemaCard(1);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
         Dice dice1 = new Dice(Color.YELLOW,1);
         Dice dice2 = new Dice(Color.GREEN,2);
         Dice dice3 = new Dice(Color.PURPLE,3);

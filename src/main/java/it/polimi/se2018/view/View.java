@@ -56,11 +56,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     @Override
-    public void update(Message message) {
-        System.out.println(message.toString());
-    }
-
-    @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
         for(int i=0;i<4;i++) {
             System.out.println("type " + (i+1) + " to choose this schema");
@@ -276,6 +271,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     @Override
     public void update(RequestMessage requestMessage) {
         int draftPoolDiceNumber = -1;
+        boolean usingTapWheel = false;
         String toolCardUsageName = "";
         for(String name: toolCardNames){
             System.out.println(name);
@@ -304,6 +300,9 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             if(word.equalsIgnoreCase("ToolCardName:")){
                 toolCardUsageName = words.get(words.indexOf(word)+1);
             }
+            if(word.equalsIgnoreCase("TapWheel:")){
+                usingTapWheel = Boolean.valueOf(words.get(words.indexOf(word)+1));
+            }
         }
         System.out.println("requestMessage values: " + requestMessage.getValues());
         inputManager = requestMessage.getInputManager();
@@ -311,7 +310,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(inputThread.isAlive()){
             inputThread.interrupt();
         }
-        inputThread = new NotifyingThread(inputManager, username, toolCardUsageName, draftPoolDiceNumber);
+        inputThread = new NotifyingThread(inputManager, username, toolCardUsageName,
+                draftPoolDiceNumber, usingTapWheel);
         inputThread.addListener(this);
         inputThread.start();
     }

@@ -8,8 +8,6 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 
 public interface ProjectObserver {
 
-    void update(Message message);
-
     void update(ChooseDiceMove chooseDiceMove);
 
     void update(ChooseSchemaMessage chooseSchemaMessage);

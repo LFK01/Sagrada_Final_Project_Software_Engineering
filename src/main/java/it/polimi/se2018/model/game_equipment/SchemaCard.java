@@ -9,237 +9,30 @@ import java.util.Scanner;
 
 /**
  * Schema Cards class
- * @author Giorgia
- * edited Giovanni
+ * @author Luciano
  */
 
 public class SchemaCard {
 
-    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\SchemaCards.txt";
+    private static final String FILE_ADDRESS_SCHEMA_CARD = "src\\main\\java\\it\\polimi\\se2018\\model\\resources_schema_card";
     private String name;
     private Cell[][] cells = new Cell[4][5];
     private int difficultyLevel;
 
     /**
      * constructor method initializing schemacard using n to choose one of the 24 different schemacard
-     * @param schemaCardIndex
+     * @param name
+     * @param cells
+     * @param difficultyLevel
      */
-    public SchemaCard(int schemaCardIndex) {
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(FILE_ADDRESS));
-            String line = "";
-            boolean hasNextLine = true;
-            boolean cardFound = false;
-            boolean completedRows = false;
-            boolean stopReading = false;
-            int row=0;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine && !stopReading){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length && !completedRows){
-                    if(words[i].trim().equals("Number:")){
-                        if(schemaCardIndex == Integer.parseInt(words[i+1])){
-                            cardFound = true;
-                            i++;
-                        }
-                    }
-                    if(cardFound){
-                        if(words[i].trim().equals("name:")){
-                            name = words[i+1].replace('/', ' ');
-                            i++;
-                        }
-                        if(words[i].trim().equals("difficulty:")){
-                            difficultyLevel = Integer.parseInt(words[i+1]);
-                            i++;
-                        }
-                        if(words[i].startsWith("[")){
-                            for(int col=0; col<words.length; col++){
-                                switch(words[col].trim()){
-                                    case "[]":{
-                                        this.cells[row][col] = new Cell(null, 0);
-                                        break;
-                                    }
-                                    case "[1]":{
-                                        this.cells[row][col] = new Cell(null, 1);
-                                        break;
-                                    }
-                                    case "[2]":{
-                                        this.cells[row][col] = new Cell(null, 2);
-                                        break;
-                                    }
-                                    case "[3]":{
-                                        this.cells[row][col] = new Cell(null, 3);
-                                        break;
-                                    }
-                                    case "[4]":{
-                                        this.cells[row][col] = new Cell(null, 4);
-                                        break;
-                                    }
-                                    case "[5]":{
-                                        this.cells[row][col] = new Cell(null, 5);
-                                        break;
-                                    }
-                                    case "[6]":{
-                                        this.cells[row][col] = new Cell(null, 6);
-                                        break;
-                                    }
-                                    case "[Y]":{
-                                        this.cells[row][col] = new Cell(Color.YELLOW, 0);
-                                        break;
-                                    }
-                                    case "[R]":{
-                                        this.cells[row][col] = new Cell(Color.RED, 0);
-                                        break;
-                                    }
-                                    case "[B]":{
-                                        this.cells[row][col] = new Cell(Color.BLUE, 0);
-                                        break;
-                                    }
-                                    case "[G]":{
-                                        this.cells[row][col] = new Cell(Color.GREEN, 0);
-                                        break;
-                                    }
-                                    case "[P]":{
-                                        this.cells[row][col] = new Cell(Color.PURPLE, 0);
-                                        break;
-                                    }
-                                }
-                            }
-                            row++;
-                            if(row>3){
-                                completedRows = true;
-                                cardFound = false;
-                                stopReading = true;
-                            }
-                        }
-                    }
-                    i=words.length;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
+    public SchemaCard(String name, Cell[][] cells, int difficultyLevel) {
+        this.name = name;
+        this.cells = cells;
+        this.difficultyLevel = difficultyLevel;
     }
 
     public SchemaCard(String schemaName){
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\" +
-                    "polimi\\se2018\\SchemaCards.txt"));
-            String line = "";
-            boolean hasNextLine = true;
-            boolean cardFound = false;
-            boolean completedRows = false;
-            boolean stopReading = false;
-            int row=0;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine && !stopReading){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length && !completedRows){
-                    if(words[i].trim().equals("name:")){
-                        if(schemaName.replace(' ', '/').equals(words[i+1])){
-                            cardFound = true;
-                            name = words[i+1].replace('/', ' ');
-                            i++;
-                        }
-                    }
-                    if(cardFound){
-                        if(words[i].trim().equals("difficulty:")){
-                            difficultyLevel = Integer.parseInt(words[i+1]);
-                            i++;
-                        }
-                        if(words[i].startsWith("[")){
-                            for(int col=0; col<words.length; col++){
-                                switch(words[col].trim()){
-                                    case "[]":{
-                                        this.cells[row][col] = new Cell(null, 0);
-                                        break;
-                                    }
-                                    case "[1]":{
-                                        this.cells[row][col] = new Cell(null, 1);
-                                        break;
-                                    }
-                                    case "[2]":{
-                                        this.cells[row][col] = new Cell(null, 2);
-                                        break;
-                                    }
-                                    case "[3]":{
-                                        this.cells[row][col] = new Cell(null, 3);
-                                        break;
-                                    }
-                                    case "[4]":{
-                                        this.cells[row][col] = new Cell(null, 4);
-                                        break;
-                                    }
-                                    case "[5]":{
-                                        this.cells[row][col] = new Cell(null, 5);
-                                        break;
-                                    }
-                                    case "[6]":{
-                                        this.cells[row][col] = new Cell(null, 6);
-                                        break;
-                                    }
-                                    case "[Y]":{
-                                        this.cells[row][col] = new Cell(Color.YELLOW, 0);
-                                        break;
-                                    }
-                                    case "[R]":{
-                                        this.cells[row][col] = new Cell(Color.RED, 0);
-                                        break;
-                                    }
-                                    case "[B]":{
-                                        this.cells[row][col] = new Cell(Color.BLUE, 0);
-                                        break;
-                                    }
-                                    case "[G]":{
-                                        this.cells[row][col] = new Cell(Color.GREEN, 0);
-                                        break;
-                                    }
-                                    case "[P]":{
-                                        this.cells[row][col] = new Cell(Color.PURPLE, 0);
-                                        break;
-                                    }
-                                }
-                            }
-                            row++;
-                            if(row>3){
-                                completedRows = true;
-                                cardFound = false;
-                                stopReading = true;
-                            }
-                        }
-                    }
-                    i=words.length;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
+
     }
 
     /**

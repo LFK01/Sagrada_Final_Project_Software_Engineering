@@ -1,0 +1,7 @@
+Number: 11
+name: Chromatic/Splendor
+difficulty: 4
+[] [] [G] [] []
+[2] [Y] [5] [B] [1]
+[] [R] [3] [P] []
+[1] [] [6] [] [4]

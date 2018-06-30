@@ -1,0 +1,7 @@
+Number: 9
+Name: Cork/Backed/Straight/Edge
+ID: nju
+description: After/drafting,/place/the/die/in/a/spot/that/is/not/adjacent/to/another/die./You/must/obey/all/other/placement/restrictions
+effects: MoveDieOnWindow
+parameters: NoNearnessRestriction
+inputManager: INPUT_MOVE_DIE_ON_WINDOW

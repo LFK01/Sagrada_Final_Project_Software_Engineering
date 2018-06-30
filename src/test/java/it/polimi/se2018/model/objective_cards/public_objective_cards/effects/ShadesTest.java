@@ -16,10 +16,10 @@ public class ShadesTest {
 
     @Test
     public void countPoints() throws RestrictionsNotRespectedException, FullCellException {
-        FileParser parser = new FileParser();
         Model model = new Model();
-        SchemaCard schemaCard1 = new SchemaCard(1);
-        SchemaCard schemaCard2 = new SchemaCard(1);
+        FileParser parser = new FileParser();
+        SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+        SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
         model.addPlayer("p1");
         model.addPlayer("p2");
         Dice dice1 = new Dice(Color.YELLOW,6);

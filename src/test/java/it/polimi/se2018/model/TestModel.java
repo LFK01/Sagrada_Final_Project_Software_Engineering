@@ -5,7 +5,7 @@ package it.polimi.se2018.model;
  */
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.model.events.messages.SendWinnerMessage;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
@@ -54,7 +54,8 @@ public class TestModel {
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice3);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice4);
 
-        SchemaCard schemaCard = new SchemaCard(1);
+        FileParser parser = new FileParser();
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
         ChooseDiceMove chooseDiceMove = new ChooseDiceMove("luca","model",1);
         //model.doDiceMove(chooseDiceMove);
         //model.placeDie(schemaCard,5,0,0);
@@ -217,8 +218,9 @@ public class TestModel {
         Dice dice2 = new Dice(Color.GREEN,1);
         Dice dice3 = new Dice(Color.BLUE,3);
         Dice dice4 = new Dice(Color.YELLOW,6);
-        SchemaCard schemaCard1 = new SchemaCard(1);
-        SchemaCard schemaCard2 = new SchemaCard(14);
+         FileParser parser = new FileParser();
+         SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+         SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 14);
 
         schemaCard2.placeDie(dice2,3,0,false,false,false);
         schemaCard2.placeDie(dice1,2,0,false,false,false);

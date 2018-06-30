@@ -1,0 +1,7 @@
+Number: 5
+name: Sun/Catcher
+difficulty: 3
+[] [B] [2] [] [Y]
+[] [4] [] [R] []
+[] [] [5] [Y] []
+[G] [3] [] [] [P]

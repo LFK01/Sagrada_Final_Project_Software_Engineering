@@ -1,6 +1,5 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.exceptions.FullCellException;
@@ -41,7 +40,10 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
     public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
-    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
+    public static final String FILE_ADDRESS_TOOL_CARDS =
+            "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources_tool_cards";
+    public static final String FILE_ADDRESS_SCHEMA_CARDS =
+            "src\\main\\java\\it\\polimi\\se2018\\model\\resources_schema_card";
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -206,9 +208,9 @@ public class Model extends ProjectObservable implements Runnable{
             gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 1), 0);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 2), 1);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 3), 2);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 9), 0);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 11), 1);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 12), 2);
     }
 
     /**
@@ -240,9 +242,11 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void sendSchemaCard(){
         Thread sendingMessageThread;
-        int extractedCardIndex = 0;
         ArrayList<Integer> randomValues = new ArrayList<>();
-        for(int i = 1; i<= SCHEMA_CARDS_NUMBER /2; i++){
+        FileParser parser = new FileParser();
+        int cardsExtractedIndex = 0;
+        int actualSchemaCardNumber = SCHEMA_CARDS_NUMBER + parser.countExcessSchemaCards(FILE_ADDRESS_SCHEMA_CARDS);
+        for(int i = 1; i<= actualSchemaCardNumber; i++){
             randomValues.add(i);
         }
         Collections.shuffle(randomValues);
@@ -250,12 +254,11 @@ public class Model extends ProjectObservable implements Runnable{
             SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER *2];
             String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER *2];
             sendingMessageThread = new Thread(this);
-            for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i+=2){
-                extractedSchemaCards[i] = new SchemaCard(randomValues.get(extractedCardIndex));
+            for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i++){
+                extractedSchemaCards[i] = parser
+                        .createSchemaCardByNumber(FILE_ADDRESS_SCHEMA_CARDS, randomValues.get(cardsExtractedIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
-                extractedSchemaCards[i+1] = new SchemaCard((SCHEMA_CARDS_NUMBER +1)-randomValues.get(extractedCardIndex));
-                schemaCards[i+1] = extractedSchemaCards[i+1].toString();
-                extractedCardIndex++;
+                cardsExtractedIndex++;
             }
             setDefaultSchemaCard(player, extractedSchemaCards[0]);
             try{
@@ -275,7 +278,8 @@ public class Model extends ProjectObservable implements Runnable{
      * @param schemaName Schemacard chosen by the player
      */
     public void setSchemaCardPlayer(int playerPos, String schemaName){
-        SchemaCard schema = new SchemaCard(schemaName);
+        FileParser parser = new FileParser();
+        SchemaCard schema = parser.createSchemaCardByName(FILE_ADDRESS_SCHEMA_CARDS, schemaName);
         participants.get(playerPos).setSchemaCard(schema);
     }
 

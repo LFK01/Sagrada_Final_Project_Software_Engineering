@@ -1,0 +1,7 @@
+Number: 4
+Name: Lathekin
+ID: mrm
+description: Move/exactly/two/dice,/obeying/all/placement/restrictions
+effects: MoveDieOnWindow/MoveDieOnWindow
+parameters: AllRestrictions/AllRestrictions
+inputManager: INPUT_MOVE_DIE_ON_WINDOW/INPUT_MOVE_DIE_ON_WINDOW

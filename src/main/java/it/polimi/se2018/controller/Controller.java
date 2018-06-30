@@ -24,7 +24,7 @@ import java.util.*;
 
 public class Controller extends ProjectObservable implements ProjectObserver {
 
-    private static final String TOOL_CARD_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\ToolCards.txt";
+    private static final String TOOL_CARD_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources";
     private Model model;
     private int time;
     private Timer timer;
@@ -37,10 +37,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public Controller() {
         this.model = new Model();
         this.timer = new Timer();
-    }
-
-    @Override
-    public void update(Message message) {
     }
 
     public void update(ChooseDiceMove message) {
@@ -138,17 +134,17 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ErrorMessage errorMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(NewRoundMessage newRoundMessage) {
-
+        /*this method should never be called*/
     }
 
     public void update(SelectedSchemaMessage message) {
@@ -188,27 +184,27 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(RequestMessage requestMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(SuccessMessage successMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
     public void update(SuccessMoveMessage successMoveMessage) {
-
+        /*this method should never be called*/
     }
 
     @Override
@@ -330,9 +326,26 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             if(activePlayer.getFavorTokens()>=2){
                 if(activeToolCard.checkPlayerAbilityToUseTool(activePlayer, activeToolCard.getIdentificationName(),
                         model.getRoundNumber(), model.isFirstDraftOfDice())){
+                    System.out.println("player can use tool card");
+                    valuesBuilder.append("ToolCardName: ")
+                            .append(activeToolCard.getIdentificationName())
+                            .append(" ");
+                    if(activeToolCard.getIdentificationName().equals(
+                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 5)) ||
+                            activeToolCard.getIdentificationName().equals(
+                                    new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 12))
+                            ){
+                        valuesBuilder.append("RoundTrack: ");
+                        for(int i=0; i<model.getRoundNumber(); i++){
+                            valuesBuilder.append(model.getGameBoard().getRoundDice()[i].toString())
+                                    .append(" ");
+                        }
+                        valuesBuilder.append("DiceStop ");
+                    }
                     setChanged();
+                    System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
                     notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
-                            "ToolCardName: " + activeToolCard.getIdentificationName(),
+                            valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();

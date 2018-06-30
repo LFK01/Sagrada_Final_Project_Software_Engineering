@@ -103,8 +103,10 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
     public void notifyView(SendWinnerMessage sendWinnerMessage){
-        setChanged();
-        notifyObservers(sendWinnerMessage);
+        if(sendWinnerMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(sendWinnerMessage);
+        }
     }
 
     public void notifyView(ToolCardErrorMessage toolCardErrorMessage){

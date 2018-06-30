@@ -175,7 +175,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-        System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
+
         String playingPlayer;
         boolean alreadyRead = false;
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
@@ -245,6 +245,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             }
             if(words[i].equalsIgnoreCase("playingPlayer:")){
                 playingPlayer = words[i+1];
+                System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
                 if(playingPlayer.equals(username)){
                     inputManager = InputManager.INPUT_CHOOSE_MOVE;
                     if(inputThread.isAlive()){
@@ -253,11 +254,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                     inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
                     inputThread.addListener(this);
                     inputThread.start();
+
                 }else{
                     System.out.println("It's not your turn!");
                 }
             }
         }
+
     }
 
     @Override
@@ -346,8 +349,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        System.out.println("The Winner is: " + sendWinnerMessage.getWinnerName());
-        System.out.println("with " + sendWinnerMessage.getWinnerScore()+ " points");
+        System.out.println("The Winner is: " + sendWinnerMessage.getParticipants().get(3).getName());
+        System.out.println("with " + sendWinnerMessage.getParticipants().get(3).getPoints());
+        System.out.println("Other scores: ");
+        for(int i=0;i<3;i++){
+            System.out.println("Name" + " " + sendWinnerMessage.getParticipants().get(i).getName());
+            System.out.println("Score" + " " + sendWinnerMessage.getParticipants().get(i).getPoints() + "\n");
+        }
     }
 
     @Override

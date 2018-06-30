@@ -93,8 +93,10 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     public void notifyView(SendWinnerMessage sendWinnerMessage){
         System.out.println("rmView -> view: " + sendWinnerMessage);
+        if(sendWinnerMessage.getRecipient().equals(username)){
             setChanged();
             notifyObservers(sendWinnerMessage);
+        }
     }
 
     private void notifyView(ToolCardErrorMessage toolCardErrorMessage){

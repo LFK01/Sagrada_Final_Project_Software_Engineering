@@ -1,19 +1,22 @@
 package it.polimi.se2018.model.events.messages;
 
+import it.polimi.se2018.model.player.Player;
+
+import java.util.ArrayList;
+
+/**
+ * @author giovanni
+ */
 public class SendWinnerMessage extends Message {
-    private String winnerName;
-    private int winnerScore;
-    public SendWinnerMessage(String sender, String recipient,String winnerName, int winnerScore) {
+    private ArrayList<Player> participants;
+
+    public SendWinnerMessage(String sender, String recipient,ArrayList<Player> participants) {
         super(sender, recipient);
-        this.winnerName = winnerName;
-        this.winnerScore = winnerScore;
+        this.participants = participants;
+
     }
 
-    public String getWinnerName() {
-        return winnerName;
-    }
-
-    public int getWinnerScore() {
-        return winnerScore;
+    public ArrayList<Player> getParticipants() {
+        return participants;
     }
 }

@@ -2,6 +2,7 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
@@ -15,6 +16,7 @@ public class ColorVarietyTest {
 
     @Test
     public void countPoints() throws RestrictionsNotRespectedException, FullCellException {
+        FileParser parser = new FileParser();
         Model model = new Model();
         model.addPlayer("p1");
 
@@ -43,7 +45,7 @@ public class ColorVarietyTest {
         schemaCard.placeDie(dice10,2,4,false,false,false);
 
 
-        ObjectiveCard objectiveCard = new ObjectiveCard(false,10);
+        ObjectiveCard objectiveCard = parser.createObjectiveCard(false,10);
         objectiveCard.countPoints(model,objectiveCard.getName(),objectiveCard.getPoints());
         assertEquals(8,model.getParticipants().get(0).getPoints());
     }

@@ -2,6 +2,7 @@ package it.polimi.se2018.model.objective_cards.public_objective_cards.effects;
 
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
+import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
@@ -17,6 +18,7 @@ public class ColoredDiagonalsTest {
 
     @Test
     public void countPoints() throws RestrictionsNotRespectedException, FullCellException {
+        FileParser parser = new FileParser();
         Model model = new Model();
         model.addPlayer("p1");
         SchemaCard schemaCard = new SchemaCard(14);
@@ -49,7 +51,7 @@ public class ColoredDiagonalsTest {
         schemaCard.placeDie(dice12,2,1,false,false,false);
         schemaCard.placeDie(dice13,3,0,false,false,false);
         model.getParticipants().get(0).setSchemaCard(schemaCard);
-        ObjectiveCard card = new ObjectiveCard(false,3);
+        ObjectiveCard card = parser.createObjectiveCard(false,3);
         card.countPoints(model,card.getName(),card.getPoints());
         System.out.println(schemaCard);
         assertEquals(13,model.getParticipants().get(0).getPoints());

@@ -206,15 +206,16 @@ public class Model extends ProjectObservable implements Runnable{
             gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 9), 0);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 11), 1);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 12), 2);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 1), 0);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 2), 1);
+        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS, 3), 2);
     }
 
     /**
      *method to extract and set PublicObjectiveCard
      */
     public void extractPublicObjectiveCards() {
+        FileParser parser = new FileParser();
         ArrayList<Integer> cardIndex = new ArrayList<>();
         for(int i = 1; i <= PUBLIC_OBJECTIVE_CARDS_NUMBER; i++){
             System.out.println("added: " + i);
@@ -223,7 +224,7 @@ public class Model extends ProjectObservable implements Runnable{
         Collections.shuffle(cardIndex);
         for(int i = 0; i < PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++) {
             System.out.println("extracted: " + cardIndex.get(i));
-            gameBoard.setPublicObjectiveCards(new ObjectiveCard(false,cardIndex.get(i)), i);
+            gameBoard.setPublicObjectiveCards(parser.createObjectiveCard(false,cardIndex.get(i)), i);
         }
     }
 
@@ -286,22 +287,22 @@ public class Model extends ProjectObservable implements Runnable{
      *method that extracts and sends each player his PrivateObjectivecard
      */
     public void sendPrivateObjectiveCard(){
+        FileParser parser = new FileParser();
         ArrayList<Integer> cardIndex = new ArrayList<>(3);
         ArrayList<ObjectiveCard> privateObjectiveCard =new ArrayList<>();
-        for(int i = 1; i < PRIVATE_OBJECTIVE_CARDS_NUMBER; i++){
+        for(int i = 1; i <= PRIVATE_OBJECTIVE_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        for(Player player: participants) {
-            privateObjectiveCard.add(new ObjectiveCard(true, cardIndex.get(participants.indexOf(player))));
+        for(int j=0;j<participants.size();j++) {
+            participants.get(j).setPrivateObjectiveCard(parser.createObjectiveCard(true,cardIndex.get(j+1)));
         }
-        int s =0;
-        for(Player player: participants) {
-            String colorString = privateObjectiveCard.get(participants.indexOf(player)).getDescription();
+        for(int s=0;s<participants.size();s++) {
+            String colorString = participants.get(s).getPrivateObjective().getDescription();
             setChanged();
-            notifyObservers(new ShowPrivateObjectiveCardsMessage("model", player.getName(), colorString,
+            notifyObservers(new ShowPrivateObjectiveCardsMessage("model",participants.get(s).getName(), colorString,
                     participants.size()));
-            s = s+1;
+
         }
         sendSchemaCard();
     }
@@ -423,6 +424,7 @@ public class Model extends ProjectObservable implements Runnable{
     public int getRoundNumber() {
         return roundNumber;
     }
+
     public void resetTurnOfTheRound() {
         this.turnOfTheRound = 0;
     }
@@ -449,8 +451,15 @@ public class Model extends ProjectObservable implements Runnable{
                 participants.add(j + 1, actualWinner);
             }
         }
-        setChanged();
-        notifyObservers(new SendWinnerMessage("all","controller",participants.get(participants.size()).getName(),participants.get(participants.size()).getPoints()));
+        for(int s =0;s<participants.size();s++){
+            System.out.println(participants.get(0).getName());
+            System.out.println(participants.get(1).getName());
+            System.out.println(participants.get(2).getName());
+            System.out.println(participants.get(3).getName());
+            setChanged();
+            notifyObservers(new SendWinnerMessage("model",participants.get(s).getName(),participants));
+        }
+
     }
 
     @Override

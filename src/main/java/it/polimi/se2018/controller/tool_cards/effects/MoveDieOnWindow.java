@@ -2,6 +2,7 @@ package it.polimi.se2018.controller.tool_cards.effects;
 
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.exceptions.ExecutingEffectException;
+import it.polimi.se2018.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
@@ -105,7 +106,11 @@ public class MoveDieOnWindow implements TCEffectInterface {
                 activePlayer = player;
             }
         }
-        dieToBeMoved = activePlayer.getSchemaCard().getCell(oldDieRow, oldDieCol).removeDieFromCell();
+        try {
+            dieToBeMoved = activePlayer.getSchemaCard().getCell(oldDieRow, oldDieCol).removeDieFromCell();
+        } catch (InvalidCellPositionException e) {
+            throw new ExecutingEffectException();
+        }
         if(effectParameter.equals("NoColorRestrictions")){
             placeDieWithToolCard(true, false, false);
         }
@@ -202,10 +207,19 @@ public class MoveDieOnWindow implements TCEffectInterface {
                 activePlayer = player;
             }
         }
-        dieToBeMoved = activePlayer.getSchemaCard().getCell(firstPlacedDieRow, firstPlacedDieCol)
-                .removeDieFromCell();
-        newDieRow = backupRows.get(0);
-        newDieCol = backupColumns.get(0);
-        placeDieWithToolCard(true, true, true);
+        FileParser parser = new FileParser();
+        if(parser.getTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS)){
+            try {
+                dieToBeMoved = activePlayer.getSchemaCard().getCell(firstPlacedDieRow, firstPlacedDieCol)
+                        .removeDieFromCell();
+            } catch (InvalidCellPositionException e){
+                System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions()");
+            }
+            newDieRow = backupRows.get(0);
+            newDieCol = backupColumns.get(0);
+            placeDieWithToolCard(true, true, true);
+        }
+        parser.writeTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS, false);
+        parser.writeTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS, null);
     }
 }

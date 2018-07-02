@@ -199,17 +199,6 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(NewRoundMessage newRoundMessage) {
-        if(serverIsUp){
-            try{
-                server.sendToServer(newRoundMessage);
-            } catch (RemoteException e){
-                serverIsUp = false;
-            }
-        }
-    }
-
-    @Override
     public void update(NoActionMove noActionMove){
         if(serverIsUp){
             try{

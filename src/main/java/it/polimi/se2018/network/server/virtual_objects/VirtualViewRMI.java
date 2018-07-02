@@ -135,11 +135,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
 
     @Override
-    public void update(NewRoundMessage newRoundMessage) {
-        virtualClientRMI.notifyClient(newRoundMessage);
-    }
-
-    @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
         virtualClientRMI.notifyClient(selectedSchemaMessage);
     }

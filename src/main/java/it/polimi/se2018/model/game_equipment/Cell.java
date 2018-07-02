@@ -1,6 +1,7 @@
 package it.polimi.se2018.model.game_equipment;
 
 import it.polimi.se2018.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.exceptions.NoColorException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 
@@ -116,11 +117,15 @@ public class Cell {
      * Removes the die from the cell and sets containsDie to false
      * @return the removed die
      */
-    public Dice removeDieFromCell(){
-        Dice removedDie = this.assignedDice;
-        this.assignedDice = null;
-        this.containsDie = false;
-        return removedDie;
+    public Dice removeDieFromCell() throws InvalidCellPositionException{
+        if(this.containsDie==false){
+            throw new InvalidCellPositionException();
+        } else {
+            Dice removedDie = this.assignedDice;
+            this.assignedDice = null;
+            this.containsDie = false;
+            return removedDie;
+        }
     }
     /**
      * Returns a reference to the Dice placed on the schemaCard

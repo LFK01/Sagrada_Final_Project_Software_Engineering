@@ -8,7 +8,6 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.player.ToolCardMove;
 import it.polimi.se2018.utils.ProjectObservable;
@@ -24,7 +23,6 @@ import java.util.*;
 
 public class Controller extends ProjectObservable implements ProjectObserver {
 
-    private static final String TOOL_CARD_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources";
     private Model model;
     private int time;
     private Timer timer;
@@ -142,11 +140,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         /*this method should never be called*/
     }
 
-    @Override
-    public void update(NewRoundMessage newRoundMessage) {
-        /*this method should never be called*/
-    }
-
     public void update(SelectedSchemaMessage message) {
         if(!matchStarted) {
             for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
@@ -241,7 +234,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                     if(player.getName().equals(toolCardErrorMessage.getSender())){
                         /*finds active player*/
                         if(toolCard.getIdentificationName().equals(
-                                new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 4)
+                                new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 4)
                         )){
                             MoveDieOnWindow backupEffect = (MoveDieOnWindow) toolCard.getEffectsList().get(0);
                             backupEffect.backupTwoDicePositions();
@@ -295,9 +288,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             .append(activeToolCard.getIdentificationName())
                             .append(" ");
                     if(activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 5)) ||
+                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 5)) ||
                             activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 12))
+                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 12))
                             ){
                         valuesBuilder.append("RoundTrack: ");
                         for(int i=0; i<model.getRoundNumber(); i++){
@@ -331,9 +324,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             .append(activeToolCard.getIdentificationName())
                             .append(" ");
                     if(activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 5)) ||
+                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 5)) ||
                             activeToolCard.getIdentificationName().equals(
-                                    new FileParser().searchIDByNumber(TOOL_CARD_FILE_ADDRESS, 12))
+                                    new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 12))
                             ){
                         valuesBuilder.append("RoundTrack: ");
                         for(int i=0; i<model.getRoundNumber(); i++){

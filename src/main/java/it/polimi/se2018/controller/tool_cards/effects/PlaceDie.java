@@ -36,6 +36,9 @@ public class PlaceDie implements TCEffectInterface {
             if(words[i].trim().equalsIgnoreCase("draftPoolDiePosition:")){
                 draftPoolDiePosition = Integer.parseInt(words[i+1]);
                 System.out.println("read draftPoolDiePosition: " + draftPoolDiePosition);
+                if(draftPoolDiePosition>model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
+                    throw new ExecutingEffectException();
+                }
             }
             if(words[i].trim().equalsIgnoreCase("row:")){
                 row = Integer.parseInt(words[i+1]);

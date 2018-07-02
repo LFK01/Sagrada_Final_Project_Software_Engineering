@@ -1,6 +1,5 @@
 package it.polimi.se2018.view;
 
-import com.sun.org.apache.xml.internal.security.algorithms.MessageDigestAlgorithm;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
@@ -16,8 +15,13 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class NotifyingThread extends Thread{
 
-    private static final String QUIT_QUOTE = "Type \"quit\" anytime to interrupt the move\n";
+    private static final String QUIT_QUOTE = "Type \"quit\" to interrupt the move\n";
     private static final String ERROR_QUOTE = "Wrong input!";
+    private static final String STANDARD_CHOICE_QUOTE = "Choice: ";
+    private static final String CHANGE_VALUE_QUOTE = "Choose a die from the draftpool to change its values:";
+    private static volatile String inputMemoryString = "null\n";
+    private static volatile boolean playerIsActive = false;
+    private static volatile boolean playerDisabledThreadHasEnded = true;
     private final Set<ThreadCompleteListener> listeners = new CopyOnWriteArraySet<>();
     private final InputManager inputManager;
     private Scanner scanner;
@@ -26,7 +30,6 @@ public class NotifyingThread extends Thread{
     private final int draftPoolDiceNumber;
     private String[] schemaNames;
     private String[] toolCardIDs;
-    private boolean usingTapWheel;
 
     public NotifyingThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
@@ -36,7 +39,6 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = null;
         this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
-        this.usingTapWheel = false;
     }
 
     public NotifyingThread(InputManager inputManager, String username, String[] names) {
@@ -47,19 +49,6 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = names;
         this.toolCardUsageID = "";
         this.draftPoolDiceNumber = -1;
-        this.usingTapWheel = false;
-    }
-
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
-                           int draftPoolDiceNumber, boolean usingTapWheel) {
-        scanner = new Scanner(new InputStreamReader(System.in));
-        this.inputManager = inputManager;
-        this.username = username;
-        this.schemaNames = null;
-        this.toolCardIDs = null;
-        this.toolCardUsageID = toolCardUsageID;
-        this.draftPoolDiceNumber = draftPoolDiceNumber;
-        this.usingTapWheel = usingTapWheel;
     }
 
     public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID) {
@@ -70,7 +59,17 @@ public class NotifyingThread extends Thread{
         this.toolCardIDs = null;
         this.toolCardUsageID = toolCardUsageID;
         this.draftPoolDiceNumber = -1;
-        this.usingTapWheel = false;
+    }
+
+    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
+                           int draftPoolDiceNumber) {
+        scanner = new Scanner(new InputStreamReader(System.in));
+        this.inputManager = inputManager;
+        this.username = username;
+        this.schemaNames = null;
+        this.toolCardIDs = null;
+        this.toolCardUsageID = toolCardUsageID;
+        this.draftPoolDiceNumber = draftPoolDiceNumber;
     }
 
     public void addListener(final ThreadCompleteListener listener){
@@ -176,33 +175,34 @@ public class NotifyingThread extends Thread{
                             toolCardUsageID, "");
                     break;
                 }
+                case INPUT_PLAYER_DISABLED:{
+                    /*player cannot choose any move, this method is implemented to synchronize
+                    * between disabled state and active state and to handle the
+                    * scanner input*/
+                    inputMessage = readPlayerDisabledInput();
+                    break;
+                }
             }
         } finally {
-            notifyListeners(inputMessage);
+            if(!inputMessage.getRecipient().equals("doNotSend")) {
+                notifyListeners(inputMessage);
+            }
         }
     }
 
+    /*done thread safe, not required quit*/
     private Message readNewConnectionChoice() {
-        String input;
-        boolean wrongInput = true;
-        int choice = -1;
-        System.out.println("You've been banned from the match due to inactivity, choose what to do:\n" +
+        int choice;
+        System.out.print("You've been banned from the match due to inactivity, choose what to do:\n" +
                 "1 Reconnect to the game\n" +
-                "2 Quit");
-        while(wrongInput){
-            System.out.print("choice: ");
-            input = scanner.nextLine();
-            try{
-                choice = Integer.parseInt(input);
-                if(choice<1||choice>2){
-                    System.out.println("ERROR_QUOTE");
-                    wrongInput = true;
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-                System.out.println(ERROR_QUOTE);
+                "2 Quit\n" +
+                STANDARD_CHOICE_QUOTE);
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesIncluded(1,2, STANDARD_CHOICE_QUOTE);
+        } else {
+            if (choice < 1 || choice > 2) {
+                choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE);
             }
         }
         if(choice==1){
@@ -215,6 +215,7 @@ public class NotifyingThread extends Thread{
         }
     }
 
+    /*already thread safe, not required quit*/
     private Message readPlayerName() {
         boolean wrongInput = true;
         String username = "";
@@ -231,147 +232,193 @@ public class NotifyingThread extends Thread{
         return new CreatePlayerMessage(username, "server", username);
     }
 
+    /*done thread safe, not required quit*/
     private Message readSchemaCard(){
-        boolean wrongInput = true;
-        String input;
-        int choice = -1;
-        while(wrongInput){
-            try{
-                System.out.println("Schema card number: ");
-                input = scanner.nextLine();
-                choice = Integer.parseInt(input);
-                System.out.println("choice = " + choice);
-                if(choice<1||choice>4){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
+        int choice;
+        System.out.println("Choose schema card number: ");
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER*2,
+                    "Schema card number: ");
+        } else {
+            if(choice<1 || choice>Model.SCHEMA_CARDS_EXTRACT_NUMBER*2){
+                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER*2,
+                        "Schema card number: ");
             }
         }
         System.out.println("schemaName: " + schemaNames[choice-1]);
         return new SelectedSchemaMessage(username,"server", schemaNames[choice -1]);
     }
 
+    /*done thread safe, not required quit*/
     private Message readMove() {
-        String input;
         Message message = null;
-        int choice = -1;
-        int toolCardNumber = -1;
-        System.out.println("It's your Turn! Type the number of your choice:" +
-                "\n1 Place a die" +
-                "\n2 Use a ToolCard" +
-                "\n3 Do nothing");
-        boolean wrongInput = true;
-        while(wrongInput){
-            try{
-                System.out.print("Choice: ");
-                input = scanner.nextLine();
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>3){
-                    System.out.println("Wrong Input");
-                    wrongInput = true;
-                } else {
-                    wrongInput = false;
-                    if(choice == 1){
-                        int diceOnRoundDice =-1;
-                        System.out.println("Take a die from the draftPool:");
-                        wrongInput = true;
-                        while(wrongInput) {
-                            System.out.print("Die position: ");
-                            try {
-                                input = scanner.nextLine();
-                                diceOnRoundDice = Integer.parseInt(input);
-                                if (diceOnRoundDice < 1 || diceOnRoundDice > Model.MAXIMUM_PLAYER_NUMBER*2 +1) {
-                                    System.out.println("Wrong Input");
-                                    wrongInput = true;
-                                } else {
-                                    diceOnRoundDice = diceOnRoundDice-1;
-                                    wrongInput = false;
-                                }
-                            } catch (NumberFormatException e) {
-                                System.out.println("Wrong Input");
-                                wrongInput = true;
-                            }
-                        }
-                        message = new ChooseDiceMove(username,"server", diceOnRoundDice);
-                    }
-                    if(choice == 2){
-                        wrongInput = true;
-                        while (wrongInput){
-                            System.out.print("Tool card number: ");
-                            try{
-                                input = scanner.nextLine();
-                                System.out.println("choose: " + input);
-                                toolCardNumber = Integer.parseInt(input);
-                                System.out.println("read: " + toolCardNumber);
-                                if(toolCardNumber < 1 || toolCardNumber > Model.TOOL_CARDS_EXTRACT_NUMBER){
-                                    System.out.println(ERROR_QUOTE);
-                                    wrongInput = true;
-                                } else {
-                                    wrongInput = false;
-                                    System.out.println("decided to use: " +
-                                            toolCardIDs[toolCardNumber-1]);
-                                    message = new UseToolCardMove(username, "server",
-                                            toolCardIDs[toolCardNumber-1]);
-                                }
-                            } catch (NumberFormatException e){
-                                System.out.println(ERROR_QUOTE);
-                                wrongInput = true;
-                            }
-                        }
-                    }
-                    if (choice == 3){
-                        System.out.println("You have chose to forfeit this turn");
-                        message = new NoActionMove(username,"server");
-                    }
-                }
-            } catch (NumberFormatException e){
+        int choice;
+        int toolCardNumber;
+        System.out.print("It's your Turn! Type the number of your choice:\n" +
+                "1 Place a die\n" +
+                "2 Use a ToolCard\n" +
+                "3 Do nothing\n" +
+                STANDARD_CHOICE_QUOTE);
+        waitThreadEnd();
+        System.out.println("player has become active");
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE);
+        } else {
+            if(choice<1 || choice>3){
                 System.out.println(ERROR_QUOTE);
-                wrongInput = true;
+                choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE);
+            }
+        }
+        switch (choice){
+            case 1:{
+                int diceOnRoundDice;
+                System.out.println("Take a die from the draftPool:");
+                diceOnRoundDice = readChoiceBetweenValuesIncluded(1,
+                        Model.MAXIMUM_PLAYER_NUMBER*2 +1, "Die position: ");
+                message = new ChooseDiceMove(username,"server", diceOnRoundDice);
+                break;
+            }
+            case 2:{
+                toolCardNumber = readChoiceBetweenValuesIncluded(1, Model.TOOL_CARDS_EXTRACT_NUMBER,
+                        "Tool card number: ");
+                message = new UseToolCardMove(username, "server",
+                        toolCardIDs[toolCardNumber-1]);
+                break;
+            }
+            case 3:{
+                System.out.println("You have chose to forfeit this turn");
+                message = new NoActionMove(username,"server");
+                break;
             }
         }
         return message;
     }
 
+    /*done thread safe, not required quit*/
     private Message readChosenDie(){
+        int choice;
         System.out.println("Choose a die from the draft pool:");
-        return new ToolCardActivationMessage(username, "server", toolCardUsageID,
-                getDraftPoolNumber());
-    }
-
-    private Message readChosenDieToPlace(){
-        Message message;
         StringBuilder builder = new StringBuilder();
-        System.out.println("Choose a die from the draft pool:");
-        builder.append(getDraftPoolNumber());
-        System.out.println("Choose where to place the selected die:");
-        builder.append(getRowNumberColNumber());
-        message = new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
-        return message;
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                    "Position: ");
+        } else {
+            if (choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                        "Position: ");
+            }
+        }
+        builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
+        return new ToolCardActivationMessage(username, "server", toolCardUsageID,
+                builder.toString());
     }
 
+    /*done thread safe, quit safe*/
+    private Message readChosenDieToPlace(){
+        int choice;
+        System.out.println("Choose a die from the draft pool:");
+        waitThreadEnd();
+        choice = readFromMemory();
+        StringBuilder builder = new StringBuilder();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                    "Position: ");
+        } else {
+            if (choice <1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                        "Position: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
+
+        }
+        System.out.println("Choose where to place the selected die:");
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                "Row: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("row: ").append(choice-1).append(" ");
+        }
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("col: ").append(choice-1).append(" ");
+        }
+        return new ToolCardActivationMessage(username, "server",
+                toolCardUsageID, builder.toString());
+    }
+
+    /*done, not required quit*/
     private Message readPositions(){
         StringBuilder builder = new StringBuilder();
+        int choice;
         System.out.println("Choose die position:");
-        String rowColValues = getRowNumberColNumber();
-        builder.append(rowColValues);
-        builder.append("DraftPoolDiePosition: ");
-        builder.append(draftPoolDiceNumber).append(" ");
-        System.out.println("player has entered this values: \n" + rowColValues);
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                    "Row: ");
+        } else{
+            if (choice<1 || choice >Model.SCHEMA_CARD_ROWS_NUMBER){
+                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                        "Row: ");
+            }
+        }
+        builder.append("row: ").append(choice-1).append(" ");
+        choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        builder.append("col: ").append(choice-1).append(" ");
+        builder.append("DraftPoolDiePosition: ")
+                .append(draftPoolDiceNumber)
+                .append(" ");
         System.out.println(builder.toString());
         return new DiePlacementMessage(username,"server", builder.toString());
     }
 
+    /*done, quit safe*/
     private Message readToolPositions(){
         StringBuilder builder = new StringBuilder();
-        System.out.println(QUIT_QUOTE
-                + "Choose die position:");
-        builder.append(getRowNumberColNumber());
+        System.out.println("Choose die position:");
+        int choice;
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                    "Row: ");
+        } else {
+            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER) {
+                choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                        "Row: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("row: ").append(choice-1).append(" ");
+        }
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("col: ").append(choice-1).append(" ");
+        }
         builder.append("DraftPoolDiePosition: ");
         builder.append(draftPoolDiceNumber);
         System.out.println(builder.toString());
@@ -379,382 +426,340 @@ public class NotifyingThread extends Thread{
                 toolCardUsageID, builder.toString());
     }
 
+    /*done, quit safe*/
     private Message readDieToModify() {
-        boolean wrongInput = true;
-        String input;
-        int choice = -1;
-        while (wrongInput){
-            System.out.print("Type \" quit \" anytime to interrupt the move\n"
-                    + "Choose a die from the draft pool to change its values: " +
-                    "\nDie position number: ");
-            try{
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice > Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-                System.out.println(ERROR_QUOTE);
+        int choice;
+        System.out.println(CHANGE_VALUE_QUOTE);
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                    "Die position number: ");
+
+        } else {
+            if (choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                        "Die position number: ");
             }
         }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            StringBuilder builder = new StringBuilder();
+            builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
+            return new ToolCardActivationMessage(username, "server",
+                    toolCardUsageID, builder.toString());
+        }
+    }
+
+    /*done, quit safe*/
+    private Message readDieToModifyAndIncreaseChoice(){
+        int choice;
         StringBuilder builder = new StringBuilder();
+        System.out.println(CHANGE_VALUE_QUOTE);
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                    "Die position number: ");
+        } else {
+            if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                        "Die position number: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        }
         builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
+        System.out.println("Do you want to increase the die value? ");
+        String stringChoice = readYesOrNoWithQuit("( Y / N ) : ");
+        if(stringChoice.equals("Error")){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        }
+        builder.append("IncreaseValue: ")
+                .append(stringChoice)
+                .append(" ");
         return new ToolCardActivationMessage(username, "server",
                 toolCardUsageID, builder.toString());
     }
 
-    private Message readDieToModifyAndIncreaseChoice(){
-        String input;
-        int choice = -1;
+    /*done, quit safe*/
+    private Message readMultiplePositions(){
+        StringBuilder builder = new StringBuilder();
+        int choice;
+        System.out.println("Choose a die to move from your window:");
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                    "Row: ");
+        } else {
+            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                        "Row: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("OldDieRow: ").append(choice-1).append(" ");
+        }
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("OldDieCol: ").append(choice-1).append(" ");
+        }
+        System.out.println("Choose a new position where to place the selected die:");
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                "Row: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("newDieRow: ").append(choice-1).append(" ");
+        }
+        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("newDieCol: ").append(choice-1).append(" ");
+        }
+        return new ToolCardActivationMessage(username, "server",
+                toolCardUsageID, builder.toString());
+    }
+
+    /*done, quit safe*/
+    private Message readValue(){
+        int choice;
+        StringBuilder builder = new StringBuilder();
+        System.out.println("Choose a new value for the drafted die:");
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_DIE_NUMBER,
+                    "Value: ");
+        } else {
+            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_DIE_NUMBER,
+                        "Value: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("NewValue: ").append(choice).append(" ");
+        }
+        builder.append("draftPoolDiePosition: ").append(draftPoolDiceNumber).append(" ");
+        return new ToolCardActivationMessage(username, "server", toolCardUsageID, builder.toString());
+    }
+
+    /*done, quit safe*/
+    private Message readDraftPoolRoundTrackPositions(){
+        int choice;
+        StringBuilder builder = new StringBuilder();
+        System.out.println("Choose a die from the draft pool: ");
+        waitThreadEnd();
+        choice = readFromMemory();
+        if(choice == -1){
+            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                    "Position: ");
+        } else {
+            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                        "Position: ");
+            }
+        }
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("DraftPoolPosition: ")
+                    .append(choice-1)
+                    .append(" ");
+        }
+        System.out.println("Choose a round of the round track: ");
+        choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_ROUND_NUMBER, "Round: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("RoundNumber: ")
+                    .append(choice-1)
+                    .append("");
+        }
+        System.out.println("Choose a die from the Round Track:");
+        choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                "Position: ");
+        if(choice == -1){
+            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                    "InputQuit", null);
+        } else {
+            builder.append("RoundNumber: ")
+                    .append(choice-1)
+                    .append(" ");
+        }
+        return new ToolCardActivationMessage(username, "server",
+                toolCardUsageID, builder.toString());
+    }
+
+    private Message readPlayerDisabledInput(){
+        NotifyingThread.setPlayerDisabledThreadHasEnded(false);
+        System.out.println("player disabled thread started");
+        while (!playerIsActive){
+            StringBuilder builder = new StringBuilder();
+            builder.append(inputMemoryString);
+            String playerDisableInput = scanner.nextLine();
+            builder.append(playerDisableInput)
+                    .append("\n");
+            NotifyingThread.setInputMemoryString(builder.toString());
+        }
+        NotifyingThread.setPlayerDisabledThreadHasEnded(true);
+        System.out.println("input_player_disabled while loop ended");
+        return new ErrorMessage(username, "doNotSend", "doNotSend");
+    }
+
+    private int readChoiceBetweenValuesIncluded(int firstValue, int secondValue, String inputInstructions){
         boolean wrongInput = true;
-        while (wrongInput){
-            System.out.print(QUIT_QUOTE
-                    + "Choose a die from the draft pool to change its values: " +
-                    "\nDie position number: ");
-            try{
+        String input;
+        int choice;
+        while (wrongInput) {
+            System.out.print(inputInstructions);
+            try {
                 input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
                 choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                if(choice<firstValue || choice>secondValue){
                     wrongInput = true;
                     System.out.println(ERROR_QUOTE);
                 } else {
-                    wrongInput = false;
+                    return choice;
                 }
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
+                System.out.println(ERROR_QUOTE);
+                wrongInput = true;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     *
+     * @param firstValue
+     * @param secondValue
+     * @param inputInstructions
+     * @return -1 if the player decides to quit
+     */
+    private int readChoiceBetweenValuesWithQuit(int firstValue, int secondValue, String inputInstructions){
+        String input;
+        int choice;
+        boolean wrongInput = true;
+        while (wrongInput) {
+            try {
+                System.out.println(QUIT_QUOTE + inputInstructions);
+                input = scanner.nextLine();
+                input.replace("\"", "")
+                        .trim();
+                if (input.equalsIgnoreCase("quit")) {
+                    return -1;
+                }
+                choice = Integer.parseInt(input);
+                if (choice < firstValue || choice > secondValue) {
+                    wrongInput = true;
+                    System.out.println(ERROR_QUOTE);
+                } else {
+                    return choice;
+                }
+            } catch (NumberFormatException e) {
                 wrongInput = true;
                 System.out.println(ERROR_QUOTE);
             }
         }
-        wrongInput = true;
-        StringBuilder builder = new StringBuilder();
-        builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-        System.out.println("Do you want to increase the die value? (Y/N)");
+        return -2;
+    }
+
+    /**
+     *
+     * @param inputInstructions
+     * @return "Error" if the player decides to quit
+     */
+    private String readYesOrNoWithQuit(String inputInstructions){
+        boolean wrongInput = true;
+        String input;
         while (wrongInput){
+            System.out.print(QUIT_QUOTE + inputInstructions);
             input = scanner.nextLine();
             input.replace("\"", "");
             input.trim();
             if(input.equalsIgnoreCase("quit")){
-                return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                        "InputQuit", null);
+                return "Error";
             }
             if(input.equalsIgnoreCase("y")||input.equalsIgnoreCase("n")){
-                wrongInput = false;
-                builder.append("IncreaseValue: ").append(input);
+                return input.toLowerCase();
             } else {
                 System.out.println(ERROR_QUOTE);
                 wrongInput = true;
             }
         }
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
+        return "n";
     }
 
-    private Message readMultiplePositions(){
-        StringBuilder builder = new StringBuilder();
-        boolean wrongInput = true;
-        int positionIndex = 0;
-        String input;
-        int choice = -1;
-        System.out.println("Choose a die to move from your window:");
-        while(wrongInput){
-            System.out.print("Row: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
-                    wrongInput = true;
-                } else {
-                    wrongInput = false;
-                    builder.append("OldDieRow: ").append(choice-1).append(" ");
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-            }
-        }
-        wrongInput = true;
-        while (wrongInput){
-            System.out.print("Column: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.SCHEMA_CARD_COLUMNS_NUMBER){
-                    wrongInput = true;
-                } else {
-                    wrongInput = false;
-                    builder.append("OldDieCol: ").append(choice-1).append(" ");
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-            }
-        }
-        System.out.println("Choose a new position where to place the selected die:");
-        wrongInput = true;
-        while(wrongInput){
-            System.out.print("Row: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
-                    wrongInput = true;
-                } else {
-                    builder.append("newDieRow: ").append(choice-1).append(" ");
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-            }
-        }
-        wrongInput = true;
-        while (wrongInput){
-            System.out.print("Column: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.SCHEMA_CARD_COLUMNS_NUMBER){
-                    wrongInput = true;
-                } else {
-                    wrongInput = false;
-                    builder.append("newDieCol: ").append(choice-1).append(" ");
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-            }
-        }
-        if(usingTapWheel){
-            builder.append("TapWheel: true ");
-        }
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
-    }
-
-    private Message readValue(){
-        boolean wrongInput = true;
-        int choice = -1;
-        String input;
-        StringBuilder builder = new StringBuilder();
-        System.out.println(QUIT_QUOTE
-                + "Choose a value for your die:");
-        while (wrongInput){
-            System.out.print("Value: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice >Model.MAXIMUM_DIE_NUMBER){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                wrongInput = true;
-                System.out.println(ERROR_QUOTE);
-            }
-        }
-        builder.append("NewValue: ").append(choice).append(" ");
-        builder.append("draftPoolDiePosition: ").append(draftPoolDiceNumber).append(" ");
-        return new ToolCardActivationMessage(username, "server", toolCardUsageID, builder.toString());
-    }
-
-    private Message readDraftPoolRoundTrackPositions(){
-        boolean wrongInput = true;
-        String input;
-        int draftPoolPosition = -1;
-        int roundNumber = -1;
-        int roundTrackPosition = -1;
-        System.out.println(QUIT_QUOTE
-                + "Choose a die from the draft pool: ");
-        while (wrongInput){
-            System.out.print("Position: ");
-            try{
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                draftPoolPosition = Integer.parseInt(input);
-                if(draftPoolPosition<1 || draftPoolPosition>Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
-            }
-        }
-        wrongInput = true;
-        System.out.println("Choose a round of the Round Track: ");
-        while (wrongInput){
-            System.out.print("Round: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                roundNumber = Integer.parseInt(input);
-                if(roundNumber<1 || roundNumber>Model.MAXIMUM_ROUND_NUMBER){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
-            }
-        }
-        wrongInput = true;
-        System.out.println("Choose a die from the Round Track:");
-        while (wrongInput){
-            System.out.print("Position: ");
-            try {
-                input = scanner.nextLine();
-                input.replace("\"", "");
-                input.trim();
-                if(input.equalsIgnoreCase("quit")){
-                    return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                            "InputQuit", null);
-                }
-                roundTrackPosition = Integer.parseInt(input);
-                if(roundTrackPosition<1 || roundTrackPosition>Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                }
-            } catch (NumberFormatException e){
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
-            }
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append("DraftPoolPosition: ").append(draftPoolPosition-1).append(" ");
-        builder.append("RoundNumber: ").append(roundNumber-1).append(" ");
-        builder.append("RoundTrackPosition: ").append(roundTrackPosition-1).append(" ");
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
-    }
-
-    private String getRowNumberColNumber(){
-        StringBuilder builder = new StringBuilder();
-        boolean wrongInput = true;
-        String input;
-        int row = -1;
-        while (wrongInput) {
-            System.out.print("Row: ");
-            try {
-                input = scanner.nextLine();
-                row = Integer.parseInt(input);
-                if (row < 1 || row > Model.SCHEMA_CARD_ROWS_NUMBER) {
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    row = row-1;
-                    wrongInput = false;
-                    builder.append("row: ").append(row).append(" ");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
-            }
-        }
-        wrongInput = true;
-        int col = -1;
-        while (wrongInput) {
-            System.out.print("Column: ");
-            try {
-                input = scanner.nextLine();
-                col = Integer.parseInt(input);
-                if (col < 1 || col > Model.SCHEMA_CARD_COLUMNS_NUMBER) {
-                    System.out.println(ERROR_QUOTE);
-                    wrongInput = true;
-                } else {
-                    col = col-1;
-                    wrongInput = false;
-                    builder.append("col: ").append(col).append(" ");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println(ERROR_QUOTE);
-                wrongInput = true;
-            }
-        }
-        return builder.toString();
-    }
-
-    private String getDraftPoolNumber(){
-        boolean wrongInput = true;
-        StringBuilder builder = new StringBuilder();
-        String input;
+    /**
+     *
+     * @return -1 if doesn't find anything to read from the other thread,
+     *      else returns every values it reads
+     */
+    private  int readFromMemory(){
         int choice;
-        while (wrongInput){
+        String[] inputLines = inputMemoryString.split("\n");
+        if(inputLines[inputLines.length-1].equals("null")){
+            System.out.println("player has typed nothing");
+            /*player has typed nothing before his turn*/
+            return -1;
+        } else {
+            /*player has typed something before his turn*/
+            System.out.println("player has typed something: " + inputMemoryString);
+            System.out.println("reading: " + inputLines[inputLines.length - 1]);
             try {
-                System.out.print("Position: ");
-                input = scanner.nextLine();
-                choice = Integer.parseInt(input);
-                if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                    wrongInput = true;
-                    System.out.println(ERROR_QUOTE);
-                } else {
-                    wrongInput = false;
-                    builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-                }
-            } catch (NumberFormatException e){
+                choice = Integer.parseInt(inputLines[inputLines.length - 1]);
+                return choice;
+            } catch (NumberFormatException e) {
+                /*other thread didn't have any readable value*/
                 System.out.println(ERROR_QUOTE);
-                wrongInput = true;
+                return -1;
             }
         }
-        return builder.toString();
+    }
+
+    public static void setInputMemoryString(String newMemory){
+        inputMemoryString = newMemory;
+    }
+
+    private static void setPlayerDisabledThreadHasEnded(boolean hasEnded){
+        playerDisabledThreadHasEnded = hasEnded;
+    }
+
+    public static void setPlayerIsActive(boolean isActive){
+        playerIsActive = isActive;
+    }
+
+    private void waitThreadEnd(){
+        while (!playerDisabledThreadHasEnded){
+            try {
+                /*waiting for the player inactive thread to end*/
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
     }
 }

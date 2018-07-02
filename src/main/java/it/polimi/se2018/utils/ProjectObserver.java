@@ -24,8 +24,6 @@ public interface ProjectObserver {
 
     void update(SendGameboardMessage sendGameboardMessage);
 
-    void update(NewRoundMessage newRoundMessage);
-
     void update(NoActionMove noActionMove);
 
     void update(RequestMessage requestMessage);

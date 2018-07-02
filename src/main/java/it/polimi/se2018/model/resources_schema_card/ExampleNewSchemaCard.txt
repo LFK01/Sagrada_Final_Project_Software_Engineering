@@ -32,6 +32,7 @@ difficulty: 10
 * [5] ==> 5
 * [6] ==> 6
 *
+* Once you've finished personalizing place this file
 * If you want to create multiple schema cards and not just this one,
 * copy and paste this text on a new .txt file on this folder and
 * personalize your new schema card as you want.

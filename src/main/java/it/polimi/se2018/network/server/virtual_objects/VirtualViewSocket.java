@@ -120,11 +120,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(NewRoundMessage newRoundMessage) {
-        virtualClientSocket.notifyClient(newRoundMessage);
-    }
-
-    @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
         virtualClientSocket.notifyClient(selectedSchemaMessage);
     }

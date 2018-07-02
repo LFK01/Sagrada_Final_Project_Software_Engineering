@@ -1,6 +1,7 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.exceptions.FullCellException;
+import it.polimi.se2018.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.exceptions.NoColorException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Cell;
@@ -105,7 +106,12 @@ public class TestCell {
         }
         assertTrue(excpetionCalledCorrect);
         excpetionCalledCorrect=false;
-        Dice thrownAwayDie = cellaProva4.removeDieFromCell();
+        Dice thrownAwayDie = null;
+        try {
+            thrownAwayDie = cellaProva4.removeDieFromCell();
+        } catch (InvalidCellPositionException e) {
+            e.printStackTrace();
+        }
         assertEquals(thrownAwayDie, dadoProva1);
         try{
             cellaProva4.setAssignedDice(dadoProva2, false, false);
@@ -154,8 +160,16 @@ public class TestCell {
         assertEquals(dadoProva2.getDiceColor(), cellaProva4.getAssignedDice().getDiceColor());
         assertEquals(dadoProva1.getValue(), cellaProva1.getAssignedDice().getValue());
         assertEquals(dadoProva2.getValue(), cellaProva4.getAssignedDice().getValue());
-        cellaProva1.removeDieFromCell();
-        cellaProva2.removeDieFromCell();
+        try {
+            cellaProva1.removeDieFromCell();
+        } catch (InvalidCellPositionException e) {
+            e.printStackTrace();
+        }
+        try {
+            cellaProva2.removeDieFromCell();
+        } catch (InvalidCellPositionException e) {
+            e.printStackTrace();
+        }
         try{
             cellaProva1.setAssignedDice(dadoProva2, false, false);
         }
@@ -166,7 +180,11 @@ public class TestCell {
             fail();
         }
         assertTrue(excpetionCalledCorrect);
-        cellaProva1.removeDieFromCell();
+        try {
+            cellaProva1.removeDieFromCell();
+        } catch (InvalidCellPositionException e) {
+            e.printStackTrace();
+        }
         excpetionCalledCorrect = false;
         try{
             cellaProva2.setAssignedDice(dadoProva2, false, false);

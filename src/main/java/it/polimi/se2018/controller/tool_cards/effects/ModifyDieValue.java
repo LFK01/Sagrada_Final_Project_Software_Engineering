@@ -37,6 +37,9 @@ public class ModifyDieValue implements TCEffectInterface {
             if(words[i].trim().equalsIgnoreCase("NewValue:")){
                 System.out.println("read new value: " + newValue);
                 newValue = Integer.parseInt(words[i+1]);
+                if(newValue<1 || newValue>6){
+                    throw new ExecutingEffectException();
+                }
             }
         }
         ArrayList<Dice> diceList = model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList();

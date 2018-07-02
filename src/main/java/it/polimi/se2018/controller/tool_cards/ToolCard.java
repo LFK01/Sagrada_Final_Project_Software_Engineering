@@ -18,7 +18,6 @@ import java.util.*;
 public class ToolCard {
 
     private String name;
-    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources";
     private String identificationName;
 
     private String description;
@@ -43,7 +42,7 @@ public class ToolCard {
 
     public static String searchIDByNumber(int toolCardNumber){
         FileParser parser = new FileParser();
-        return parser.searchIDByNumber(FILE_ADDRESS, toolCardNumber);
+        return parser.searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, toolCardNumber);
     }
 
     /**
@@ -138,10 +137,6 @@ public class ToolCard {
                         StringBuilder builder = new StringBuilder();
                         builder.append("ToolCardName: ").append(toolCardName).append(" ");
                         builder.append("DraftPoolDiePosition: ").append(draftPoolDiePosition).append(" ");
-                        builder.append("TapWheel: ")
-                                .append(specificEffectsList.get(effectsList.indexOf(effectToExecute))
-                                        .equalsIgnoreCase("SameColorDice"))
-                                .append(" ");
                         model.notifyObservers(new RequestMessage("server", username, builder.toString(),
                                 inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
                     }

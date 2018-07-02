@@ -63,9 +63,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             schemaName[i]= chooseSchemaMessage.getSchemaCards(i).split("\n")[0];
         }
         inputManager = InputManager.INPUT_SCHEMA_CARD;
-        if(inputThread.isAlive()){
-            inputThread.interrupt();
-        }
+        NotifyingThread.setPlayerIsActive(true);
         inputThread = new NotifyingThread(inputManager, username, schemaName);
         inputThread.addListener(this);
         inputThread.start();
@@ -106,9 +104,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
             System.out.println("Professor Oak: \"it's not the time to use that!\"");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
@@ -119,9 +114,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
             System.out.println("You need more tokens to activate this card!");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
@@ -129,9 +121,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equals("La posizione &eacute; gi&aacute; occupata")){
             System.out.println("You can't place a die over another die!");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
@@ -139,9 +128,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equals("La posizione del dado non &eacute; valida")){
             System.out.println("Selected die doesn't respect cell's restrictions");
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
@@ -149,18 +135,12 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         if(errorMessage.toString().equals("DiceMoveAlreadyUsed")){
             System.out.println("You have already used all your moves in this round");
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("TimeElapsed")){
             inputManager = InputManager.INPUT_NEW_CONNECTION;
-            if(inputThread.isAlive()){
-                inputThread.interrupt();
-            }
             inputThread = new NotifyingThread(inputManager, username);
             inputThread.addListener(this);
             inputThread.start();
@@ -170,7 +150,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-
         String playingPlayer;
         boolean alreadyRead = false;
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
@@ -242,30 +221,26 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 playingPlayer = words[i+1];
                 System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
                 if(playingPlayer.equals(username)){
+                    NotifyingThread.setPlayerIsActive(true);
                     inputManager = InputManager.INPUT_CHOOSE_MOVE;
-                    if(inputThread.isAlive()){
-                        inputThread.interrupt();
-                    }
                     inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
                     inputThread.addListener(this);
                     inputThread.start();
-
                 }else{
                     System.out.println("It's not your turn!");
+                    inputManager = InputManager.INPUT_PLAYER_DISABLED;
+                    NotifyingThread.setPlayerIsActive(false);
+                    inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
+                    inputThread.addListener(this);
+                    inputThread.start();
                 }
             }
         }
-
-    }
-
-    @Override
-    public void update(NewRoundMessage newRoundMessage) {
-
     }
 
     @Override
     public void update(NoActionMove noActionMove) {
-
+        /*should never be called*/
     }
 
     @Override
@@ -300,25 +275,19 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             if(word.equalsIgnoreCase("ToolCardName:")){
                 toolCardUsageName = words.get(words.indexOf(word)+1);
             }
-            if(word.equalsIgnoreCase("TapWheel:")){
-                usingTapWheel = Boolean.valueOf(words.get(words.indexOf(word)+1));
-            }
         }
         System.out.println("requestMessage values: " + requestMessage.getValues());
         inputManager = requestMessage.getInputManager();
         System.out.println(inputManager.toString());
-        if(inputThread.isAlive()){
-            inputThread.interrupt();
-        }
         inputThread = new NotifyingThread(inputManager, username, toolCardUsageName,
-                draftPoolDiceNumber, usingTapWheel);
+                draftPoolDiceNumber);
         inputThread.addListener(this);
         inputThread.start();
     }
 
     @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
-
+        /*should never be called*/
     }
 
     @Override
@@ -335,6 +304,9 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         username = successCreatePlayerMessage.getRecipient();
         System.out.println("Successful  login, new username: " + username);
+        inputThread = new NotifyingThread(InputManager.INPUT_PLAYER_DISABLED, username);
+        inputThread.addListener(this);
+        inputThread.start();
     }
 
     @Override
@@ -372,9 +344,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         inputManager = toolCardErrorMessage.getInputManager();
         System.out.println("Wrong Input Parameters! Choose different values:");
-        if(inputThread.isAlive()){
-            inputThread.interrupt();
-        }
         inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardID());
         inputThread.addListener(this);
         inputThread.start();
@@ -385,6 +354,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         setChanged();
         if(!message.getSender().equalsIgnoreCase("quit")){
             notifyObservers(message);
+            NotifyingThread.setInputMemoryString("null\n");
         } else {
             stillPlaying = false;
         }

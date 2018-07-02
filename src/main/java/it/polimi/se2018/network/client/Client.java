@@ -40,9 +40,6 @@ public class Client {
         boolean correctInput = false;
         boolean comeback = false;
 
-        serverIP = parser.readServerIP(FILE_ADDRESS);
-        portSocket = parser.readPortSocket(FILE_ADDRESS);
-
         RemoteViewSocket remoteViewSocket;
         ClientRMIInterface remoteRef;
         ServerRMIInterface serverRMIInterface;
@@ -66,6 +63,8 @@ public class Client {
                 correctInput = false;
             }
             if(correctInput){
+                serverIP = parser.readServerIP(FILE_ADDRESS);
+                portSocket = parser.readPortSocket(FILE_ADDRESS);
                 switch (choice) {
                     case 1: {
                         correctChoice = true;

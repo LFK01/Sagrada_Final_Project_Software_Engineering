@@ -9,8 +9,6 @@ import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
-import java.rmi.ConnectException;
-
 /**
  * @author Luciano
  */
@@ -155,11 +153,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
         server.sendToServer(sendGameboardMessage);
-    }
-
-    @Override
-    public void update(NewRoundMessage newRoundMessage) {
-        server.sendToServer(newRoundMessage);
     }
 
     @Override

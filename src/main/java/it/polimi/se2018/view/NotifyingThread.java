@@ -278,7 +278,7 @@ public class NotifyingThread extends Thread{
                 System.out.println("Take a die from the draftPool:");
                 diceOnRoundDice = readChoiceBetweenValuesIncluded(1,
                         Model.MAXIMUM_PLAYER_NUMBER*2 +1, "Die position: ");
-                message = new ChooseDiceMove(username,"server", diceOnRoundDice);
+                message = new ChooseDiceMove(username,"server", diceOnRoundDice-1);
                 break;
             }
             case 2:{
@@ -724,6 +724,7 @@ public class NotifyingThread extends Thread{
         if(inputLines[inputLines.length-1].equals("null")){
             System.out.println("player has typed nothing");
             /*player has typed nothing before his turn*/
+            setInputMemoryString("null\n");
             return -1;
         } else {
             /*player has typed something before his turn*/
@@ -731,13 +732,16 @@ public class NotifyingThread extends Thread{
             System.out.println("reading: " + inputLines[inputLines.length - 1]);
             try {
                 choice = Integer.parseInt(inputLines[inputLines.length - 1]);
+                setInputMemoryString("null\n");
                 return choice;
             } catch (NumberFormatException e) {
                 /*other thread didn't have any readable value*/
                 System.out.println(ERROR_QUOTE);
+                setInputMemoryString("null\n");
                 return -1;
             }
         }
+
     }
 
     public static void setInputMemoryString(String newMemory){

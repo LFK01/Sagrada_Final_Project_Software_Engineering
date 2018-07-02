@@ -1,9 +1,14 @@
 package it.polimi.se2018.view;
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.RequestMessage;
+import it.polimi.se2018.model.events.messages.SendWinnerMessage;
+import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 public class ViewTest {
 
@@ -40,4 +45,17 @@ public class ViewTest {
                 "choose column:";
         view.update(new RequestMessage("a", "b", "Alesatore Lamina di Rame", InputManager.INPUT_CHOOSE_MOVE));
     */}
+
+    @Test
+    public void updateSendWinnerMessage(){
+     /*   View view = new View();
+        Model model = new Model();
+        model.addPlayer("p1");
+        model.addPlayer("p2");
+        model.extractPublicObjectiveCards();
+        model.sendPrivateObjectiveCard();
+        SendWinnerMessage sendWinnerMessage = new SendWinnerMessage("controller","Luca", model.getParticipants());
+        view.update(sendWinnerMessage);
+        */
+    }
 }

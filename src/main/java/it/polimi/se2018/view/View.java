@@ -10,6 +10,7 @@ import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 
+import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,7 +26,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     private InputManager inputManager;
 
     private String[] schemaName = new String[4];
-
+    private boolean doPausedGame = true;
     private String[] toolCardNames;
     private String[] toolCardIDs;
 
@@ -228,11 +229,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                     inputThread.start();
                 }else{
                     System.out.println("It's not your turn!");
-                    inputManager = InputManager.INPUT_PLAYER_DISABLED;
-                    NotifyingThread.setPlayerIsActive(false);
-                    inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
-                    inputThread.addListener(this);
-                    inputThread.start();
+                    if(!inputThread.isAlive()) {
+                        inputManager = InputManager.INPUT_PLAYER_DISABLED;
+                        NotifyingThread.setPlayerIsActive(false);
+                        inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
+                        inputThread.addListener(this);
+                        inputThread.start();
+                    }
                 }
             }
         }
@@ -279,6 +282,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         System.out.println("requestMessage values: " + requestMessage.getValues());
         inputManager = requestMessage.getInputManager();
         System.out.println(inputManager.toString());
+        NotifyingThread.setPlayerIsActive(true);
         inputThread = new NotifyingThread(inputManager, username, toolCardUsageName,
                 draftPoolDiceNumber);
         inputThread.addListener(this);
@@ -321,10 +325,10 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        System.out.println("The Winner is: " + sendWinnerMessage.getParticipants().get(3).getName());
-        System.out.println("with " + sendWinnerMessage.getParticipants().get(3).getPoints());
+        System.out.println("The Winner is: " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()).getName());
+        System.out.println("with " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()).getPoints());
         System.out.println("Other scores: ");
-        for(int i=0;i<3;i++){
+        for(int i=0;i<sendWinnerMessage.getParticipants().size();i++){
             System.out.println("Name" + " " + sendWinnerMessage.getParticipants().get(i).getName());
             System.out.println("Score" + " " + sendWinnerMessage.getParticipants().get(i).getPoints() + "\n");
         }

@@ -101,7 +101,7 @@ public class Model extends ProjectObservable implements Runnable{
         return participants.get(index);
     }
 
-    public List<Player> getParticipants() {
+    public ArrayList<Player> getParticipants() {
         return participants;
     }
 
@@ -208,9 +208,9 @@ public class Model extends ProjectObservable implements Runnable{
             gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
         }*/
         FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 9), 0);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 11), 1);
-        gameBoard.setToolCards(parser.createToolCard(FILE_ADDRESS_TOOL_CARDS, 12), 2);
+        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 4), 0);
+        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 5), 1);
+        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 6), 2);
     }
 
     /**
@@ -441,6 +441,7 @@ public class Model extends ProjectObservable implements Runnable{
      * method that counts points of all players and sorts them according to the winner
      */
     public void countPoints(){
+        StringBuilder builderGameboard = new StringBuilder();
         for(int i =0;i<3;i++){
             gameBoard.getPublicObjectiveCards()[i].countPoints(this,gameBoard.getPublicObjectiveCardName(i),gameBoard.getPublicObjectiveCardPoints(i));
         }
@@ -458,8 +459,8 @@ public class Model extends ProjectObservable implements Runnable{
         for(int s =0;s<participants.size();s++){
             System.out.println(participants.get(0).getName());
             System.out.println(participants.get(1).getName());
-            System.out.println(participants.get(2).getName());
-            System.out.println(participants.get(3).getName());
+            //System.out.println(participants.get(2).getName());
+            //System.out.println(participants.get(3).getName());
             setChanged();
             notifyObservers(new SendWinnerMessage("model",participants.get(s).getName(),participants));
         }

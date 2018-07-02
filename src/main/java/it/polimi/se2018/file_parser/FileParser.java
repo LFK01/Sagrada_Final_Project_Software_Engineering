@@ -736,8 +736,8 @@ public class FileParser {
                                 cardFound = true;
                                 i++;
                             }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("usingTapWheel:")){
-                                line = "usingTapWheel: " + Boolean.toString(isBeingUsed);
+                            if(cardFound && words[i].trim().equalsIgnoreCase("isBeingUsed:")){
+                                line = "isBeingUsed: " + Boolean.toString(isBeingUsed);
                             }
                             i++;
                         }
@@ -788,7 +788,7 @@ public class FileParser {
                                 cardFound = true;
                                 i++;
                             }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("isBeingUsed:")){
+                            if(cardFound && words[i].trim().equalsIgnoreCase("color:")){
                                 return Color.valueOf(words[i+1]);
                             }
                             i++;

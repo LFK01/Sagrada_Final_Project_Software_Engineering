@@ -5,15 +5,12 @@ import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.exceptions.InvalidCellPositionException;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import it.polimi.se2018.model.player.Player;
-import it.polimi.se2018.model.player.Round;
-import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +24,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
     private String effectParameter;
     private ArrayList<Integer> backupRows = new ArrayList<>();
     private ArrayList<Integer> backupColumns = new ArrayList<>();
-    private int firstPlacedDieRow;
-    private int firstPlacedDieCol;
     private int newDieRow;
     private int newDieCol;
     private int oldDieRow;
@@ -60,7 +55,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
         for(int i=0; i < words.length; i++){
             if(words[i].trim().equalsIgnoreCase("OldDieRow:")){
                 oldDieRow = Integer.parseInt(words[i+1]);
-                System.out.println("read oldDieRow: " + oldDieRow);
                 backupRows.add(oldDieRow);
                 System.out.println("read oldDieRow: " + oldDieRow);
             }
@@ -119,8 +113,6 @@ public class MoveDieOnWindow implements TCEffectInterface {
         }
         if(effectParameter.equals("AllRestrictions")){
             placeDieWithToolCard(false, false, false);
-            firstPlacedDieRow = newDieRow;
-            firstPlacedDieCol = newDieCol;
         }
         if(effectParameter.equals("NoNearnessRestriction")){
             placeDieWithToolCard(false, false, true);
@@ -164,30 +156,18 @@ public class MoveDieOnWindow implements TCEffectInterface {
     }
 
     private void placeDieWithToolCard(boolean avoidColorRestrictions, boolean avoidValueRestrictions,
-                                    boolean avoidNearnessRestrictions) {
+                                    boolean avoidNearnessRestrictions) throws ExecutingEffectException {
         try {
             activePlayer.getSchemaCard().placeDie(dieToBeMoved, newDieRow, newDieCol,
                     avoidColorRestrictions, avoidValueRestrictions, avoidNearnessRestrictions);
-        } catch (RestrictionsNotRespectedException e) {
+        } catch (RestrictionsNotRespectedException | FullCellException e) {
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
                         true, true, true);
+                throw  new ExecutingEffectException();
             } catch (RestrictionsNotRespectedException | FullCellException e1) {
                 System.out.println("Something has gone completely wrong!");
             }
-            model.setChanged();
-            model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    effectParameter, "ValueRestrictionNotRespected", InputManager.INPUT_CHOOSE_DIE_PLACE_DIE));
-        } catch (FullCellException e){
-            try {
-                activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
-                        true, true, true);
-            } catch (RestrictionsNotRespectedException | FullCellException e1) {
-                System.out.println("Something has gone completely wrong!");
-            }
-            model.setChanged();
-            model.notifyObservers(new ToolCardErrorMessage("server", username,
-                    effectParameter, "FullCell", InputManager.INPUT_CHOOSE_DIE_PLACE_DIE));
         }
     }
 
@@ -201,25 +181,13 @@ public class MoveDieOnWindow implements TCEffectInterface {
         isDone = b;
     }
 
-    public void backupTwoDicePositions(){
+    public void backupTwoDicePositions(String username){
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
                 activePlayer = player;
             }
         }
         FileParser parser = new FileParser();
-        if(parser.getTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS)){
-            try {
-                dieToBeMoved = activePlayer.getSchemaCard().getCell(firstPlacedDieRow, firstPlacedDieCol)
-                        .removeDieFromCell();
-            } catch (InvalidCellPositionException e){
-                System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions()");
-            }
-            newDieRow = backupRows.get(0);
-            newDieCol = backupColumns.get(0);
-            placeDieWithToolCard(true, true, true);
-        }
-        parser.writeTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS, false);
-        parser.writeTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS, null);
+
     }
 }

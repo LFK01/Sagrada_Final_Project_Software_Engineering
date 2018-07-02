@@ -46,9 +46,6 @@ public class Player implements Serializable {
         return points;
     }
 
-    public ObjectiveCard getPrivateObjective() {
-        return privateObjective;
-    }
 
     public SchemaCard getSchemaCard() {
         return schemaCard;
@@ -60,6 +57,9 @@ public class Player implements Serializable {
 
     public void setPrivateObjectiveCard(ObjectiveCard privateObjective){
         this.privateObjective = privateObjective;
+    }
+    public ObjectiveCard getPrivateObjective() {
+        return privateObjective;
     }
 
     public void setSchemaCard(SchemaCard schema){

@@ -39,32 +39,38 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     public void update(ChooseDiceMove message) {
         timer.cancel();
-        if(model.isFirstDraftOfDice()){
-            if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
-                    [model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed()){
-                setChanged();
-                notifyObservers(new ErrorMessage("server", model.getParticipants().
-                        get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
+        if(message.getDraftPoolPos()>model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
+            setChanged();
+            notifyObservers(new ErrorMessage("server", model.getParticipants().
+                    get(model.getTurnOfTheRound()).getName(), "NotValidDraftPoolPosition"));
+        }else {
+            if (model.isFirstDraftOfDice()) {
+                if (model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
+                        [model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed()) {
+                    setChanged();
+                    notifyObservers(new ErrorMessage("server", model.getParticipants().
+                            get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
+                } else {
+                    String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
+                    setChanged();
+                    notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
+                            InputManager.INPUT_PLACE_DIE));
+                }
             } else {
-                String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
-                setChanged();
-                notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
-                        InputManager.INPUT_PLACE_DIE));
+                if ((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
+                        [model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())) {
+                    setChanged();
+                    notifyObservers(new ErrorMessage("server", model.getParticipants().
+                            get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
+                } else {
+                    String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
+                    setChanged();
+                    notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
+                            InputManager.INPUT_PLACE_DIE));
+                }
             }
-        } else {
-            if((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
-                    [model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())) {
-                setChanged();
-                notifyObservers(new ErrorMessage("server", model.getParticipants().
-                        get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
-            } else {
-                String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
-                setChanged();
-                notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
-                        InputManager.INPUT_PLACE_DIE));
-            }
+            waitMoves();
         }
-        waitMoves();
     }
 
     @Override
@@ -236,8 +242,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         if(toolCard.getIdentificationName().equals(
                                 new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 4)
                         )){
+                            System.out.println("STA ATTIVANDO L'EFFETTO");
                             MoveDieOnWindow backupEffect = (MoveDieOnWindow) toolCard.getEffectsList().get(0);
-                            backupEffect.backupTwoDicePositions();
+                            backupEffect.backupTwoDicePositions(player.getName());
+                            toolCard.setAllEffectsNotDone();
+                            model.updateGameboard();
+                            waitMoves();
                         } else{
                             if(toolCard.isThereAnyEffectDone()){
                                 /*tool cards has been partially used so

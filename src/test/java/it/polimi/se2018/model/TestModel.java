@@ -213,7 +213,7 @@ public class TestModel {
         model.addPlayer("p1");
         model.addPlayer("p2");
         model.extractPublicObjectiveCards();
-
+        model.sendPrivateObjectiveCard();
         Dice dice1 = new Dice(Color.RED,2);
         Dice dice2 = new Dice(Color.GREEN,1);
         Dice dice3 = new Dice(Color.BLUE,3);
@@ -229,7 +229,7 @@ public class TestModel {
         model.getParticipants().get(0).setSchemaCard(schemaCard1);
         model.getParticipants().get(1).setSchemaCard(schemaCard2);
 
-        //model.countPoints();
+        model.countPoints();
 
      }
      @Test

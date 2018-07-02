@@ -29,7 +29,7 @@ public class PlaceDie implements TCEffectInterface {
     }
 
     @Override
-    public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
+    public void doYourJob(String username, String effectParameter, String values, Model model) throws ExecutingEffectException {
         System.out.println("PlaceDie is working");
         String[] words = values.split(" ");
         for(int i = 0; i<words.length; i++){
@@ -49,16 +49,26 @@ public class PlaceDie implements TCEffectInterface {
                 System.out.println("read col: " + col);
             }
         }
+
+
         ArrayList<Dice> diceList = model.getGameBoard().getRoundDice()[model.getRoundNumber()].getDiceList();
         Dice die = diceList.get(draftPoolDiePosition);
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
                 try{
-                    System.out.println("trying to place die w/" + die.toString());
-                    player.getSchemaCard().placeDie(die, row, col, false,
-                            false, false);
-                    System.out.println("placed Die");
-                    model.removeDieFromDraftPool(draftPoolDiePosition);
+                    if(effectParameter.equals("NoNearnessRestriction")) {
+                        System.out.println("trying to place die w/" + die.toString());
+                        player.getSchemaCard().placeDie(die, row, col, false,
+                            false, true);
+                        System.out.println("placed Die");
+                        model.removeDieFromDraftPool(draftPoolDiePosition);
+                }else {
+                        System.out.println("trying to place die w/" + die.toString());
+                        player.getSchemaCard().placeDie(die, row, col, false,
+                                false, false);
+                        System.out.println("placed Die");
+                        model.removeDieFromDraftPool(draftPoolDiePosition);
+                    }
                 } catch (RestrictionsNotRespectedException e){
                     System.out.println("error restrictions");
                     throw new ExecutingEffectException();

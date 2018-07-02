@@ -114,9 +114,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
         if(effectParameter.equals("AllRestrictions")){
             placeDieWithToolCard(false, false, false);
         }
-        if(effectParameter.equals("NoNearnessRestriction")){
-            placeDieWithToolCard(false, false, true);
-        }
+
         if(effectParameter.equals("SameColorDice")){
             FileParser parser = new FileParser();
             if(parser.getTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS)) {

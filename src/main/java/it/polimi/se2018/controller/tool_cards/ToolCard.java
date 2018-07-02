@@ -100,6 +100,7 @@ public class ToolCard {
         ).forEach(
                 e -> System.out.println(e.toString())
         );
+        System.out.println("EFFETTO DA USARE  "+ effectsList.get(0));
         TCEffectInterface effectToExecute = effectsList.get(0);
         while (!executingEffect) {
             /*searches for an undone effect*/
@@ -141,9 +142,11 @@ public class ToolCard {
                                 inputManagerList.get(effectsList.indexOf(effectToExecute)+1)));
                     }
                 } catch (ExecutingEffectException e){
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("DraftpoolDiePosition: ").append(draftPoolDiePosition).append(" ");
                     model.setChanged();
                     model.notifyObservers(new ToolCardErrorMessage("server", username, toolCardName,
-                            "WrongInputParameters",
+                            builder.toString(),
                             inputManagerList.get(effectsList.indexOf(effectToExecute))));
                 }
             } else {
@@ -289,7 +292,6 @@ public class ToolCard {
             } else {
                 if (activePlayer.getSchemaCard().hasLessThanTwoDie()){
                     if(toolCardName.equals(ToolCard.searchIDByNumber(4)) ||
-                            toolCardName.equals(ToolCard.searchIDByNumber(9)) ||
                             toolCardName.equals(ToolCard.searchIDByNumber(12))){
                         System.out.println("these schema card can't be activated whit less than two dice");
                         /*these schema card can't be activated whit less than two dice*/

@@ -99,7 +99,7 @@ public class SchemaCard {
         return true;
     }
     
-    public void placeDie(Dice die, int row, int col, boolean avoidColorRestrictions, boolean avoidValueRestrictions, boolean avoidNearnessRestriction) throws RestrictionsNotRespectedException, FullCellException{
+    public void placeDie(Dice die, int row, int col, boolean avoidColorRestrictions, boolean avoidValueRestrictions, boolean usingCorkBackedStraightEdge) throws RestrictionsNotRespectedException, FullCellException{
         boolean isPlacingFirstDie = (this.isEmpty() && ((row==0||row==3) || (col==0||col==4)));
         if (isPlacingFirstDie){
             this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
@@ -110,7 +110,10 @@ public class SchemaCard {
             }
             else{
                 boolean hasADieNear = this.hasADieNear(row, col,die.getDiceColor(),die.getValue());
-                if(hasADieNear || avoidNearnessRestriction){
+                if(hasADieNear && !usingCorkBackedStraightEdge){
+                    this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
+                }
+                else if(!hasADieNear && usingCorkBackedStraightEdge) {
                     this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
                 }
                 else{

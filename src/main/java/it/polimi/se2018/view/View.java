@@ -140,6 +140,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             inputThread.addListener(this);
             inputThread.start();
         }
+        if(errorMessage.toString().equalsIgnoreCase("NotValidDraftPoolPosition")){
+            System.out.println("Not Valid DraftPoolPosition");
+                inputManager = InputManager.INPUT_CHOOSE_MOVE;
+                inputThread = new NotifyingThread(inputManager, username);
+                inputThread.addListener(this);
+                inputThread.start();
+        }
         if(errorMessage.toString().equalsIgnoreCase("TimeElapsed")){
             inputManager = InputManager.INPUT_NEW_CONNECTION;
             inputThread = new NotifyingThread(inputManager, username);
@@ -346,9 +353,11 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
+        String[] myString =toolCardErrorMessage.getErrorInformation().split(" ");
+        int draftPoolPosition = Integer.parseInt(myString[1]);
         inputManager = toolCardErrorMessage.getInputManager();
         System.out.println("Wrong Input Parameters! Choose different values:");
-        inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardID());
+        inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardID(),draftPoolPosition);
         inputThread.addListener(this);
         inputThread.start();
     }

@@ -52,6 +52,6 @@ public class ExtractNewDie implements TCEffectInterface {
 
     @Override
     public void setDone(boolean b) {
-
+        isDone =b;
     }
 }

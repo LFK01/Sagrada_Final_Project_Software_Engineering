@@ -5,5 +5,5 @@ description: Move/up/to/two/dice/of/the/same/color/that/match/the/color/of/a/die
 effects: MoveDieOnWindow/MoveDieOnWindow
 parameters: SameColorDice/SameColorDice
 inputManager: INPUT_MOVE_DIE_ON_WINDOW/INPUT_MOVE_DIE_ON_WINDOW
-isBeingUsed: false
-color: null
+isBeingUsed: true
+Color: RED

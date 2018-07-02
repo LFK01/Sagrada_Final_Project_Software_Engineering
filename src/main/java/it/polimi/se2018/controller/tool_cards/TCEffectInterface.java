@@ -5,9 +5,10 @@ import it.polimi.se2018.model.Model;
 
 public interface TCEffectInterface {
 
-    void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException;
+    void doYourJob(String username, String effectParameter, String values, Model model) throws ExecutingEffectException;
 
     boolean isDone();
 
     void setDone(boolean b);
+
 }

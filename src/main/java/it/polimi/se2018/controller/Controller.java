@@ -37,8 +37,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         this.timer = new Timer();
     }
 
+    /*placing die controller*/
     public void update(ChooseDiceMove message) {
-        timer.cancel();
         if(message.getDraftPoolPos()>model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
             setChanged();
             notifyObservers(new ErrorMessage("server", model.getParticipants().
@@ -69,7 +69,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             InputManager.INPUT_PLACE_DIE));
                 }
             }
-            waitMoves();
         }
     }
 
@@ -80,12 +79,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        /*should never be called here*/
-    }
-
-    public void update(ComebackSocketMessage message){
-        setChanged();
-        notifyObservers(new SuccessCreatePlayerMessage("server", message.getSender()));
+        unblockPlayer(comebackMessage.getUsername());
     }
 
     public void update(CreatePlayerMessage message){
@@ -111,9 +105,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
+    /*placing die controller*/
     @Override
     public void update(DiePlacementMessage diePlacementMessage) {
-        timer.cancel();
         String[] words = diePlacementMessage.getValues().split(" ");
         int row=-1;
         int col = -1;
@@ -133,7 +127,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
         System.out.println(draftPoolPosition + " " + row + " "+ col);
         model.doDiceMove(draftPoolPosition,row,col);
-        waitMoves();
     }
 
     @Override
@@ -148,12 +141,15 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     public void update(SelectedSchemaMessage message) {
         if(!matchStarted) {
-            for (int playerPos = 0; playerPos < model.getParticipants().size(); playerPos++) {
-                if (model.getParticipants().get(playerPos).getName().equals(message.getSender())) {
-                    model.setSchemaCardPlayer(playerPos, message.getSchemaCardName());
-                    playerNumberDoneSelecting++;
-                }
-            }
+            model.getParticipants().stream().filter(
+                    p -> p.getName().equals(message.getSender())
+            ).forEach(
+                    p -> {
+                        model.setSchemaCardPlayer(model.getParticipants().indexOf(p),
+                                message.getSchemaCardName());
+                        playerNumberDoneSelecting++;
+                    }
+            );
         }
         if(playerNumberDoneSelecting == model.getParticipantsNumber()){
             matchStarted = true;
@@ -169,15 +165,10 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public void update(NoActionMove message){
         timer.cancel();
         model.updateTurnOfTheRound();
-        if(model.getTurnOfTheRound()<0){
-            model.updateRound();
-            if(model.getRoundNumber()==10){
-                model.countPoints();
-            }
-            else
-            model.updateGameboard();
+        if(!model.getParticipants().get(model.getTurnOfTheRound()).isConnected()){
+            update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), "server"));
         }
-        else model.updateGameboard();
+        model.updateGameboard();
         waitMoves();
     }
 
@@ -196,19 +187,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         /*this method should never be called*/
     }
 
-    @Override
-    public void update(SuccessMessage successMessage) {
-        /*this method should never be called*/
-    }
-
-    @Override
-    public void update(SuccessMoveMessage successMoveMessage) {
-        /*this method should never be called*/
-    }
-
+    /*toolcard controller*/
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
-        timer.cancel();
         System.out.println("toolCardActivaton: " + toolCardActivationMessage.getToolCardID()
         + "\nvalues: " + toolCardActivationMessage.getValues());
         System.out.println("toolcard name: " + toolCardActivationMessage.getToolCardID());
@@ -228,33 +209,27 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 }
             }
         }
-        waitMoves();
     }
 
+    /*toolcard controller*/
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
-        for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(toolCard.getIdentificationName().equals(toolCardErrorMessage.getToolCardID())){
+        for (ToolCard toolCard : model.getGameBoard().getToolCards()) {
+            if (toolCard.getIdentificationName().equals(toolCardErrorMessage.getToolCardID())) {
                 /*finds active tool card*/
-                for (Player player: model.getParticipants()) {
-                    if(player.getName().equals(toolCardErrorMessage.getSender())){
+                for (Player player : model.getParticipants()) {
+                    if (player.getName().equals(toolCardErrorMessage.getSender())) {
                         /*finds active player*/
-                        if(toolCard.getIdentificationName().equals(
-                                new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 4)
-                        )){
-                            System.out.println("STA ATTIVANDO L'EFFETTO");
-                            MoveDieOnWindow backupEffect = (MoveDieOnWindow) toolCard.getEffectsList().get(0);
-                            backupEffect.backupTwoDicePositions(player.getName());
+                        if (this.checkLathekinBackup(toolCard, player)) {
                             toolCard.setAllEffectsNotDone();
                             model.updateGameboard();
-                            waitMoves();
-                        } else{
-                            if(toolCard.isThereAnyEffectDone()){
+                        } else {
+                            if (toolCard.isThereAnyEffectDone()) {
                                 /*tool cards has been partially used so
                                  * player tokens will be decreased anyway*/
                                 player.decreaseFavorTokens(toolCard.isFirstUsage());
                                 ToolCardMove toolCardMove;
-                                if(model.isFirstDraftOfDice()){
+                                if (model.isFirstDraftOfDice()) {
                                     toolCardMove = player.getPlayerTurns()[model.getRoundNumber()]
                                             .getTurn1().getToolMove();
                                 } else {
@@ -273,9 +248,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
+    /*toolcard controller*/
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-        timer.cancel();
         StringBuilder valuesBuilder = new StringBuilder();
         ToolCard activeToolCard = null;
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
@@ -298,14 +273,14 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             .append(activeToolCard.getIdentificationName())
                             .append(" ");
                     if(activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 5)) ||
+                            new FileParser().searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, 5)) ||
                             activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 12))
+                            new FileParser().searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, 12))
                             ){
                         valuesBuilder.append("RoundTrack: ");
                         for(int i=0; i<model.getRoundNumber(); i++){
                             valuesBuilder.append(model.getGameBoard().getRoundDice()[i].toString())
-                                    .append(" ");
+                                    .append(" \n ");
                         }
                         valuesBuilder.append("DiceStop ");
                     }
@@ -334,14 +309,14 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             .append(activeToolCard.getIdentificationName())
                             .append(" ");
                     if(activeToolCard.getIdentificationName().equals(
-                            new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 5)) ||
+                            new FileParser().searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, 5)) ||
                             activeToolCard.getIdentificationName().equals(
-                                    new FileParser().searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, 12))
+                                    new FileParser().searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, 12))
                             ){
                         valuesBuilder.append("RoundTrack: ");
                         for(int i=0; i<model.getRoundNumber(); i++){
                             valuesBuilder.append(model.getGameBoard().getRoundDice()[i].toString())
-                                    .append(" ");
+                                    .append(" \n ");
                         }
                         valuesBuilder.append("DiceStop ");
                     }
@@ -360,12 +335,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 notifyObservers(new ErrorMessage("server", activePlayer.getName(), "NotEnoughFavorTokens"));
             }
         }
-        waitMoves();
     }
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-
+        /*should never be called here*/
     }
 
     private void waitSchemaCards(){
@@ -404,7 +378,64 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         model.addObserver(observer);
     }
 
+    public void removeObserverFromModel(ProjectObserver observer){
+        model.removeObserver(observer);
+    }
+
     public void setTimer(int time){
         this.time = time;
+    }
+
+    /*toolcard controller*/
+    private boolean checkLathekinBackup(ToolCard toolCard, Player player){
+        FileParser parser = new FileParser();
+        if(toolCard.getIdentificationName().equals(
+                new FileParser().searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, 4)
+        )) {
+            System.out.println("lathekin quit");
+            /*lathekin has been quitted*/
+            if(parser.getLathekinOldDiePositions(Model.FOLDER_ADDRESS_TOOL_CARDS)[0] != -1) {
+                /*lathekin has been quitted during half of it*/
+                System.out.println("has been quitted during half");
+                MoveDieOnWindow backupEffect = (MoveDieOnWindow) toolCard.getEffectsList().get(0);
+                backupEffect.backupTwoDicePositions(player.getName());
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public ArrayList<String> getPlayerNames(){
+        ArrayList<String> playerNames = new ArrayList<>();
+        model.getParticipants().forEach(
+                p -> playerNames.add(p.getName())
+        );
+        return playerNames;
+    }
+
+    public void blockPlayer(String username) {
+        model.getParticipants().stream().filter(
+                p -> p.getName().equals(username)
+        ).forEach(
+                p -> p.setConnected(false)
+        );
+        if(model.getParticipants().stream().filter(
+                p -> p.isConnected()
+        ).count()<2){
+            model.getParticipants().stream().filter(
+                    p -> p.isConnected()
+            ).forEach(
+                    p -> model.singlePlayerWinning(p)
+            );
+        }
+    }
+
+    public void unblockPlayer(String username) {
+        model.getParticipants().stream().filter(
+                p -> p.getName().equals(username)
+        ).forEach(
+                p -> p.setConnected(true)
+        );
     }
 }

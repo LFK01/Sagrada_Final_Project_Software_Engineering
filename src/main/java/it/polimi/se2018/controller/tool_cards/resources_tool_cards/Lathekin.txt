@@ -5,3 +5,7 @@ description: Move/exactly/two/dice,/obeying/all/placement/restrictions
 effects: MoveDieOnWindow/MoveDieOnWindow
 parameters: AllRestrictions/AllRestrictions
 inputManager: INPUT_MOVE_DIE_ON_WINDOW/INPUT_MOVE_DIE_ON_WINDOW
+firstPlacedDieOldRow: 7
+firstPlacedDieOldCol: 8
+firstPlacedDieNewRow: 9
+firstPlacedDieNewCol: 10

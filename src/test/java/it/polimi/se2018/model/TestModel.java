@@ -53,41 +53,6 @@ public class TestModel {
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice2);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice3);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice4);
-
-        FileParser parser = new FileParser();
-        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
-        ChooseDiceMove chooseDiceMove = new ChooseDiceMove("luca","model",1);
-        //model.doDiceMove(chooseDiceMove);
-        //model.placeDie(schemaCard,5,0,0);
-        //model.placeDie(schemaCard,6,0,0);
-        /*model.placeDie(schemaCard,5,1,4);
-        model.placeDie(schemaCard,6,2,4);
-        model.placeDie(schemaCard,7,1,3);*/
-        /*
-        try{
-            //model.placeDie(schemaCard,8,0,1);
-        }catch(RestrictionsNotRespectedException e){
-            fail();
-        }*/
-
-
-        /*try {
-            model.placeDie(schemaCard, 5, 3, 4);
-        }
-        catch(RestrictionsNotRespectedException e){
-            fail();
-        }*/
-
-        System.out.println(schemaCard.toString());
-
-        //assertEquals(Color.YELLOW,schemaCard.getCell(0,0).getAssignedDice().getDiceColor());
-        //assertEquals(Color.BLUE,schemaCard.getCell(0,1).getAssignedDice().getDiceColor());
-        //assertNotEquals(Color.RED,schemaCard.getCell(2,3).getAssignedDice().getDiceColor());
-
-
-
-
-
     }
 
     @Test
@@ -159,8 +124,6 @@ public class TestModel {
         model.addPlayer("p1");
         model.addPlayer("p2");
         model.extractRoundTrack();
-
-
     }
 
     @Test
@@ -171,7 +134,7 @@ public class TestModel {
         model.updateTurnOfTheRound();
         model.updateTurnOfTheRound();
         model.updateTurnOfTheRound();
-        assertEquals(0,model.getTurnOfTheRound());
+        assertEquals(0, model.getTurnOfTheRound());
     }
 
     @Test
@@ -219,8 +182,8 @@ public class TestModel {
         Dice dice3 = new Dice(Color.BLUE,3);
         Dice dice4 = new Dice(Color.YELLOW,6);
          FileParser parser = new FileParser();
-         SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
-         SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 14);
+         SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
+         SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 14);
 
         schemaCard2.placeDie(dice2,3,0,false,false,false);
         schemaCard2.placeDie(dice1,2,0,false,false,false);

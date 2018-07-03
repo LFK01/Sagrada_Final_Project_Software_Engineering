@@ -19,7 +19,7 @@ public class TestSchemaCard {
     public void initializationTest(){
         FileParser parser = new FileParser();
         for(int i=0; i<Model.SCHEMA_CARDS_NUMBER; i++){
-            SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, i+1);
+            SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, i+1);
             assertNotNull(schemaCard);
         }
     }
@@ -41,7 +41,7 @@ public class TestSchemaCard {
    @Test
     public void testPlaceDie() throws FullCellException {
         FileParser parser = new FileParser();
-        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
         Dice dice1 = new Dice(Color.YELLOW,1);
         Dice dice2 = new Dice(Color.GREEN,4);
         Dice dice3 = new Dice(Color.BLUE,3);
@@ -103,7 +103,7 @@ public class TestSchemaCard {
     @Test
     public void placeDieRightTest() throws RestrictionsNotRespectedException, FullCellException{
         FileParser parser = new FileParser();
-        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
         Dice dice1 = new Dice(Color.YELLOW,6);
         Dice dice2 = new Dice(Color.GREEN,2);
         Dice dice3 = new Dice(Color.BLUE,2);
@@ -140,7 +140,7 @@ public class TestSchemaCard {
     @Test
     public void placeDieUpperRight() throws RestrictionsNotRespectedException, FullCellException{
         FileParser parser = new FileParser();
-        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 16);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 16);
         Dice dice1 = new Dice(Color.YELLOW,6);
         Dice dice2 = new Dice(Color.BLUE,1);
         Dice dice3 = new Dice(Color.YELLOW,6);
@@ -177,7 +177,7 @@ public class TestSchemaCard {
    @Test
     public void schemaTest(){
        FileParser parser = new FileParser();
-       SchemaCard schema = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+       SchemaCard schema = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
 
         for (int i =0; i<4;i++){
             for(int j=0; j<5;j++){

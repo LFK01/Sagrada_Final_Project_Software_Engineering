@@ -20,7 +20,7 @@ public class DifferentShadesTest {
         Model model = new Model();
         model.addPlayer("p1");
 
-        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FILE_ADDRESS_SCHEMA_CARDS, 1);
+        SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
 
         Dice dice1 = new Dice(Color.RED,2);
         Dice dice2 = new Dice(Color.PURPLE,1);

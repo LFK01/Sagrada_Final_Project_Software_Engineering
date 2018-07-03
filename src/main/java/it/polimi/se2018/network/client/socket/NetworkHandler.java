@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.client.socket;
 
-import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
 import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 
@@ -25,38 +24,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
 
     public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket) throws ConnectException{
         socketSetUp(localhost, port, remoteViewSocket);
-        /*String message = "";
-        System.out.println("NetworkHandler setup...");
-        try{
-            message = (String) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if(message.equals("ConnectionEnabled")){
-            serverIsUp = true;
-            this.start();
-        }*/
         this.start();
         serverIsUp = true;
-    }
-
-    public NetworkHandler(String localhost, int port, RemoteViewSocket remoteViewSocket, String oldUsername) throws ConnectException{
-        socketSetUp(localhost, port, remoteViewSocket);
-        String message = "";
-        try{
-            message = (String) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if(message.equals("ConnectionEnabled")){
-            serverIsUp = true;
-            this.start();
-            try{
-                outputStream.writeObject(new ComebackSocketMessage(oldUsername, "server", oldUsername));
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        }
     }
 
     private void socketSetUp(String localhost, int port, RemoteViewSocket remoteViewSocket) throws ConnectException{
@@ -97,13 +66,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     }
 
     @Override
-    public void sendToServer(Message message) {
-        try {
+    public void sendToServer(Message message) throws IOException {
             outputStream.writeObject(message);
-        } catch (IOException e){
-            serverIsUp = false;
-            e.printStackTrace();
-        }
     }
 
     @Override

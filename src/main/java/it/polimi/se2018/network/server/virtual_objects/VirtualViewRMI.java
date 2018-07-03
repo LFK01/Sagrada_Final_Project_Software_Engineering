@@ -29,29 +29,20 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         }
     }
 
-    /**
-     * constructor method called when a new username wants to connect to an existing game
-     * with a username already used
-     * @param clientRMIInterface used to link the VirtualView with the Client
-     * @param username used to set the username field
-     */
-    public VirtualViewRMI(ClientRMIInterface clientRMIInterface, String username, Server server){
-        try{
-            virtualClientRMI = new VirtualClientRMI(this, clientRMIInterface, server);
-        } catch (RemoteException e){
-            e.printStackTrace();
-        }
+    public void updateServer(ChooseSchemaMessage chooseSchemaMessage){
+        setChanged();
+        notifyObservers(chooseSchemaMessage);
     }
 
-    public void updateServer(Message message){
+    public void updateServer(ComebackMessage comebackMessage){
         setChanged();
-        notifyObservers(message);
+        notifyObservers(comebackMessage);
     }
 
     public void updateServer(CreatePlayerMessage createPlayerMessage) {
         boolean correctUsername = true;
-        if(virtualClientRMI.getServer().getPlayers().size()>1){
-            for(VirtualViewInterface client: virtualClientRMI.getServer().getPlayers()){
+        if(virtualClientRMI.getServer().getVirtualViewInterfacesList().size()>1){
+            for(VirtualViewInterface client: virtualClientRMI.getServer().getVirtualViewInterfacesList()){
                 if(client!=this){
                     if(client.getUsername().equals(createPlayerMessage.getPlayerName())){
                         update(new ErrorMessage("server", createPlayerMessage.getPlayerName(), "NotValidUsername"));
@@ -60,17 +51,13 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
                 }
             }
         } else {
-                correctUsername = true;
+            correctUsername = true;
         }
         if(correctUsername){
             virtualClientRMI.setUsername(createPlayerMessage.getPlayerName());
             setChanged();
             notifyObservers(createPlayerMessage);
         }
-    }
-
-    public void updateServer(ComebackSocketMessage message){
-        /*to be implemented with comeback function*/
     }
 
     public void updateServer(SelectedSchemaMessage selectedSchemaMessage){
@@ -92,7 +79,12 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         setChanged();
         notifyObservers(noActionMove);
     }
-    
+
+    public void updateServer(ToolCardActivationMessage toolCardActivationMessage){
+        setChanged();
+        notifyObservers(toolCardActivationMessage);
+    }
+
     public void updateServer(ToolCardErrorMessage toolCardErrorMessage){
         setChanged();
         notifyObservers(toolCardErrorMessage);
@@ -106,11 +98,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     @Override
     public void update(ComebackMessage comebackMessage) {
         virtualClientRMI.notifyClient(comebackMessage);
-    }
-
-    @Override
-    public void update(ComebackSocketMessage comebackSocketMessage) {
-        virtualClientRMI.notifyClient(comebackSocketMessage);
     }
 
     @Override
@@ -145,21 +132,9 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(SuccessMessage successMessage) {
-        virtualClientRMI.notifyClient(successMessage);
-    }
-
-
-    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         virtualClientRMI.notifyClient(successCreatePlayerMessage);
     }
-
-    @Override
-    public void update(SuccessMoveMessage successMoveMessage) {
-        virtualClientRMI.notifyClient(successMoveMessage);
-    }
-
 
     @Override
     public void update(ChooseDiceMove chooseDiceMove){
@@ -194,7 +169,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         virtualClientRMI.notifyClient(requestMessage);
     }
 
-
     @Override
     public String getUsername() {
         return virtualClientRMI.getUsername();
@@ -204,12 +178,4 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         return virtualClientRMI;
     }
 
-    @Override
-    public void setClientConnection(Socket clientConnection) {
-        /*method to be implemented in VirtualViewSocket*/
-    }
-
-    public void setVirtualClientRMI(VirtualClientRMI virtualClientRMI) {
-        this.virtualClientRMI = virtualClientRMI;
-    }
 }

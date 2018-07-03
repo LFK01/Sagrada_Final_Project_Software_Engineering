@@ -1,11 +1,9 @@
 package it.polimi.se2018.controller.tool_cards;
 
-import it.polimi.se2018.controller.tool_cards.effects.MoveDieOnWindow;
 import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.RequestMessage;
-import it.polimi.se2018.model.events.messages.SuccessMessage;
 import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.view.comand_line.InputManager;
@@ -42,7 +40,7 @@ public class ToolCard {
 
     public static String searchIDByNumber(int toolCardNumber){
         FileParser parser = new FileParser();
-        return parser.searchIDByNumber(Model.FILE_ADDRESS_TOOL_CARDS, toolCardNumber);
+        return parser.searchIDByNumber(Model.FOLDER_ADDRESS_TOOL_CARDS, toolCardNumber);
     }
 
     /**
@@ -124,12 +122,6 @@ public class ToolCard {
                             /*after placing two consecutive dice player can't place another die*/
                             setNextRoundDieMoveDone(username, model);
                         }
-                        /* player gets notified of the results of the move and
-                         * every player gets an update of the gameboard*/
-                        model.setChanged();
-                        model.notifyObservers(new SuccessMessage("server", username, "SuccessfulMove"));
-                        System.out.println("sent success messsages");
-                        model.updateGameboard();
                     }
                     else{
                         model.updateGameboardToolCard();
@@ -171,13 +163,12 @@ public class ToolCard {
     }
 
     private void setNextRoundDieMoveDone(String username, Model model) {
-        Player activePlayer = null;
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
-                activePlayer = player;
+                player.getPlayerTurns()[model.getRoundNumber()]
+                        .getTurn2().getDieMove().setBeenUsed(true);
             }
         }
-        activePlayer.getPlayerTurns()[model.getRoundNumber()].getTurn2().getDieMove().setBeenUsed(true);
     }
 
     /**
@@ -313,8 +304,18 @@ public class ToolCard {
                 int currentRound = model.getRoundNumber();
                 if(model.isFirstDraftOfDice()){
                     player.getPlayerTurns()[currentRound].getTurn1().getToolMove().setBeenUsed(true);
+                    if(player.getPlayerTurns()[currentRound].getTurn1().getDieMove().isBeenUsed()){
+                        model.updateTurnOfTheRound();
+                    } else {
+                        model.updateGameboard();
+                    }
                 } else {
                     player.getPlayerTurns()[currentRound].getTurn2().getToolMove().setBeenUsed(true);
+                    if(player.getPlayerTurns()[currentRound].getTurn2().getDieMove().isBeenUsed()){
+                        model.updateTurnOfTheRound();
+                    } else {
+                        model.updateGameboard();
+                    }
                 }
             }
         }

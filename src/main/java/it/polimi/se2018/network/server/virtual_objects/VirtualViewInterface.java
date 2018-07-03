@@ -8,5 +8,4 @@ public interface VirtualViewInterface extends ProjectObserver{
 
     String getUsername();
 
-    void setClientConnection(Socket clientConnection);
 }

@@ -1,8 +1,10 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -15,10 +17,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMIInterface {
-    @Override
-    public void sendToServer(DiePlacementMessage diePlacementMessage) throws RemoteException {
-
-    }
 
     private Server server;
 
@@ -28,27 +26,18 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
 
     @Override
     public ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException {
-        if (server.getPlayers().size() < 4) {
+        if (server.getVirtualViewInterfacesList().size() < 4) {
             VirtualViewRMI newVirtualView = new VirtualViewRMI(newClient, server);
             server.getController().addObserver(newVirtualView);
             newVirtualView.addObserver(server.getController());
             server.getController().addObserverToModel(newVirtualView);
-            ServerRMIInterface remoteServerRef = null;
-            try {
-                remoteServerRef = (ServerRMIInterface) UnicastRemoteObject.exportObject(newVirtualView.getVirtualClientRMI(), 0);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+            ServerRMIInterface remoteServerRef = (ServerRMIInterface)
+                    UnicastRemoteObject.exportObject(newVirtualView.getVirtualClientRMI(), 0);
             server.addClient(newVirtualView);
             return remoteServerRef;
         } else {
-            throw new PlayerNumberExceededException("Player number limit already reached.");
+            throw new PlayerNumberExceededException("LimitPlayerNumberReached");
         }
-    }
-
-    @Override
-    public void sendToServer(Message message) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
     }
 
     @Override
@@ -62,22 +51,17 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(ComebackSocketMessage comebackSocketMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
     public void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 
     @Override
-    public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
+    public void sendToServer(DiePlacementMessage diePlacementMessage) throws RemoteException {
+        /*should never be called here*/
     }
 
     @Override
-    public void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException {
+    public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 
@@ -97,18 +81,18 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(SuccessMessage successMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
-    public void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
+    public void sendToServer(ToolCardActivationMessage toolCardActivationMessage) throws RemoteException {
+        /*should be handled by RemoteViewRMI*/
     }
 
     @Override
     public void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
+    }
+
+    @Override
+    public void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException {
+        /*should be handled by RemoteViewRMI*/
     }
 
     @Override
@@ -131,22 +115,4 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
         /*method to be called in VirtualClientRMI*/
     }
 
-    @Override
-    public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
-        boolean playerFound = false;
-        ServerRMIInterface remoteRef = null;
-        for (VirtualViewInterface client : server.getPlayers()) {
-            if (client.getUsername().equals(username)) {
-                playerFound = true;
-                client = new VirtualViewRMI(newClient, username, server);
-                ((VirtualViewRMI) client).addObserver(server.getController());
-                remoteRef = (ServerRMIInterface) UnicastRemoteObject.exportObject(((VirtualViewRMI) client).getVirtualClientRMI(), 0);
-            }
-        }
-        if (!playerFound) {
-            throw new PlayerNotFoundException();
-        } else {
-            return remoteRef;
-        }
-    }
 }

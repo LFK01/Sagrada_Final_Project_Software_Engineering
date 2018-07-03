@@ -20,8 +20,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     public void updateServer(CreatePlayerMessage createPlayerMessage){
         boolean correctUsername = true;
-        if(virtualClientSocket.getServer().getPlayers().size()>1){
-            for(VirtualViewInterface client: virtualClientSocket.getServer().getPlayers()){
+        if(virtualClientSocket.getServer().getVirtualViewInterfacesList().size()>1){
+            for(VirtualViewInterface client: virtualClientSocket.getServer().getVirtualViewInterfacesList()){
                 if(client!=this){
                     if(client.getUsername().equals(createPlayerMessage.getPlayerName())){
                         update(new ErrorMessage(virtualClientSocket.getServer().toString(), createPlayerMessage.getPlayerName(), "NotValidUsername"));
@@ -36,16 +36,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
             virtualClientSocket.setUsername(createPlayerMessage.getPlayerName());
             setChanged();
             notifyObservers(createPlayerMessage);
-        }
-    }
-
-    public void updateServer(ComebackSocketMessage message){
-        try{
-            virtualClientSocket.resetOldPlayer(message);
-            setChanged();
-            notifyObservers(message);
-        } catch (PlayerNotFoundException e){
-            virtualClientSocket.notifyClient(new ErrorMessage("server", virtualClientSocket.getUsername(), "Player not found"));
         }
     }
 
@@ -95,11 +85,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(ComebackSocketMessage comebackSocketMessage) {
-        virtualClientSocket.notifyClient(comebackSocketMessage);
-    }
-
-    @Override
     public void update(CreatePlayerMessage createPlayerMessage) {
         virtualClientSocket.notifyClient(createPlayerMessage);
     }
@@ -130,18 +115,8 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     }
 
     @Override
-    public void update(SuccessMessage successMessage) {
-        virtualClientSocket.notifyClient(successMessage);
-    }
-
-    @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
         virtualClientSocket.notifyClient(successCreatePlayerMessage);
-    }
-
-    @Override
-    public void update(SuccessMoveMessage successMoveMessage) {
-        virtualClientSocket.notifyClient(successMoveMessage);
     }
 
     @Override
@@ -181,11 +156,6 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
     @Override
     public String getUsername() {
         return virtualClientSocket.getUsername();
-    }
-
-    @Override
-    public void setClientConnection(Socket clientConnection) {
-        virtualClientSocket.setClientConnection(clientConnection);
     }
 
     public VirtualClientSocket getClientSocket() {

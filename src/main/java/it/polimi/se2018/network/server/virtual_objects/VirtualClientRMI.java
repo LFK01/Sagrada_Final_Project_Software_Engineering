@@ -1,8 +1,10 @@
 package it.polimi.se2018.network.server.virtual_objects;
 
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -15,7 +17,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     private VirtualViewRMI virtualView;
     private ClientRMIInterface remoteView;
-    private boolean isConnected;
     private Server server;
     private String username;
 
@@ -23,33 +24,13 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         this.virtualView = virtualView;
         this.remoteView = remoteView;
         this.server = server;
-        isConnected = true;
         username = this.toString();
     }
 
-    public VirtualClientRMI(VirtualViewRMI virtualView, ClientRMIInterface remoteView, String username, Server server) throws RemoteException{
-        this.virtualView = virtualView;
-        this.remoteView = remoteView;
-        this.server = server;
-        this.username = username;
-        isConnected = true;
-    }
-
     @Override
-    public ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException {
+    public ServerRMIInterface addClient(ClientRMIInterface newClient) {
         /*method to be implemented in ClientGathererRMI*/
         return null;
-    }
-
-    @Override
-    public ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException {
-        /*method to be implemented in ClientGathererRMI*/
-        return null;
-    }
-
-    @Override
-    public void sendToServer(Message message) throws RemoteException {
-        virtualView.updateServer(message);
     }
 
     @Override
@@ -68,11 +49,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(ComebackSocketMessage comebackSocketMessage) throws RemoteException {
-        virtualView.updateServer(comebackSocketMessage);
-    }
-
-    @Override
     public void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException {
         virtualView.updateServer(createPlayerMessage);
     }
@@ -84,17 +60,12 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     @Override
     public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
-        virtualView.updateServer(errorMessage);
+        /*should never be called here*/
     }
 
     @Override
     public void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException{
-        virtualView.updateServer(sendGameboardMessage);
-    }
-
-    @Override
-    public void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException {
-        virtualView.updateServer(newRoundMessage);
+        /*should never be called here*/
     }
 
     @Override
@@ -104,28 +75,24 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     @Override
     public void sendToServer(RequestMessage requestMessage) throws RemoteException {
-        virtualView.updateServer(requestMessage);
+        /*should never be called here*/
     }
 
     @Override
     public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
-        virtualView.updateServer(showPrivateObjectiveCardsMessage);
+        /*should never be called here*/
     }
 
     @Override
     public void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException {
-        virtualView.updateServer(successCreatePlayerMessage);
+        /*should never be called here*/
     }
 
     @Override
-    public void sendToServer(SuccessMessage successMessage) throws RemoteException {
-        virtualView.updateServer(successMessage);
+    public void sendToServer(ToolCardActivationMessage toolCardActivationMessage) throws RemoteException {
+        virtualView.updateServer(toolCardActivationMessage);
     }
 
-    @Override
-    public void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException {
-        virtualView.updateServer(successMoveMessage);
-    }
     @Override
     public void sendToServer(SelectedSchemaMessage selectedSchemaMessage) throws RemoteException {
         virtualView.updateServer(selectedSchemaMessage);
@@ -136,91 +103,72 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         virtualView.updateServer(toolCardErrorMessage);
     }
 
+    @Override
+    public void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException {
+        virtualView.update(useToolCardMove);
+    }
+
     public void notifyClient(Message message){
-        if(isConnected){
-            try{
-                remoteView.updateClient(message);
-            } catch (RemoteException e) {
-                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(message);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(chooseSchemaMessage);
-            } catch (RemoteException e) {
-                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(chooseSchemaMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(SendGameboardMessage sendGameboardMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(sendGameboardMessage);
-            } catch (RemoteException e) {
-                System.out.println("Giocatore #" + server.getPlayers().indexOf(virtualView) + " " + username + "disconnesso");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(sendGameboardMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(RequestMessage requestMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(requestMessage);
-            } catch (RemoteException e) {
-                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline.");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(requestMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
+
     public void notifyClient(SendWinnerMessage sendWinnerMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(sendWinnerMessage);
-            } catch (RemoteException e) {
-                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline.");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(sendWinnerMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(ErrorMessage errorMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(errorMessage);
-            } catch (RemoteException e) {
-                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(errorMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(showPrivateObjectiveCardsMessage);
-            } catch (RemoteException e) {
-                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline");
-                isConnected = false;
-            }
+        try{
+            remoteView.updateClient(showPrivateObjectiveCardsMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
     public void notifyClient(SuccessCreatePlayerMessage successCreatePlayerMessage){
-        if(isConnected){
-            try{
-                remoteView.updateClient(successCreatePlayerMessage);
-            } catch (RemoteException e) {
-                System.out.println("Player #" + server.getPlayers().indexOf(virtualView) + " " + username + "offline");
-                isConnected = false;
-                e.printStackTrace();
-            }
+        try{
+            remoteView.updateClient(successCreatePlayerMessage);
+        } catch (RemoteException e) {
+            server.removeClient(virtualView);
         }
     }
 
@@ -238,4 +186,5 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     public void setUsername(String username) {
         this.username = username;
     }
+
 }

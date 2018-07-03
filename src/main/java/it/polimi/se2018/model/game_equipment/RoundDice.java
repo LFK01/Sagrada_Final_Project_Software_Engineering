@@ -46,14 +46,6 @@ public class RoundDice {
     }
 
     /**
-     * Round getter
-     * @return the current round
-     */
-    public int getRound() {
-        return round;
-    }
-
-    /**
      * Dice getter
      * @param index index of the chosen dice
      * @return the chosen dice
@@ -71,20 +63,13 @@ public class RoundDice {
     }
 
     /**
-     * Participants number getter
-     * @return the participants number
-     */
-    public int getParticipantsNumber() {
-        return participantsNumber;
-    }
-
-    /**
      * Removes a die from the draft pool after it is placed on a Schema Card
      * @param index indicates the die number that has to be extracted
      */
-    public void removeDiceFromDraftPool(int index){
+    public Dice removeDiceFromList(int index){
         Dice dieToRemove = diceList.get(index);
         diceList.remove(dieToRemove);
+        return dieToRemove;
     }
 
     @Override

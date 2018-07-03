@@ -27,16 +27,16 @@ import java.util.Scanner;
 
 public class Server {
 
-    private static final String FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
-    private ArrayList<VirtualViewInterface> players = new ArrayList<>();
+    public static final String INPUT_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
+    private ArrayList<VirtualViewInterface> playersVirtualView = new ArrayList<>();
     private final Controller controller;
 
     public Server() {
         FileParser fileParser = new FileParser();
 
-        int timer = fileParser.readTimer(FILE_ADDRESS);
-        int portSocket = fileParser.readPortSocket(FILE_ADDRESS);
-        int portRMI = fileParser.readPortRMI(FILE_ADDRESS);
+        int timer = fileParser.readTimer(INPUT_FILE_ADDRESS);
+        int portSocket = fileParser.readPortSocket(INPUT_FILE_ADDRESS);
+        int portRMI = fileParser.readPortRMI(INPUT_FILE_ADDRESS);
 
         controller = new Controller();
         controller.setTimer(timer);
@@ -92,7 +92,7 @@ public class Server {
     }
 
     public void addClient(Socket newClient){
-        if(players.size()<4){
+        if(playersVirtualView.size()<4){
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
             virtualClientSocket.start();
             this.addClient(virtualClientSocket.getVirtualViewSocket());
@@ -108,15 +108,20 @@ public class Server {
     }
 
     public void addClient(VirtualViewInterface newClient){
-        players.add(newClient);
+        playersVirtualView.add(newClient);
     }
 
     public void removeClient(VirtualViewInterface oldClient){
-        players.remove(oldClient);
+        System.out.println("server has detected a problem in the connection." +
+                "\n" + oldClient.getUsername() + "will be disconnected");
+        playersVirtualView.remove(oldClient);
+        controller.removeObserver(oldClient);
+        controller.removeObserverFromModel(oldClient);
+        controller.blockPlayer(oldClient.getUsername());
     }
 
-    public List<VirtualViewInterface> getPlayers(){
-        return players;
+    public List<VirtualViewInterface> getVirtualViewInterfacesList(){
+        return playersVirtualView;
     }
 
     public Controller getController() {
@@ -132,25 +137,4 @@ public class Server {
         new Server();
     }
 
-    public void resetOldClientSocket(Socket newClientConnection, String username) {
-        System.out.println("Comeback procedure started.");
-        boolean clientFound = false;
-        for(VirtualViewInterface client: players){
-            if(client.getUsername().equals(username)){
-                System.out.println("Found old VirtualClient.");
-                clientFound = true;
-                client.setClientConnection(newClientConnection);
-            }
-        }
-        if(!clientFound){
-            System.out.println("Old VirtualClient not found");
-            ObjectOutputStream temporaryOutput;
-            try {
-                temporaryOutput = new ObjectOutputStream(newClientConnection.getOutputStream());
-                temporaryOutput.writeObject(new ErrorMessage("server", newClientConnection.getRemoteSocketAddress().toString(), "UsernameNotFound"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

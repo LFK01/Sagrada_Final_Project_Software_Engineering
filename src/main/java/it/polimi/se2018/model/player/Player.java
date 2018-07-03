@@ -34,7 +34,7 @@ public class Player implements Serializable {
 
     public String getName(){ return name; }
 
-    public boolean getConnected(){
+    public boolean isConnected(){
         return this.isConnected;
     }
 

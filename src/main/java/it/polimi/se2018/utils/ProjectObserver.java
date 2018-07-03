@@ -14,8 +14,6 @@ public interface ProjectObserver {
 
     void update(ComebackMessage comebackMessage);
 
-    void update(ComebackSocketMessage comebackSocketMessage);
-
     void update(CreatePlayerMessage createPlayerMessage);
 
     void update(DiePlacementMessage diePlacementMessage);
@@ -32,11 +30,7 @@ public interface ProjectObserver {
 
     void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage);
 
-    void update(SuccessMessage successMessage);
-
     void update(SuccessCreatePlayerMessage successCreatePlayerMessage);
-
-    void update(SuccessMoveMessage successMoveMessage);
 
     void update(ToolCardActivationMessage toolCardActivationMessage);
 

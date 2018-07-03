@@ -21,14 +21,12 @@ public class MoveDieOnWindow implements TCEffectInterface {
     private Player activePlayer;
     private Dice dieToBeMoved;
     private Model model;
-    private String effectParameter;
     private ArrayList<Integer> backupRows = new ArrayList<>();
     private ArrayList<Integer> backupColumns = new ArrayList<>();
     private int newDieRow;
     private int newDieCol;
     private int oldDieRow;
     private int oldDieCol;
-    private String username;
     private int roundNumber;
     private int roundTrackDiePosition;
     private Color firstDieMovingColor;
@@ -43,10 +41,8 @@ public class MoveDieOnWindow implements TCEffectInterface {
         System.out.println("MoveDieOnWindow is working");
         String words[] = values.split(" ");
         System.out.println("words lenght: " + words.length);
-        this.username = username;
         this.model = model;
-        this.effectParameter = effectParameter;
-        int draftPoolPosition = -1;
+        int draftPoolPosition;
         oldDieRow = -1;
         oldDieCol = -1;
         newDieRow = -1;
@@ -112,12 +108,15 @@ public class MoveDieOnWindow implements TCEffectInterface {
             placeDieWithToolCard(false, true, false);
         }
         if(effectParameter.equals("AllRestrictions")){
+            FileParser parser = new FileParser();
+            parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
+                    oldDieRow, oldDieCol, newDieRow, newDieCol);
             placeDieWithToolCard(false, false, false);
         }
 
         if(effectParameter.equals("SameColorDice")){
             FileParser parser = new FileParser();
-            if(parser.getTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS)) {
+            if(parser.getTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS)) {
                 if (checkSameColorDice()) {
                     placeDieWithToolCard(false, false, false);
                 } else {
@@ -138,8 +137,8 @@ public class MoveDieOnWindow implements TCEffectInterface {
                 if(!foundSameColor){
                     throw new ExecutingEffectException();
                 } else {
-                    parser.writeTapWheelUsingValue(Model.FILE_ADDRESS_TOOL_CARDS, true);
-                    parser.writeTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS, firstDieMovingColor);
+                    parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, true);
+                    parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, firstDieMovingColor);
                     placeDieWithToolCard(false, false, false);
                 }
             }
@@ -149,7 +148,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
 
     private boolean checkSameColorDice() {
         FileParser parser = new FileParser();
-        firstDieMovingColor = parser.getTapWheelFirstColor(Model.FILE_ADDRESS_TOOL_CARDS);
+        firstDieMovingColor = parser.getTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS);
         return (dieToBeMoved.getDiceColor().equals(firstDieMovingColor));
     }
 
@@ -164,7 +163,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
                         true, true, true);
                 throw  new ExecutingEffectException();
             } catch (RestrictionsNotRespectedException | FullCellException e1) {
-                System.out.println("Something has gone completely wrong!");
+                System.out.println("Something has gone completely wrong on MoveDieOnWindow.placeDieWithToolCard()");
             }
         }
     }
@@ -180,12 +179,33 @@ public class MoveDieOnWindow implements TCEffectInterface {
     }
 
     public void backupTwoDicePositions(String username){
+        FileParser parser = new FileParser();
+        int[] oldPositions;
+        int[] newPositions;
         for(Player player: model.getParticipants()){
             if(player.getName().equals(username)){
                 activePlayer = player;
             }
         }
-        FileParser parser = new FileParser();
-
+        System.out.println("doing backup for: " + activePlayer.getName());
+        oldPositions = parser.getLathekinOldDiePositions(Model.FOLDER_ADDRESS_TOOL_CARDS);
+        System.out.println("read old positions: " + oldPositions[0] + oldPositions[1]);
+        newPositions = parser.getLathekinNewDiePositions(Model.FOLDER_ADDRESS_TOOL_CARDS);
+        System.out.println("read new positions: " + newPositions[0] + newPositions[1]);
+        try {
+            dieToBeMoved = activePlayer.getSchemaCard().getCell(newPositions[0], newPositions[1]).removeDieFromCell();
+            System.out.println("dieToBeMoved: " + dieToBeMoved.toString());
+        } catch (InvalidCellPositionException e) {
+            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions");
+        }
+        try {
+            activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldPositions[0], oldPositions[1],
+                    true, true, true);
+            System.out.println("die on old position");
+        } catch (RestrictionsNotRespectedException | FullCellException e) {
+            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions");
+        }
+        parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
+                -1, -1, -1, -1);
     }
 }

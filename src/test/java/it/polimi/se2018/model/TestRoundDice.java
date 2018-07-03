@@ -31,7 +31,6 @@ public class TestRoundDice {
        }
 
        assertNotNull(roundDice);
-       assertEquals(roundDice.getParticipantsNumber()*2+1, roundDice.getDiceList().size());
 
     }
 

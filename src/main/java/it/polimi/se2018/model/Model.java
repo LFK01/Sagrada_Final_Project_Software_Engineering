@@ -40,9 +40,9 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
     public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
-    public static final String FILE_ADDRESS_TOOL_CARDS =
+    public static final String FOLDER_ADDRESS_TOOL_CARDS =
             "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources_tool_cards";
-    public static final String FILE_ADDRESS_SCHEMA_CARDS =
+    public static final String FOLDER_ADDRESS_SCHEMA_CARDS =
             "src\\main\\java\\it\\polimi\\se2018\\model\\resources_schema_card";
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
@@ -121,19 +121,28 @@ public class Model extends ProjectObservable implements Runnable{
             removeDieFromDraftPool(draftPoolPos);
             if(isFirstDraftOfDice()) {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
+                if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getToolMove().isBeenUsed()){
+                    updateTurnOfTheRound();
+                } else {
+                    updateGameboard();
+                }
             }
             else {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
+                if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getToolMove().isBeenUsed()){
+                    updateTurnOfTheRound();
+                } else {
+                    updateGameboard();
+                }
             }
-            updateGameboard();
         }
         catch(FullCellException e){
             setChanged();
-            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"La posizione &eacute; gi&aacute; occupata"));
+            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"FullCellError"));
         }
         catch(RestrictionsNotRespectedException e){
             setChanged();
-            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(), "La posizione del dado non &eacute; valida"));
+            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(), "InvalidPositionError"));
         }
     }
 
@@ -142,7 +151,7 @@ public class Model extends ProjectObservable implements Runnable{
      * @param draftPoolPos position of the die to be removed
      */
     public void removeDieFromDraftPool(int draftPoolPos) {
-        gameBoard.getRoundDice()[roundNumber].removeDiceFromDraftPool(draftPoolPos);
+        gameBoard.getRoundDice()[roundNumber].removeDiceFromList(draftPoolPos);
     }
 
     /**
@@ -170,17 +179,33 @@ public class Model extends ProjectObservable implements Runnable{
     public void updateTurnOfTheRound(){
         if(isFirstDraftOfDice()){
             /*first run of turns to choose a die*/
-            if(turnOfTheRound == participants.size()-1){
-                turnOfTheRound = participants.size()-1;
-                firstDraftOfDice = false;
-            }
-            else {
-                turnOfTheRound++;
-            }
+            increaseTurnNumber();
         }
         else{
             /*second run of turns to choose a die*/
-            turnOfTheRound--;
+            decreaseTurnNumber();
+        }
+    }
+
+    private void increaseTurnNumber(){
+        if(turnOfTheRound == participants.size()-1){
+            turnOfTheRound = participants.size()-1;
+            firstDraftOfDice = false;
+        }
+        else {
+            turnOfTheRound++;
+        }
+    }
+
+    private void decreaseTurnNumber(){
+        turnOfTheRound--;
+        if(turnOfTheRound<0){
+            turnOfTheRound = 0;
+            firstDraftOfDice = true;
+            updateRound();
+            if(roundNumber == 9){
+                countPoints();
+            }
         }
     }
 
@@ -199,18 +224,24 @@ public class Model extends ProjectObservable implements Runnable{
      * method to extract and set ToolCard
      */
     public void extractToolCards() {
-        /*ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
+        FileParser parser = new FileParser();
+        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, null);
+        parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
+                -1, -1, -1, -1);
+        parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, false);
+        ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
         for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        for(int i = 0; i < 3; i++) {
-            gameBoard.setToolCards(parser.createToolCard(fileAddress, cardIndex.get(i), i);
-        }*/
-        FileParser parser = new FileParser();
-        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 6), 0);
-        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 11), 1);
-        gameBoard.setToolCards(parser.createToolCard(Model.FILE_ADDRESS_TOOL_CARDS, 12), 2);
+        for(int i = 0; i < Model.TOOL_CARDS_EXTRACT_NUMBER; i++) {
+            gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, cardIndex.get(i)), i);
+        }
+        /*
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 1), 0);
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 2), 1);
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 3), 2);
+        */
     }
 
     /**
@@ -245,7 +276,7 @@ public class Model extends ProjectObservable implements Runnable{
         ArrayList<Integer> randomValues = new ArrayList<>();
         FileParser parser = new FileParser();
         int cardsExtractedIndex = 0;
-        int actualSchemaCardNumber = SCHEMA_CARDS_NUMBER + parser.countExcessSchemaCards(FILE_ADDRESS_SCHEMA_CARDS);
+        int actualSchemaCardNumber = SCHEMA_CARDS_NUMBER + parser.countExcessSchemaCards(FOLDER_ADDRESS_SCHEMA_CARDS);
         for(int i = 1; i<= actualSchemaCardNumber; i++){
             randomValues.add(i);
         }
@@ -256,7 +287,7 @@ public class Model extends ProjectObservable implements Runnable{
             sendingMessageThread = new Thread(this);
             for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i++){
                 extractedSchemaCards[i] = parser
-                        .createSchemaCardByNumber(FILE_ADDRESS_SCHEMA_CARDS, randomValues.get(cardsExtractedIndex));
+                        .createSchemaCardByNumber(FOLDER_ADDRESS_SCHEMA_CARDS, randomValues.get(cardsExtractedIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
                 cardsExtractedIndex++;
             }
@@ -279,7 +310,7 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void setSchemaCardPlayer(int playerPos, String schemaName){
         FileParser parser = new FileParser();
-        SchemaCard schema = parser.createSchemaCardByName(FILE_ADDRESS_SCHEMA_CARDS, schemaName);
+        SchemaCard schema = parser.createSchemaCardByName(FOLDER_ADDRESS_SCHEMA_CARDS, schemaName);
         participants.get(playerPos).setSchemaCard(schema);
     }
 
@@ -293,21 +324,26 @@ public class Model extends ProjectObservable implements Runnable{
     public void sendPrivateObjectiveCard(){
         FileParser parser = new FileParser();
         ArrayList<Integer> cardIndex = new ArrayList<>(3);
-        ArrayList<ObjectiveCard> privateObjectiveCard =new ArrayList<>();
         for(int i = 1; i <= PRIVATE_OBJECTIVE_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        for(int j=0;j<participants.size();j++) {
-            participants.get(j).setPrivateObjectiveCard(parser.createObjectiveCard(true,cardIndex.get(j+1)));
-        }
-        for(int s=0;s<participants.size();s++) {
-            String colorString = participants.get(s).getPrivateObjective().getDescription();
-            setChanged();
-            notifyObservers(new ShowPrivateObjectiveCardsMessage("model",participants.get(s).getName(), colorString,
-                    participants.size()));
-
-        }
+        participants.forEach(
+                p -> {
+                    int playerIndex = participants.indexOf(p);
+                    p.setPrivateObjectiveCard(parser.createObjectiveCard(true, cardIndex.get(playerIndex)));
+                }
+        );
+        participants.stream().filter(
+                Player::isConnected
+        ).forEach(
+                p -> {
+                    setChanged();
+                    notifyObservers(new ShowPrivateObjectiveCardsMessage("model", p.getName(),
+                            p.getPrivateObjective().getDescription(),
+                            participants.size()));
+                }
+        );
         sendSchemaCard();
     }
 
@@ -316,26 +352,28 @@ public class Model extends ProjectObservable implements Runnable{
      * send the gameboard to all the players
      */
     public void updateGameboard(){
-        Thread sendingMessageThread;
-        StringBuilder builderGameboard;
-        for(Player player: participants){
-            builderGameboard = buildMessage();
-            StringBuilder personalBuilder = new StringBuilder();
-            personalBuilder.append("FavorTokens:/" + player.getFavorTokens()).append("/");
-            personalBuilder.append("playingPlayer:/")
-                    .append(participants.get(turnOfTheRound).getName()).append("/");
-            builderGameboard.append(personalBuilder.toString());
-            sendingMessageThread = new Thread(this);
-            try{
-                memorizeMessage(new SendGameboardMessage("model", player.getName(),
-                        builderGameboard.toString()));
-                sendingMessageThread.start();
-                sendingMessageThread.join();
-            } catch (InterruptedException e){
-                sendingMessageThread.interrupt();
-                Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
-            }
-        }
+        participants.stream().filter(
+                Player::isConnected
+        ).forEach(
+                p -> {
+                    StringBuilder builderGameboard = buildMessage();
+                    StringBuilder personalBuilder = new StringBuilder();
+                    personalBuilder.append("FavorTokens:/" + p.getFavorTokens()).append("/");
+                    personalBuilder.append("playingPlayer:/")
+                            .append(participants.get(turnOfTheRound).getName()).append("/");
+                    builderGameboard.append(personalBuilder.toString());
+                    Thread sendingMessageThread = new Thread(this);
+                    try{
+                        memorizeMessage(new SendGameboardMessage("model", p.getName(),
+                                builderGameboard.toString()));
+                        sendingMessageThread.start();
+                        sendingMessageThread.join();
+                    } catch (InterruptedException e){
+                        sendingMessageThread.interrupt();
+                        Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
+                    }
+                }
+        );
     }
 
     public void updateGameboardToolCard() {
@@ -389,7 +427,7 @@ public class Model extends ProjectObservable implements Runnable{
             builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
         }
         builderGameboard.append("SchemaCards:/");
-        for (int i =participants.size()-1; i>=0;i--){
+        for (int i=participants.size()-1; i>=0;i--){
             builderGameboard.append(participants.get(i).getName()).append("\n");
             builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
         }
@@ -397,9 +435,9 @@ public class Model extends ProjectObservable implements Runnable{
         builderGameboard.append("DiceList:/");
         RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];
         List<Dice> currentDiceList = currentRoundDice.getDiceList();
-        for(Dice die: currentDiceList){
-            builderGameboard.append(die.toString()).append("/");
-        }
+        currentDiceList.forEach(
+                die -> builderGameboard.append(die.toString()).append("/")
+        );
         builderGameboard.append("DiceStop/");
         return builderGameboard;
     }
@@ -410,9 +448,7 @@ public class Model extends ProjectObservable implements Runnable{
      * update the Round
      */
     public void updateRound(){
-        roundNumber = roundNumber +1;
-        resetTurnOfTheRound();
-        resetFirstDieOfDraft();
+        roundNumber++;
         changeFirstPlayer();
         extractRoundTrack();
     }
@@ -429,42 +465,37 @@ public class Model extends ProjectObservable implements Runnable{
         return roundNumber;
     }
 
-    public void resetTurnOfTheRound() {
-        this.turnOfTheRound = 0;
-    }
-
-    public void resetFirstDieOfDraft(){
-        firstDraftOfDice =true;
-    }
-
     /**
      * method that counts points of all players and sorts them according to the winner
      */
     public void countPoints(){
-        StringBuilder builderGameboard = new StringBuilder();
-        for(int i =0;i<3;i++){
-            gameBoard.getPublicObjectiveCards()[i].countPoints(this,gameBoard.getPublicObjectiveCardName(i),gameBoard.getPublicObjectiveCardPoints(i));
-        }
-        for(int k=0;k<participants.size();k++){
-            participants.get(k).getPrivateObjective().countPoints(this,participants.get(k).getPrivateObjective().getName(),participants.get(k).getPrivateObjective().getPoints());
-        }
-        Player actualWinner =null;
-        for(int j=0;j<participants.size()-1;j++){
-            if(participants.get(j).getPoints() > participants.get(j+1).getPoints()) {
-                actualWinner = participants.get(j);
-                participants.add(j, participants.get(j + 1));
-                participants.add(j + 1, actualWinner);
-            }
-        }
-        for(int s =0;s<participants.size();s++){
-            System.out.println(participants.get(0).getName());
-            System.out.println(participants.get(1).getName());
-            //System.out.println(participants.get(2).getName());
-            //System.out.println(participants.get(3).getName());
-            setChanged();
-            notifyObservers(new SendWinnerMessage("model",participants.get(s).getName(),participants));
-        }
+        Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
+                objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
+        );
+        participants.stream().forEach(
+                p -> p.getPrivateObjective()
+                        .countPoints(this, p.getPrivateObjective().getName(), p.getPrivateObjective().getPoints())
+        );
+        Collections.sort(participants, Comparator.comparingInt( p -> p.getPoints()));
+        participants.stream().filter(
+                Player::isConnected
+        ).forEach(
+                p -> {
+                    this.setChanged();
+                    this.notifyObservers(new SendWinnerMessage("model", p.getName(), participants));
+                }
+        );
+    }
 
+    public void singlePlayerWinning(Player player){
+        Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
+                objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
+        );
+        player.getPrivateObjective().countPoints(this, player.getName(), player.getPoints());
+        setChanged();
+        ArrayList<Player> singlePlayerWinner = new ArrayList<>();
+        singlePlayerWinner.add(player);
+        notifyObservers(new SendWinnerMessage("server", player.getName(), singlePlayerWinner));
     }
 
     @Override

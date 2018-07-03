@@ -6,6 +6,7 @@ public enum InputManager implements Serializable{
 
     INPUT_NEW_CONNECTION,
     INPUT_PLAYER_NAME,
+    INPUT_OLD_PLAYER_NAME,
     INPUT_SCHEMA_CARD,
     INPUT_CHOOSE_MOVE,
     INPUT_CHOOSE_DIE,

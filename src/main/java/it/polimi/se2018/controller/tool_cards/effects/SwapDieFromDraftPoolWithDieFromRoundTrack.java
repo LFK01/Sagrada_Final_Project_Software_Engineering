@@ -3,9 +3,7 @@ package it.polimi.se2018.controller.tool_cards.effects;
 import it.polimi.se2018.controller.tool_cards.TCEffectInterface;
 import it.polimi.se2018.exceptions.ExecutingEffectException;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.model.events.messages.ToolCardErrorMessage;
 import it.polimi.se2018.model.game_equipment.Dice;
-import it.polimi.se2018.view.comand_line.InputManager;
 
 public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterface {
 
@@ -24,7 +22,6 @@ public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterf
     @Override
     public void doYourJob(String username, String toolCardName, String values, Model model) throws ExecutingEffectException {
         String[] words = values.split(" ");
-        boolean correctInput = true;
         for(int i = 0; i<words.length; i++){
             if(words[i].trim().equalsIgnoreCase("DraftPoolPosition:")){
                 draftPoolPosition = Integer.parseInt(words[i+1]);
@@ -54,10 +51,13 @@ public class SwapDieFromDraftPoolWithDieFromRoundTrack implements TCEffectInterf
                 }
             }
         }
-        Dice draftPoolDie = model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].
-                getDice(draftPoolPosition);
-        Dice supportDie = model.getGameBoard().getRoundTrack().getRoundDice()[roundNumber].setDice(draftPoolDie, roundTrackPosition);
-        model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].setDice(supportDie, draftPoolPosition);
+        Dice draftPoolDie = model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()]
+                .removeDiceFromList(draftPoolPosition);
+        model.getGameBoard().getRoundTrack().getRoundDice()[roundNumber].getDiceList().add(draftPoolDie);
+        Dice supportDie = model.getGameBoard().getRoundTrack().getRoundDice()[roundNumber]
+                .removeDiceFromList(roundTrackPosition);
+        model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList()
+                .add(draftPoolPosition, supportDie);
         System.out.println("swapped dice");
         isDone = true;
     }

@@ -1,8 +1,10 @@
 package it.polimi.se2018.network.server;
 
+import it.polimi.se2018.model.events.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
@@ -14,15 +16,11 @@ public interface ServerRMIInterface extends Remote{
 
     ServerRMIInterface addClient(ClientRMIInterface newClient) throws RemoteException, PlayerNumberExceededException;
 
-    void sendToServer(Message message) throws RemoteException;
-
     void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException;
 
     void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException;
 
     void sendToServer(ComebackMessage comebackMessage) throws RemoteException;
-
-    void sendToServer(ComebackSocketMessage comebackSocketMessage) throws RemoteException;
 
     void sendToServer(CreatePlayerMessage createPlayerMessage) throws RemoteException;
 
@@ -31,8 +29,6 @@ public interface ServerRMIInterface extends Remote{
     void sendToServer(ErrorMessage errorMessage) throws RemoteException;
 
     void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException;
-
-    void sendToServer(NewRoundMessage newRoundMessage) throws RemoteException;
 
     void sendToServer(NoActionMove noActionMove) throws  RemoteException;
 
@@ -44,11 +40,9 @@ public interface ServerRMIInterface extends Remote{
 
     void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException;
 
-    void sendToServer(SuccessMessage successMessage) throws RemoteException;
+    void sendToServer(ToolCardActivationMessage toolCardActivationMessage) throws RemoteException;
 
     void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException;
 
-    void sendToServer(SuccessMoveMessage successMoveMessage) throws RemoteException;
-
-    ServerRMIInterface retrieveOldClient(ClientRMIInterface newClient, String username) throws RemoteException, PlayerNotFoundException;
+    void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException;
 }

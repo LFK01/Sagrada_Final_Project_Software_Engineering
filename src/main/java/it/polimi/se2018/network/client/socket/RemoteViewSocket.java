@@ -9,6 +9,8 @@ import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 
+import java.io.IOException;
+
 /**
  * @author Luciano
  */
@@ -23,18 +25,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server = new NetworkHandler(localhost, port, this);
         } catch (java.net.ConnectException e) {
             throw e;
-        }
-    }
-
-    public RemoteViewSocket(String localhost, int port, String oldUsername)throws java.net.ConnectException{
-        System.out.println("Socket comeback: RemoteView created");
-        server = new NetworkHandler(localhost, port, this, oldUsername);
-    }
-
-    public void notifyView(Message message){
-        if(message.getRecipient().equals(username)){
-            setChanged();
-            notifyObservers(message);
         }
     }
 
@@ -80,13 +70,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
         }
     }
 
-    public void notifyView(SuccessMessage successMessage){
-        if(successMessage.getRecipient().equals(username)){
-            setChanged();
-            notifyObservers(successMessage);
-        }
-    }
-
     public void notifyView(RequestMessage requestMessage){
         if(requestMessage.getRecipient().equals(username)){
             setChanged();
@@ -100,6 +83,7 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             notifyObservers(successCreatePlayerMessage);
         }
     }
+
     public void notifyView(SendWinnerMessage sendWinnerMessage){
         if(sendWinnerMessage.getRecipient().equals(username)){
             setChanged();
@@ -116,97 +100,142 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     @Override
     public void update(ChooseDiceMove chooseDiceMove) {
-        server.sendToServer(chooseDiceMove);
+        try {
+            server.sendToServer(chooseDiceMove);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
-        server.sendToServer(chooseSchemaMessage);
+        try {
+            server.sendToServer(chooseSchemaMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        server.sendToServer(comebackMessage);
-    }
-
-    @Override
-    public void update(ComebackSocketMessage comebackSocketMessage) {
-        server.sendToServer(comebackSocketMessage);
+        try {
+            server.sendToServer(comebackMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(CreatePlayerMessage createPlayerMessage) {
         username = createPlayerMessage.getPlayerName();
-        server.sendToServer(createPlayerMessage);
+        try {
+            server.sendToServer(createPlayerMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(DiePlacementMessage diePlacementMessage) {
-        server.sendToServer(diePlacementMessage);
+        try {
+            server.sendToServer(diePlacementMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(ErrorMessage errorMessage) {
-        server.sendToServer(errorMessage);
+        try {
+            server.sendToServer(errorMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-        server.sendToServer(sendGameboardMessage);
+        try {
+            server.sendToServer(sendGameboardMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(NoActionMove noActionMove){
-        server.sendToServer(noActionMove);
+        try {
+            server.sendToServer(noActionMove);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
-        server.sendToServer(selectedSchemaMessage);
+        try {
+            server.sendToServer(selectedSchemaMessage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
-        server.sendToServer(showPrivateObjectiveCardsMessage);
-    }
-
-    @Override
-    public void update(SuccessMessage successMessage) {
-        server.sendToServer(successMessage);
+        try {
+            server.sendToServer(showPrivateObjectiveCardsMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
-        server.sendToServer(successCreatePlayerMessage);
-    }
-
-    @Override
-    public void update(SuccessMoveMessage successMoveMessage) {
-        server.sendToServer(successMoveMessage);
+        try {
+            server.sendToServer(successCreatePlayerMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(RequestMessage requestMessage) {
-        server.sendToServer(requestMessage);
+        try {
+            server.sendToServer(requestMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
-        server.sendToServer(toolCardActivationMessage);
+        try {
+            server.sendToServer(toolCardActivationMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
-        server.sendToServer(toolCardErrorMessage);
+        try {
+            server.sendToServer(toolCardErrorMessage);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(UseToolCardMove useToolCardMove) {
-        server.sendToServer(useToolCardMove);
+        try {
+            server.sendToServer(useToolCardMove);
+        } catch (IOException e) {
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+        }
     }
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-
+        /*should never be called*/
     }
 }

@@ -1,6 +1,5 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
-import it.polimi.se2018.model.events.messages.ComebackSocketMessage;
 import it.polimi.se2018.network.server.Server;
 
 import java.io.IOException;
@@ -26,26 +25,8 @@ public class ClientGathererSocket extends Thread{
     public void run(){
         while(true){
             Socket newClientConnection;
-            ComebackSocketMessage message = null;
             try{
                 newClientConnection = serverSocket.accept();
-                /*System.out.println("ClientGathererSocket found new connection.");
-                try{
-                    ObjectOutputStream temporaryOutputStream = new ObjectOutputStream(newClientConnection.getOutputStream());
-                    temporaryOutputStream.writeObject("ConnectionEnabled");
-                    System.out.println("handshake sent.");
-                } catch (IOException e){
-                    e.printStackTrace();
-                }
-                try{
-                    ObjectInputStream temporaryInputStream = new ObjectInputStream(newClientConnection.getInputStream());
-                    message = (ComebackSocketMessage) temporaryInputStream.readObject();
-                    System.out.println("New connection is a comeback connection.");
-                    server.resetOldClientSocket(newClientConnection, message.getUsername());
-                } catch (ClassNotFoundException | ClassCastException e ) {
-                    System.out.println("New connection is a new game connection.");
-                    server.addClient(newClientConnection);
-                }*/
                 server.addClient(newClientConnection);
             } catch (IOException e){
                 e.printStackTrace();

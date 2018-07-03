@@ -98,6 +98,11 @@ public class NotifyingThread extends Thread{
                     inputMessage = readPlayerName();
                     break;
                 }
+                case INPUT_OLD_PLAYER_NAME:{
+                    /*user inserts his old username to reconnect*/
+                    inputMessage = readOldPlayerName();
+                    break;
+                }
                 case INPUT_SCHEMA_CARD:{
                     /*player chooses the schema card*/
                     inputMessage = readSchemaCard();
@@ -191,6 +196,7 @@ public class NotifyingThread extends Thread{
     }
 
     /*done thread safe, not required quit*/
+
     private Message readNewConnectionChoice() {
         int choice;
         System.out.print("You've been banned from the match due to inactivity, choose what to do:\n" +
@@ -208,14 +214,11 @@ public class NotifyingThread extends Thread{
         if(choice==1){
             return new ComebackMessage(username, "server", username);
         } else {
-            for(ThreadCompleteListener listener: listeners){
-                listener.quit();
-            }
             return new ErrorMessage("quit", "quit", "quit");
         }
     }
-
     /*already thread safe, not required quit*/
+
     private Message readPlayerName() {
         boolean wrongInput = true;
         String username = "";
@@ -230,6 +233,30 @@ public class NotifyingThread extends Thread{
             }
         }
         return new CreatePlayerMessage(username, "server", username);
+    }
+
+    private Message readOldPlayerName() {
+        String oldUsername;
+        Message message = null;
+        boolean wrongInput;
+        oldUsername = readUsernameFromMemory();
+        if(oldUsername.equals("NoUsernameFound")){
+            wrongInput = true;
+            while (wrongInput){
+                System.out.print("Old Username: ");
+                oldUsername = scanner.nextLine();
+                oldUsername = oldUsername.trim();
+                if(!oldUsername.equals("") && !oldUsername.equals("\n")){
+                    message = new ComebackMessage(oldUsername, "server", oldUsername);
+                    wrongInput = false;
+                } else {
+                    wrongInput = true;
+                }
+            }
+        } else {
+            message = new ComebackMessage(oldUsername, "server", oldUsername);
+        }
+        return message;
     }
 
     /*done thread safe, not required quit*/
@@ -596,7 +623,7 @@ public class NotifyingThread extends Thread{
         } else {
             builder.append("RoundNumber: ")
                     .append(choice-1)
-                    .append("");
+                    .append(" ");
         }
         System.out.println("Choose a die from the Round Track:");
         choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
@@ -605,7 +632,7 @@ public class NotifyingThread extends Thread{
             return new ToolCardErrorMessage(username, "server", toolCardUsageID,
                     "InputQuit", null);
         } else {
-            builder.append("RoundNumber: ")
+            builder.append("RoundTrackPosition: ")
                     .append(choice-1)
                     .append(" ");
         }
@@ -720,6 +747,7 @@ public class NotifyingThread extends Thread{
      */
     private  int readFromMemory(){
         int choice;
+
         String[] inputLines = inputMemoryString.split("\n");
         if(inputLines[inputLines.length-1].equals("null")){
             System.out.println("player has typed nothing");
@@ -741,7 +769,18 @@ public class NotifyingThread extends Thread{
                 return -1;
             }
         }
+    }
 
+    private String readUsernameFromMemory(){
+        String[] inputLines = inputMemoryString.split("\n");
+        if(inputLines[inputLines.length-1].equals("null")){
+            /*player has typed nothing before his turn*/
+            setInputMemoryString("null\n");
+            return "NoUsernameFound";
+        } else {
+            /*player has typed something before his turn*/
+            return inputLines[inputLines.length - 1];
+        }
     }
 
     public static void setInputMemoryString(String newMemory){

@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 public class FileParser {
 
     private static final String FILE_NOT_FOUND = "Impossible to find the file";
+    private static final int LATHEKIN_NUMBER = 4;
+    private static final int TAP_WHEEL_NUMBER = 12;
 
     public int readPortSocket(String fileAddress) {
         int filePortSocket = 1099;
@@ -156,9 +158,7 @@ public class FileParser {
         ToolCard newToolCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            System.out.println("reading file: " + fileEntry.getName());
             newToolCard = readSingleToolCard(fileEntry, toolCardNumber);
-            System.out.println("read tool card: " + newToolCard.getName() + ".");
             if(!newToolCard.getIdentificationName().equals("")){
                 return newToolCard;
             }
@@ -187,6 +187,7 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
+                    System.out.println("reading: " + words[i]);
                     if(words[i].trim().equalsIgnoreCase("number:") &&
                             toolCardNumber == Integer.parseInt(words[i+1])){
                         cardFound = true;
@@ -244,12 +245,9 @@ public class FileParser {
         String name = "";
         String description = "";
         int points =0;
-        String effect = "";
         OCEffectFactory factory = new OCEffectFactory();
-        ObjectiveCardEffectInterface effectOC = null;
-        isPrivate=isPrivate;
+        ObjectiveCardEffectInterface effectOC = null;;
         Scanner inputFile = null;
-
         try{
             inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\model\\objective_cards\\ObjectiveCards"));
             String line = "";
@@ -361,9 +359,7 @@ public class FileParser {
         } finally {
             inputFile.close();
         }
-        System.out.println("about to create the ObjectiveCard with name is: " + name);
         return new ObjectiveCard(name, description, points,effectOC);
-
     }
 
     public SchemaCard createSchemaCardByNumber(String folderAddress, int schemaCardNumber){
@@ -621,11 +617,9 @@ public class FileParser {
     public String searchIDByNumber(String folderAddress, int toolCardNumber){
         File folder = new File(folderAddress);
         for(final File fileEntry : folder.listFiles()){
-            System.out.println("reading: " + fileEntry.getName());
             if(fileEntry.isFile()){
                 String foundID = getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
                 if(!foundID.equals("")) {
-                    System.out.println("ID: " + foundID);
                     return getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
                 }
             }
@@ -673,7 +667,6 @@ public class FileParser {
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
             if(fileEntry.isFile()){
-                int tapWheelNumber = 12;
                 try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
                     String line = "";
                     boolean hasNextLine = true;
@@ -688,7 +681,7 @@ public class FileParser {
                         int i = 0;
                         while(i<words.length){
                             if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    tapWheelNumber == Integer.parseInt(words[i+1])){
+                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
                                 cardFound = true;
                                 i++;
                             }
@@ -713,7 +706,6 @@ public class FileParser {
     }
 
     public void writeTapWheelUsingValue(String folderAddress, boolean isBeingUsed){
-        final int tapWheelNumber = 12;
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
@@ -732,7 +724,7 @@ public class FileParser {
                         int i = 0;
                         while(i<words.length){
                             if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    tapWheelNumber == Integer.parseInt(words[i+1])){
+                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
                                 cardFound = true;
                                 i++;
                             }
@@ -750,7 +742,6 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                    System.out.println("backup file: " + fileBackup.toString());
                     if(cardFound) {
                         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
                             writer.write(fileBackup.toString());
@@ -766,46 +757,7 @@ public class FileParser {
     }
 
     public Color getTapWheelFirstColor(String folderAddress){
-        final int tapWheelNumber = 12;
         File folder = new File(folderAddress);
-        for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
-                    try{
-                        line = inputFile.nextLine();
-                    } catch (NoSuchElementException e){
-                        hasNextLine = false;
-                    }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    tapWheelNumber == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("color:")){
-                                return Color.valueOf(words[i+1]);
-                            }
-                            i++;
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
-                }
-            }
-        }
-        return null;
-    }
-
-    public void writeTapWheelFirstColor(String folderAddress, Color firstDieMovingColor){
-        final int tapWheelNumber = 12;
-        File folder = new File(folderAddress);
-        StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
             if (fileEntry.isFile()) {
                 System.out.println("reading: " + fileEntry.getName());
@@ -823,8 +775,50 @@ public class FileParser {
                         int i = 0;
                         while(i<words.length){
                             if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    tapWheelNumber == Integer.parseInt(words[i+1])){
+                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
                                 System.out.println("found card");
+                                cardFound = true;
+                                i++;
+                            }
+                            if(cardFound && words[i].trim().equalsIgnoreCase("color:")){
+                                return Color.valueOf(words[i+1]);
+                            }
+                            i++;
+                        }
+                        try{
+                            line = inputFile.nextLine();
+                        } catch (NoSuchElementException e){
+                            hasNextLine = false;
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
+                }
+            }
+        }
+        return null;
+    }
+
+    public void writeTapWheelFirstColor(String folderAddress, Color firstDieMovingColor){
+        File folder = new File(folderAddress);
+        StringBuilder fileBackup = new StringBuilder();
+        for(File fileEntry: folder.listFiles()) {
+            if (fileEntry.isFile()) {
+                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+                    String line = "";
+                    boolean hasNextLine = true;
+                    boolean cardFound = false;
+                    try{
+                        line = inputFile.nextLine();
+                    } catch (NoSuchElementException e){
+                        hasNextLine = false;
+                    }
+                    while(hasNextLine){
+                        String[] words = line.split(" ");
+                        int i = 0;
+                        while(i<words.length){
+                            if(words[i].trim().equalsIgnoreCase("number:") &&
+                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
                                 cardFound = true;
                                 i++;
                             }
@@ -842,7 +836,165 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                    System.out.println("backup file: " + fileBackup.toString());
+                    if(cardFound) {
+                        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
+                            writer.write(fileBackup.toString());
+                        } catch (IOException e) {
+                            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
+                }
+            }
+        }
+    }
+    
+    public int[] getLathekinOldDiePositions(String folderAddress){
+        int[] positions = new int[2];
+        File folder = new File(folderAddress);
+        for(File fileEntry: folder.listFiles()){
+            if(fileEntry.isFile()){
+                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+                    String line = "";
+                    boolean hasNextLine = true;
+                    boolean cardFound = false;
+                    try{
+                        line = inputFile.nextLine();
+                    } catch (NoSuchElementException e){
+                        hasNextLine = false;
+                    }
+                    while(hasNextLine){
+                        String[] words = line.split(" ");
+                        int i = 0;
+                        while(i<words.length){
+                            if(words[i].trim().equalsIgnoreCase("number:") &&
+                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                                cardFound = true;
+                                i++;
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
+                                positions[0] = Integer.parseInt(words[i+1]);
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
+                                positions[1] = Integer.parseInt(words[i+1]);
+                            }
+                            i++;
+                        }
+                        try{
+                            line = inputFile.nextLine();
+                        } catch (NoSuchElementException e){
+                            hasNextLine = false;
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
+                }
+            }
+        }
+        return positions;
+    }
+    
+    public int[] getLathekinNewDiePositions(String folderAddress){
+        int[] positions = new int[2];
+        File folder = new File(folderAddress);
+        for(File fileEntry: folder.listFiles()){
+            if(fileEntry.isFile()){
+                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+                    String line = "";
+                    boolean hasNextLine = true;
+                    boolean cardFound = false;
+                    try{
+                        line = inputFile.nextLine();
+                    } catch (NoSuchElementException e){
+                        hasNextLine = false;
+                    }
+                    while(hasNextLine){
+                        String[] words = line.split(" ");
+                        int i = 0;
+                        while(i<words.length){
+                            if(words[i].trim().equalsIgnoreCase("number:") &&
+                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                                cardFound = true;
+                                i++;
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
+                                positions[0] = Integer.parseInt(words[i+1]);
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
+                                positions[1] = Integer.parseInt(words[i+1]);
+                            }
+                            i++;
+                        }
+                        try{
+                            line = inputFile.nextLine();
+                        } catch (NoSuchElementException e){
+                            hasNextLine = false;
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
+                }
+            }
+        }
+        return positions;
+    }
+    
+    public void writeLathekinPositions(String folderAddress, int oldDieRow, int oldDieCol, 
+                                       int newDieRow, int newDieCol){
+        File folder = new File(folderAddress);
+        StringBuilder fileBackup = new StringBuilder();
+        for(File fileEntry: folder.listFiles()) {
+            if (fileEntry.isFile()) {
+                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+                    String line = "";
+                    boolean hasNextLine = true;
+                    boolean cardFound = false;
+                    try{
+                        line = inputFile.nextLine();
+                    } catch (NoSuchElementException e){
+                        hasNextLine = false;
+                    }
+                    while(hasNextLine){
+                        String[] words = line.split(" ");
+                        int i = 0;
+                        while(i<words.length){
+                            if(words[i].trim().equalsIgnoreCase("number:") &&
+                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                                cardFound = true;
+                                i++;
+                            }
+                            if(cardFound && 
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
+                                line = "firstPlacedDieOldRow: " + oldDieRow;
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
+                                line = "firstPlacedDieOldCol: " + oldDieCol;
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
+                                line = "firstPlacedDieNewRow: " + newDieRow;
+                            }
+                            if(cardFound &&
+                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
+                                line = "firstPlacedDieNewCol: " + newDieCol;
+                            }
+                            i++;
+                        }
+                        if(cardFound){
+                            fileBackup.append(line).append("\n");
+                        }
+                        try{
+                            line = inputFile.nextLine();
+                        } catch (NoSuchElementException e){
+                            hasNextLine = false;
+                        }
+                    }
                     if(cardFound) {
                         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
                             writer.write(fileBackup.toString());

@@ -9,5 +9,4 @@ public interface ClientRMIInterface extends Remote{
 
     void updateClient(Message message) throws RemoteException;
 
-
 }

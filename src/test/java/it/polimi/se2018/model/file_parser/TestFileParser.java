@@ -30,7 +30,7 @@ public class TestFileParser {
     @Test
     public void writeTapWheelFirstColorTest(){
         FileParser parser = new FileParser();
-        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, Color.RED);
+        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, Color.RED.toString());
     }
 
     @Test

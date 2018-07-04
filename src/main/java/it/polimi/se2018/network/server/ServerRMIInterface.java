@@ -45,4 +45,6 @@ public interface ServerRMIInterface extends Remote{
     void sendToServer(ToolCardErrorMessage toolCardErrorMessage) throws RemoteException;
 
     void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException;
+
+    void sendToServer(SendWinnerMessage sendWinnerMessage) throws RemoteException;
 }

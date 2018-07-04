@@ -12,6 +12,8 @@ import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.player.ToolCardMove;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
+import it.polimi.se2018.utils.TimerLobbyTask;
+import it.polimi.se2018.utils.TimerMoves;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.util.*;
@@ -28,6 +30,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     private Timer timer;
     private int playerNumberDoneSelecting = 0;
     private boolean matchStarted;
+    private TimerLobbyTask timerLobbyTask;
+    private TimerMoves waitMovesTask;
 
     /**
      * Class constructor
@@ -35,9 +39,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public Controller() {
         this.model = new Model();
         this.timer = new Timer();
+        timerLobbyTask = new TimerLobbyTask(this, model);
     }
 
     /*placing die controller*/
+    @Override
     public void update(ChooseDiceMove message) {
         if(message.getDraftPoolPos()>model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
             setChanged();
@@ -79,29 +85,37 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        unblockPlayer(comebackMessage.getUsername());
+        if(model.getParticipants().stream().filter(
+                player -> player.getName().equalsIgnoreCase(comebackMessage.getUsername())
+        ).count()>0) {
+            unblockPlayer(comebackMessage.getUsername());
+        } else {
+            setChanged();
+            notifyObservers(new ErrorMessage("server",
+                    comebackMessage.getSender(), "OldUsernameNotFound"));
+        }
     }
 
-    public void update(CreatePlayerMessage message){
-        model.addPlayer(message.getPlayerName());
-        if(model.getParticipants().size()>1){
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(model.getParticipants().size()>1){
-                        model.sendPrivateObjectiveCard();
-                        waitSchemaCards();
-                    }
-                    if(model.getParticipants().size()<2){
-                        timer.cancel();
-                    }
-                }
-            }, 1000L*time);
+    @Override
+    public void update(CreatePlayerMessage createPlayerMessage){
+        if(!timerLobbyTask.isStarted()) {
+            if (countConnectedPlayer() > 1) {
+                timerLobbyTask.setStarted(true);
+                System.out.println("lobby timer started");
+                timer.schedule(timerLobbyTask, 1000L * time);
+            }
         }
-        if(model.getParticipants().size()==4){
-            timer.cancel();
-            waitSchemaCards();
-            model.sendPrivateObjectiveCard();
+        if(!timerLobbyTask.isEnded()) {
+            model.addPlayer(createPlayerMessage.getPlayerName());
+            if (countConnectedPlayer() == 4) {
+                timer.cancel();
+                model.sendPrivateObjectiveCard();
+                waitSchemaCards();
+            }
+        } else {
+            setChanged();
+            notifyObservers(new ErrorMessage("server", createPlayerMessage.getPlayerName(),
+                    "LobbyTimeEnded"));
         }
     }
 
@@ -131,7 +145,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ErrorMessage errorMessage) {
-        /*this method should never be called*/
+
     }
 
     @Override
@@ -139,6 +153,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         /*this method should never be called*/
     }
 
+    @Override
     public void update(SelectedSchemaMessage message) {
         if(!matchStarted) {
             model.getParticipants().stream().filter(
@@ -162,14 +177,32 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
+    @Override
     public void update(NoActionMove message){
-        timer.cancel();
-        model.updateTurnOfTheRound();
-        if(!model.getParticipants().get(model.getTurnOfTheRound()).isConnected()){
-            update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), "server"));
+        if(!waitMovesTask.hasEnded()){
+            timer.cancel();
         }
-        model.updateGameboard();
-        waitMoves();
+        model.getParticipants().stream().filter(
+                p -> p.getName().equals(message.getSender())
+        ).forEach(
+                p -> {
+                    if(model.isFirstDraftOfDice()) {
+                        p.getPlayerTurns()[model.getRoundNumber()].getTurn1().getDieMove().setBeenUsed(true);
+                        p.getPlayerTurns()[model.getRoundNumber()].getTurn1().getToolMove().setBeenUsed(true);
+                    } else {
+                        p.getPlayerTurns()[model.getRoundNumber()].getTurn2().getDieMove().setBeenUsed(true);
+                        p.getPlayerTurns()[model.getRoundNumber()].getTurn2().getToolMove().setBeenUsed(true);
+                    }
+                }
+        );
+        model.updateTurnOfTheRound();
+        if(model.getRoundNumber()<Model.MAXIMUM_ROUND_NUMBER-1 && countConnectedPlayer()>1) {
+            if(!model.getParticipants().get(model.getTurnOfTheRound()).isConnected()){
+                update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), "server"));
+            }
+            model.updateGameboard();
+            waitMoves();
+        }
     }
 
     @Override
@@ -240,7 +273,6 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                             }
                             toolCard.setAllEffectsNotDone();
                             model.updateGameboard();
-                            waitMoves();
                         }
                     }
                 }
@@ -342,9 +374,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         /*should never be called here*/
     }
 
-    private void waitSchemaCards(){
+    public void waitSchemaCards(){
         timer = new Timer();
-        System.out.println("timer started");
+        System.out.println("timer schema card started");
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -361,17 +393,10 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     private void waitMoves() {
         timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                setChanged();
-                Player activePlayer = model.getPlayer(model.getTurnOfTheRound());
-                notifyObservers(new ErrorMessage("server", activePlayer.getName(), "TimeElapsed"));
-                activePlayer.setConnected(false);
-                model.updatePlayerDisconnected(activePlayer);
-                waitMoves();
-            }
-        }, time*1000L);
+        waitMovesTask = new TimerMoves(this, model);
+        System.out.println("timer moves started");
+        timer.schedule(
+                waitMovesTask, time*1000L);
     }
 
     public void addObserverToModel(ProjectObserver observer){
@@ -406,27 +431,29 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
-    public ArrayList<String> getPlayerNames(){
-        ArrayList<String> playerNames = new ArrayList<>();
-        model.getParticipants().forEach(
-                p -> playerNames.add(p.getName())
-        );
-        return playerNames;
-    }
-
     public void blockPlayer(String username) {
         model.getParticipants().stream().filter(
                 p -> p.getName().equals(username)
         ).forEach(
-                p -> p.setConnected(false)
+                p -> {
+                    p.setConnected(false);
+                    System.out.println("setted player not connected: " + p.getName());
+                }
         );
-        if(model.getParticipants().stream().filter(
-                p -> p.isConnected()
-        ).count()<2){
+        if(countConnectedPlayer()<2){
             model.getParticipants().stream().filter(
-                    p -> p.isConnected()
+                    Player::isConnected
             ).forEach(
-                    p -> model.singlePlayerWinning(p)
+                    p -> {
+                        System.out.println("players still connected: " + p.getName());
+                        model.singlePlayerWinning(p);
+                    }
+            );
+        } else {
+            model.getParticipants().stream().filter(
+                    p -> p.getName().equals(username)
+            ).forEach(
+                    player -> update(new NoActionMove(player.getName(), "server"))
             );
         }
     }
@@ -437,5 +464,13 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         ).forEach(
                 p -> p.setConnected(true)
         );
+        setChanged();
+        notifyObservers(new ErrorMessage("server", username, "OldUsernameFound"));
+    }
+
+    public long countConnectedPlayer(){
+        return model.getParticipants().stream().filter(
+                Player::isConnected
+        ).count();
     }
 }

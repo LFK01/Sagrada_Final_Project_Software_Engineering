@@ -12,11 +12,14 @@ import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
 
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInterface{
 
     private VirtualViewRMI virtualView;
     private ClientRMIInterface remoteView;
+    private boolean isConnected;
     private Server server;
     private String username;
 
@@ -60,7 +63,10 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     @Override
     public void sendToServer(ErrorMessage errorMessage) throws RemoteException {
-        /*should never be called here*/
+        if(errorMessage.toString().equalsIgnoreCase("quit") &&
+                errorMessage.getSender().equalsIgnoreCase(username)){
+            server.removeClient(virtualView);
+        }
     }
 
     @Override
@@ -108,42 +114,52 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         virtualView.update(useToolCardMove);
     }
 
-    public void notifyClient(Message message){
-        try{
-            remoteView.updateClient(message);
-        } catch (RemoteException e) {
-            server.removeClient(virtualView);
-        }
+    @Override
+    public void sendToServer(SendWinnerMessage sendWinnerMessage) throws RemoteException {
+        virtualView.update(sendWinnerMessage);
     }
 
     public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
         try{
             remoteView.updateClient(chooseSchemaMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 1");
             server.removeClient(virtualView);
         }
     }
 
-    public void notifyClient(SendGameboardMessage sendGameboardMessage){
+    public void notifyClient(ChooseDiceMove chooseDiceMove){
         try{
-            remoteView.updateClient(sendGameboardMessage);
+            remoteView.updateClient(chooseDiceMove);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 11");
             server.removeClient(virtualView);
         }
     }
 
-    public void notifyClient(RequestMessage requestMessage){
+    public void notifyClient(ComebackMessage comebackMessage){
         try{
-            remoteView.updateClient(requestMessage);
+            remoteView.updateClient(comebackMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 2");
             server.removeClient(virtualView);
         }
     }
 
-    public void notifyClient(SendWinnerMessage sendWinnerMessage){
+    public void notifyClient(CreatePlayerMessage createPlayerMessage){
         try{
-            remoteView.updateClient(sendWinnerMessage);
+            remoteView.updateClient(createPlayerMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 3");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(DiePlacementMessage diePlacementMessage){
+        try{
+            remoteView.updateClient(diePlacementMessage);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 4");
             server.removeClient(virtualView);
         }
     }
@@ -152,6 +168,54 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         try{
             remoteView.updateClient(errorMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 5");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(NoActionMove noActionMove) {
+        try{
+            remoteView.updateClient(noActionMove);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 15");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(RequestMessage requestMessage){
+        try{
+            remoteView.updateClient(requestMessage);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 5");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(SelectedSchemaMessage selectedSchemaMessage){
+        try{
+            remoteView.updateClient(selectedSchemaMessage);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 6");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(SendGameboardMessage sendGameboardMessage){
+        try{
+            remoteView.updateClient(sendGameboardMessage);
+        } catch (RemoteException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "remoteExcpetion class: {0}", e.getClass());
+            System.out.println("calling removeClient from virtualClientRmi 7");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(SendWinnerMessage sendWinnerMessage){
+        try{
+            remoteView.updateClient(sendWinnerMessage);
+        } catch (RemoteException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, "remoteExcpetion class: {0}", e.getClass());
+            System.out.println("calling removeClient from virtualClientRmi 8");
             server.removeClient(virtualView);
         }
     }
@@ -160,6 +224,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         try{
             remoteView.updateClient(showPrivateObjectiveCardsMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 9");
             server.removeClient(virtualView);
         }
     }
@@ -168,6 +233,34 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         try{
             remoteView.updateClient(successCreatePlayerMessage);
         } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 10");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(ToolCardActivationMessage toolCardActivationMessage) {
+        try{
+            remoteView.updateClient(toolCardActivationMessage);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 12");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(ToolCardErrorMessage toolCardErrorMessage) {
+        try{
+            remoteView.updateClient(toolCardErrorMessage);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 13");
+            server.removeClient(virtualView);
+        }
+    }
+
+    public void notifyClient(UseToolCardMove useToolCardMove) {
+        try{
+            remoteView.updateClient(useToolCardMove);
+        } catch (RemoteException e) {
+            System.out.println("calling removeClient from virtualClientRmi 14");
             server.removeClient(virtualView);
         }
     }
@@ -187,4 +280,7 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         this.username = username;
     }
 
+    public boolean isConnected(){
+        return isConnected;
+    }
 }

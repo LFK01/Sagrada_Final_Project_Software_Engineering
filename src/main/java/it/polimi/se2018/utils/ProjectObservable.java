@@ -46,14 +46,16 @@ public class ProjectObservable {
                             "\n Recipient: " + message.getRecipient());
         synchronized (observers){
             if(changed){
-                for(ProjectObserver observer: observers){
-                    try{
-                        Method update = observer.getClass().getMethod("update", message.getClass());
-                        update.invoke(observer, message);
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
+                observers.stream().forEach(
+                        o -> {
+                            try{
+                                Method update = o.getClass().getMethod("update", message.getClass());
+                                update.invoke(o, message);
+                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                System.out.println("Error on invoking a method on observer");
+                            }
+                        }
+                );
                 changed = false;
             }
         }

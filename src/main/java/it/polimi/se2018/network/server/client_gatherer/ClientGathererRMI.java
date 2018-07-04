@@ -96,6 +96,11 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
+    public void sendToServer(SendWinnerMessage sendWinnerMessage) throws RemoteException {
+        /*should be handled by RemoteViewRMI*/
+    }
+
+    @Override
     public void sendToServer(NoActionMove noActionMove) {
         /*method to be called in VirtualClientRMI*/
     }

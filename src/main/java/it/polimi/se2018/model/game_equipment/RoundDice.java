@@ -18,23 +18,13 @@ public class RoundDice {
     /**
      * Class constructor. Given the dice bag, the participants number and the round number, it creates an ArrayList
      * containing the extracted dice in that specific round.
-     * @param participantsNumber participants number, to calculate the exact number of dice to extract (participants*2+1)
      * @param diceBag the match dice bag
-     * @param currentRound round number, to track the new set of dice to extract from the dice bag. The new set will
-     *                     go from (currentRound-1)*(participantsNumber*2+1) to
-     *                     currentRound*(participantsNumber*2+1).
      */
-    //si passano al costruttore il numero dei partecipanti e il numero del turno per calcolare i dadi da pescare, più il sacchetto
-    public RoundDice(int participantsNumber, DiceBag diceBag, int currentRound) {
-
-        this.participantsNumber = participantsNumber;
-
+    public RoundDice(DiceBag diceBag) {
         for(int i = 0; i < (this.participantsNumber *2+1); i++) {
-            diceList.add(diceBag.getDice(i));  //prendo e rimuovo sempre
-            diceBag.getDiceList().remove(i); //rimuovo il dado dalla dicebag
+            diceList.add(diceBag.getDice(i));
+            diceBag.getDiceList().remove(i);
         }
-        this.round = currentRound;
-
     }
 
     /**

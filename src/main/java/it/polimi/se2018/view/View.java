@@ -18,7 +18,6 @@ import java.util.Arrays;
  *  This class, through update (Message), sends information and asks for input to the various players.
  *  This class, through update (Message) sends information and asks for input to the various players
  */
-
 public class View extends ProjectObservable implements ProjectObserver, ThreadCompleteListener{
 
     private boolean playerIsBanned;
@@ -70,6 +69,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         inputManager = InputManager.INPUT_SCHEMA_CARD;
         NotifyingThread.setPlayerIsActive(true);
+        NotifyingThread.setPlayerBanned(false);
         inputThread = new NotifyingThread(inputManager, username, schemaName);
         inputThread.addListener(this);
         inputThread.start();
@@ -94,13 +94,18 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ErrorMessage errorMessage) {
         if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
             System.out.println("Username not available!");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             this.createPlayer();
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){
             System.out.print("Maximum player number reached, impossible to connect");
+            serverIsUp = false;
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
             System.out.println("Professor Oak: \"it's not the time to use that!\"");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
@@ -114,6 +119,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
             System.out.println("You need more tokens to activate this card!");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
@@ -121,6 +128,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equals("FullCellError")){
             System.out.println("You can't place a die over another die!");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
@@ -128,6 +137,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equals("InvalidPositionError")){
             System.out.println("Selected die doesn't respect cell's restrictions");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
@@ -135,6 +146,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equals("DiceMoveAlreadyUsed")){
             System.out.println("You have already used all your moves in this round");
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
             inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
@@ -142,15 +155,26 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equalsIgnoreCase("NotValidDraftPoolPosition")){
             System.out.println("Not Valid DraftPoolPosition");
-                inputManager = InputManager.INPUT_CHOOSE_MOVE;
-                inputThread = new NotifyingThread(inputManager, username);
-                inputThread.addListener(this);
-                inputThread.start();
+            NotifyingThread.setPlayerIsActive(true);
+            NotifyingThread.setPlayerBanned(false);
+            inputManager = InputManager.INPUT_CHOOSE_MOVE;
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("TimeElapsed")){
-            playerIsBanned = true;
+            NotifyingThread.setPlayerBanned(true);
+            NotifyingThread.setPlayerIsActive(true);
+            inputManager = InputManager.INPUT_NEW_CONNECTION;
+            inputThread = new NotifyingThread(inputManager, username);
+            inputThread.addListener(this);
+            inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("ServerIsDown")){
+            setServerIsUp(false);
+        }
+        if(errorMessage.toString().equalsIgnoreCase("LobbyTimeEnded")){
+            System.out.println("Match has already started!");
             setServerIsUp(false);
         }
     }
@@ -159,6 +183,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(SendGameboardMessage sendGameboardMessage) {
         String playingPlayer;
         boolean alreadyRead = false;
+        NotifyingThread.setMatchStarted(true);
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
@@ -229,6 +254,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
                 if(playingPlayer.equals(username)){
                     NotifyingThread.setPlayerIsActive(true);
+                    NotifyingThread.setPlayerBanned(false);
                     inputManager = InputManager.INPUT_CHOOSE_MOVE;
                     inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
                     inputThread.addListener(this);
@@ -238,6 +264,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                     if(!inputThread.isAlive()) {
                         inputManager = InputManager.INPUT_PLAYER_DISABLED;
                         NotifyingThread.setPlayerIsActive(false);
+                        NotifyingThread.setPlayerBanned(false);
                         inputThread = new NotifyingThread(inputManager, username, toolCardIDs);
                         inputThread.addListener(this);
                         inputThread.start();
@@ -289,6 +316,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         inputManager = requestMessage.getInputManager();
         System.out.println(inputManager.toString());
         NotifyingThread.setPlayerIsActive(true);
+        NotifyingThread.setPlayerBanned(false);
         inputThread = new NotifyingThread(inputManager, username, toolCardUsageName,
                 draftPoolDiceNumber);
         inputThread.addListener(this);
@@ -328,6 +356,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             System.out.println("Player: " +sendWinnerMessage.getParticipants().get(i)+
                     "\n"+ "score: " + sendWinnerMessage.getScore().get(i));
         }
+        gameHasEnded = true;
     }
 
     @Override
@@ -344,6 +373,8 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         String[] myString =toolCardErrorMessage.getErrorInformation().split(" ");
         int draftPoolPosition = Integer.parseInt(myString[1]);
+        NotifyingThread.setPlayerIsActive(true);
+        NotifyingThread.setPlayerBanned(false);
         inputManager = toolCardErrorMessage.getInputManager();
         System.out.println("Wrong Input Parameters! Choose different values:");
         inputThread = new NotifyingThread(inputManager, username, toolCardErrorMessage.getToolCardID(),draftPoolPosition);
@@ -354,24 +385,19 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     @Override
     public void notifyOfThreadComplete(Thread thread, Message message) {
         setChanged();
-        if(!message.getSender().equalsIgnoreCase("quit")){
+        if(message.getClass().equals(ErrorMessage.class) &&
+                message.toString().equalsIgnoreCase("quit")){
+            notifyObservers(message);
+            playerWantsToContinue = false;
+            gameHasEnded = true;
+        } else {
             notifyObservers(message);
             playerWantsToContinue = true;
             playerIsBanned = false;
-        } else {
-            playerWantsToContinue = false;
         }
     }
 
-    public void askNewConnection(){
-        inputManager = InputManager.INPUT_NEW_CONNECTION;
-        inputThread = new NotifyingThread(inputManager, username);
-        inputThread.addListener(this);
-        inputThread.start();
-    }
-
     public void askOldUsername(){
-        playerIsBanned = false;
         inputManager = InputManager.INPUT_OLD_PLAYER_NAME;
         inputThread = new NotifyingThread(inputManager, username);
         inputThread.addListener(this);
@@ -387,6 +413,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     public boolean playerWantsToContinue() {
+        if(inputThread.isAlive()) {
+            try {
+                inputThread.join();
+            } catch (InterruptedException e) {
+                playerWantsToContinue = false;
+            }
+        }
         return playerWantsToContinue;
     }
 
@@ -397,4 +430,5 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void setServerIsUp(boolean serverIsUp) {
         this.serverIsUp = serverIsUp;
     }
+
 }

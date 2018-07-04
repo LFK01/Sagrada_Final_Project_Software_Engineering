@@ -34,7 +34,7 @@ public class Client {
 
     private boolean connectionEstablished;
 
-    public Client() throws InterruptedException {
+    public Client() {
         connectionEstablished = false;
         boolean gameHasEnded = false;
 
@@ -42,23 +42,34 @@ public class Client {
         view.setServerIsUp(false);
 
         while(!gameHasEnded){
-            Thread.sleep(10);
+            //System.out.println("gameHasNotEnded");
             if(view.isServerUp()){
                 if(!view.isPlayerBanned()){
+                    //System.out.println("PlayerIsNotBanned");
                     gameHasEnded = view.hasGameEnded();
                 } else {
-                    view.askNewConnection();
+                    //System.out.println("PlayerHasBeenBanned");
                     if (view.playerWantsToContinue()){
+                        //System.out.println("PlayerWantsToContinue");
                         doComeBackConnection();
                     } else {
+                        //System.out.println("PlayerWantsToQuit");
                         gameHasEnded = true;
                     }
                 }
             } else {
+                //System.out.println("ServerIsNotUp");
                 establishConnection();
                 gameHasEnded = view.hasGameEnded();
             }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        System.out.println("ThreadClientHasTerminated");
+        System.exit(0);
     }
 
     private void establishConnection(){
@@ -134,8 +145,8 @@ public class Client {
         while (!connectionEstablished){
             readPortsFromFile();
             System.out.println("Type 1 to choose RMI connection\n" +
-                    "Type 2 to choose Socket connection\n");
-            choice = readChoiceBetweenValues(1, 2, "Choice");
+                    "Type 2 to choose Socket connection");
+            choice = readChoiceBetweenValues(1, 2, "Choice: ");
             switch (choice){
                 case 1:{
                     setupRMIConnection();
@@ -173,7 +184,7 @@ public class Client {
         return choice;
     }
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String args[]){
         new Client();
     }
 }

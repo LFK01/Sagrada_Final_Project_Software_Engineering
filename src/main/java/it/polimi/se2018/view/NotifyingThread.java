@@ -12,16 +12,21 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class NotifyingThread extends Thread{
 
     private static final String QUIT_QUOTE = "Type \"quit\" to interrupt the move\n";
     private static final String ERROR_QUOTE = "Wrong input!";
     private static final String STANDARD_CHOICE_QUOTE = "Choice: ";
-    private static final String CHANGE_VALUE_QUOTE = "Choose a die from the draftpool to change its values:";
+    private static final String CHANGE_VALUE_QUOTE = "Choose a die from the Draft Pool to change its values:";
     private static volatile String inputMemoryString = "null\n";
     private static volatile boolean playerIsActive = false;
     private static volatile boolean playerDisabledThreadHasEnded = true;
+    private static volatile boolean playerEnableThreadHasEnded;
+    private static volatile boolean playerHasBeenBanned = false;
+    private static volatile boolean matchHasStarted = false;
+    private Message inputMessage;
     private final Set<ThreadCompleteListener> listeners = new CopyOnWriteArraySet<>();
     private final InputManager inputManager;
     private Scanner scanner;
@@ -31,7 +36,7 @@ public class NotifyingThread extends Thread{
     private String[] schemaNames;
     private String[] toolCardIDs;
 
-    public NotifyingThread(InputManager inputManager, String username) {
+    NotifyingThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -41,7 +46,7 @@ public class NotifyingThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    public NotifyingThread(InputManager inputManager, String username, String[] names) {
+    NotifyingThread(InputManager inputManager, String username, String[] names) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -51,18 +56,8 @@ public class NotifyingThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID) {
-        scanner = new Scanner(new InputStreamReader(System.in));
-        this.inputManager = inputManager;
-        this.username = username;
-        this.schemaNames = null;
-        this.toolCardIDs = null;
-        this.toolCardUsageID = toolCardUsageID;
-        this.draftPoolDiceNumber = -1;
-    }
-
-    public NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
-                           int draftPoolDiceNumber) {
+    NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
+                    int draftPoolDiceNumber) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -85,147 +80,148 @@ public class NotifyingThread extends Thread{
     @Override
     public final void run(){
         System.out.println("starting w/" + inputManager.toString());
-        Message inputMessage = null;
-        try{
-            switch (inputManager){
-                case INPUT_NEW_CONNECTION:{
-                    /*lets the player decide whether or not to reconnect*/
-                    inputMessage = readNewConnectionChoice();
-                    break;
-                }
-                case INPUT_PLAYER_NAME:{
-                    /*user chooses his name*/
-                    inputMessage = readPlayerName();
-                    break;
-                }
-                case INPUT_OLD_PLAYER_NAME:{
-                    /*user inserts his old username to reconnect*/
-                    inputMessage = readOldPlayerName();
-                    break;
-                }
-                case INPUT_SCHEMA_CARD:{
-                    /*player chooses the schema card*/
-                    inputMessage = readSchemaCard();
-                    break;
-                }
-                case INPUT_CHOOSE_MOVE:{
-                    /*player chooses which move to do
-                    * place a die, use a tool card or forfeit*/
-                    inputMessage = readMove();
-                    break;
-                }
-                case INPUT_CHOOSE_DIE:{
-                    /*player picks a die from the draftPool
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readChosenDie();
-                    break;
-                }
-                case INPUT_CHOOSE_DIE_PLACE_DIE:{
-                    /*player drafts a die from the pool and
-                    * places it on his schema card.
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readChosenDieToPlace();
-                    break;
-                }
-                case INPUT_PLACE_DIE:{
-                    /*player drafts a die from the pool and
-                     * places it on his schema card.
-                     * this case generates a DiePlacementMessage*/
-                    inputMessage = readPositions();
-                    break;
-                }
-                case INPUT_TOOL_PLACE_DIE:{
-                    /*player choose where to place a die
-                    * which may have been modified.
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readToolPositions();
-                    break;
-                }
-                case INPUT_MODIFY_DIE_VALUE:{
-                    /*player picks a die to modifiy his value
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readDieToModify();
-                    break;
-                }
-                case INPUT_INCREASE_DIE_VALUE:{
-                    /*player picks a die from draftPool and chooses whether or not to
-                    * increase its value
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readDieToModifyAndIncreaseChoice();
-                    break;
-                }
-                case INPUT_MOVE_DIE_ON_WINDOW:{
-                    /*player picks a die from his window and decides
-                    * where to place it
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readMultiplePositions();
-                    break;
-                }
-                case INPUT_CHOOSE_VALUE:{
-                    /*player chooses a value for a die
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readValue();
-                    break;
-                }
-                case INPUT_POSITION_DRAFTPOOL_POSITION_ROUNDTRACK:{
-                    /*player chooses a die on the draftPool and a die on the RoundTrack
-                    * this case generates a ToolCardActivationMessage*/
-                    inputMessage = readDraftPoolRoundTrackPositions();
-                    break;
-                }
-                case INPUT_VOID_TOOL_CARD:{
-                    /*player has nothing to do, a message is
-                    * sent automatically with empty values*/
-                    inputMessage = new ToolCardActivationMessage(username, "server",
-                            toolCardUsageID, "");
-                    break;
-                }
-                case INPUT_PLAYER_DISABLED:{
-                    /*player cannot choose any move, this method is implemented to synchronize
-                    * between disabled state and active state and to handle the
-                    * scanner input*/
-                    inputMessage = readPlayerDisabledInput();
-                    break;
-                }
+        inputMessage = new ErrorMessage("doNotSend", "doNotSend", "doNotSend");
+        switch (inputManager){
+            case INPUT_NEW_CONNECTION:{
+                /*lets the player decide whether or not to reconnect*/
+                inputMessage = readNewConnectionChoice();
+                break;
             }
-        } finally {
-            if(!inputMessage.getRecipient().equals("doNotSend")) {
-                notifyListeners(inputMessage);
+            case INPUT_PLAYER_NAME:{
+                /*user chooses his name*/
+                inputMessage = readPlayerName();
+                break;
             }
+            case INPUT_OLD_PLAYER_NAME:{
+                /*user inserts his old username to reconnect*/
+                inputMessage = readOldPlayerName();
+                break;
+            }
+            case INPUT_SCHEMA_CARD:{
+                /*player chooses the schema card*/
+                readSchemaCard();
+                break;
+            }
+            case INPUT_CHOOSE_MOVE:{
+                /*player chooses which move to do
+                * place a die, use a tool card or forfeit*/
+                readMove();
+                break;
+            }
+            case INPUT_CHOOSE_DIE:{
+                /*player picks a die from the draftPool
+                * this case generates a ToolCardActivationMessage*/
+                readChosenDie();
+                break;
+            }
+            case INPUT_CHOOSE_DIE_PLACE_DIE:{
+                /*player drafts a die from the pool and
+                * places it on his schema card.
+                * this case generates a ToolCardActivationMessage*/
+                readChosenDieToPlace();
+                break;
+            }
+            case INPUT_PLACE_DIE:{
+                /*player drafts a die from the pool and
+                 * places it on his schema card.
+                 * this case generates a DiePlacementMessage*/
+                readPositions();
+                break;
+            }
+            case INPUT_TOOL_PLACE_DIE:{
+                /*player choose where to place a die
+                * which may have been modified.
+                * this case generates a ToolCardActivationMessage*/
+                readToolPositions();
+                break;
+            }
+            case INPUT_MODIFY_DIE_VALUE:{
+                /*player picks a die to modifiy his value
+                * this case generates a ToolCardActivationMessage*/
+                readDieToModify();
+                break;
+            }
+            case INPUT_INCREASE_DIE_VALUE:{
+                /*player picks a die from draftPool and chooses whether or not to
+                * increase its value
+                * this case generates a ToolCardActivationMessage*/
+                readDieToModifyAndIncreaseChoice();
+                break;
+            }
+            case INPUT_MOVE_DIE_ON_WINDOW:{
+                /*player picks a die from his window and decides
+                * where to place it
+                * this case generates a ToolCardActivationMessage*/
+                readMultiplePositions();
+                break;
+            }
+            case INPUT_CHOOSE_VALUE:{
+                /*player chooses a value for a die
+                * this case generates a ToolCardActivationMessage*/
+                readValue();
+                break;
+            }
+            case INPUT_POSITION_DRAFTPOOL_POSITION_ROUNDTRACK:{
+                /*player chooses a die on the draftPool and a die on the RoundTrack
+                * this case generates a ToolCardActivationMessage*/
+                readDraftPoolRoundTrackPositions();
+                break;
+            }
+            case INPUT_VOID_TOOL_CARD:{
+                /*player has nothing to do, a message is
+                * sent automatically with empty values*/
+                inputMessage = new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, "");
+                break;
+            }
+            case INPUT_PLAYER_DISABLED:{
+                /*player cannot choose any move, this method is implemented to synchronize
+                * between disabled state and active state and to handle the
+                * scanner input*/
+                readPlayerDisabledInput();
+                break;
+            }
+        }
+        if(!inputMessage.getRecipient().equals("doNotSend")) {
+            notifyListeners(inputMessage);
         }
     }
 
-    /*done thread safe, not required quit*/
-
-    private Message readNewConnectionChoice() {
-        int choice;
+    private synchronized Message readNewConnectionChoice() {
+        int choice = 0;
         System.out.print("You've been banned from the match due to inactivity, choose what to do:\n" +
                 "1 Reconnect to the game\n" +
                 "2 Quit\n" +
                 STANDARD_CHOICE_QUOTE);
+        threadDisabledInputJoin();
+        threadEnabledInputJoin();
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesIncluded(1,2, STANDARD_CHOICE_QUOTE);
+        System.out.println("read memory for connectionChoice, choice: " + choice);
+        if (choice == -1) {
+            System.out.println("new connection choice asking new input");
+            choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE, "newCoonectionChoice1");
         } else {
             if (choice < 1 || choice > 2) {
-                choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE);
+                System.out.println(ERROR_QUOTE);
+                System.out.println("new connection choice asking new input");
+                choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE, "newCoonectionChoice2");
             }
         }
         if(choice==1){
             return new ComebackMessage(username, "server", username);
         } else {
-            return new ErrorMessage("quit", "quit", "quit");
+            System.out.println("player wants to quit");
+            return new ErrorMessage(username, "server", "quit");
         }
     }
-    /*already thread safe, not required quit*/
 
-    private Message readPlayerName() {
+    private synchronized Message readPlayerName() {
         boolean wrongInput = true;
         String username = "";
-        while(wrongInput){
+        while (wrongInput) {
             System.out.print("New Username: ");
             username = scanner.nextLine();
-            if(username.equals("") || username.equals("\n")){
+            if (username.equals("") || username.equals("\n")) {
                 System.out.println("Not valid username!");
                 wrongInput = true;
             } else {
@@ -235,18 +231,18 @@ public class NotifyingThread extends Thread{
         return new CreatePlayerMessage(username, "server", username);
     }
 
-    private Message readOldPlayerName() {
+    private synchronized Message readOldPlayerName() {
         String oldUsername;
         Message message = null;
         boolean wrongInput;
         oldUsername = readUsernameFromMemory();
-        if(oldUsername.equals("NoUsernameFound")){
+        if (oldUsername.equals("NoUsernameFound")) {
             wrongInput = true;
-            while (wrongInput){
+            while (wrongInput) {
                 System.out.print("Old Username: ");
                 oldUsername = scanner.nextLine();
                 oldUsername = oldUsername.trim();
-                if(!oldUsername.equals("") && !oldUsername.equals("\n")){
+                if (!oldUsername.equals("") && !oldUsername.equals("\n")) {
                     message = new ComebackMessage(oldUsername, "server", oldUsername);
                     wrongInput = false;
                 } else {
@@ -259,388 +255,592 @@ public class NotifyingThread extends Thread{
         return message;
     }
 
-    /*done thread safe, not required quit*/
-    private Message readSchemaCard(){
+    private synchronized void readSchemaCard() {
         int choice;
         System.out.println("Choose schema card number: ");
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
+        threadDisabledInputJoin();
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER*2,
-                    "Schema card number: ");
+        System.out.println("read memory from schema card, choice: " + choice);
+        if (choice == -1) {
+            System.out.println("schema card asking new input");
+            choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2,
+                    "Schema card number: ", "readSchemaCard2");
+            if (playerHasBeenBanned || matchHasStarted) {
+                saveChoiceToMemory(choice);
+            } else {
+                System.out.println("Chosen schema name: " + schemaNames[choice - 1]);
+                saveMessageToSend(new SelectedSchemaMessage(username, "server", schemaNames[choice - 1]));
+            }
         } else {
-            if(choice<1 || choice>Model.SCHEMA_CARDS_EXTRACT_NUMBER*2){
-                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER*2,
-                        "Schema card number: ");
+            if (choice < 1 || choice > Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2) {
+                System.out.println("schema card asking new input");
+                System.out.println(ERROR_QUOTE);
+                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2,
+                        "Schema card number: ", "readSchemaCard1");
+                if (playerHasBeenBanned || matchHasStarted) {
+                    saveChoiceToMemory(choice);
+                } else {
+                    System.out.println("Chosen schema name: " + schemaNames[choice - 1]);
+                    saveMessageToSend(new SelectedSchemaMessage(username, "server", schemaNames[choice - 1]));
+                }
+            } else {
+                if (playerHasBeenBanned || matchHasStarted) {
+                    saveChoiceToMemory(choice);
+                } else {
+                    System.out.println("Chosen schema name: " + schemaNames[choice - 1]);
+                    saveMessageToSend(new SelectedSchemaMessage(username, "server", schemaNames[choice - 1]));
+                }
             }
         }
-        System.out.println("schemaName: " + schemaNames[choice-1]);
-        return new SelectedSchemaMessage(username,"server", schemaNames[choice -1]);
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done thread safe, not required quit*/
-    private Message readMove() {
-        Message message = null;
+    private synchronized void readMove() {
         int choice;
         int toolCardNumber;
-        System.out.print("It's your Turn! Type the number of your choice:\n" +
+        System.out.println("It's your Turn! Type the number of your choice:\n" +
                 "1 Place a die\n" +
                 "2 Use a ToolCard\n" +
-                "3 Do nothing\n" +
-                STANDARD_CHOICE_QUOTE);
-        waitThreadEnd();
-        System.out.println("player has become active");
+                "3 Do nothing");
+        playerEnableThreadHasEnded = false;
+        threadDisabledInputJoin();
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE);
+        System.out.println("read memory from readMove, choice: " + choice);
+        if (!playerHasBeenBanned) {
+            System.out.println("Player is not banned");
+            if (choice == -1) {
+                System.out.println("choose move asking new input");
+                choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE,
+                        "readMove1");
+            } else {
+                if (choice < 1 || choice > 3) {
+                    System.out.println("choose move asking new input");
+                    System.out.println(ERROR_QUOTE);
+                    choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE,
+                            "readMove2");
+                }
+            }
+            if(!playerHasBeenBanned) {
+                switch (choice) {
+                    case 1: {
+                        int diceOnRoundDice;
+                        System.out.println("Take a die from the draftPool:");
+                        diceOnRoundDice = readChoiceBetweenValuesIncluded(1,
+                                Model.MAXIMUM_PLAYER_NUMBER * 2 + 1, "Die position: ", "readMove3");
+                        if (!playerHasBeenBanned) {
+                            saveMessageToSend(new ChooseDiceMove(username, "server", diceOnRoundDice - 1));
+                        } else {
+                            saveChoiceToMemory(diceOnRoundDice);
+                        }
+                        break;
+                    }
+                    case 2: {
+                        System.out.println("Choose a tool card number:");
+                        toolCardNumber = readChoiceBetweenValuesIncluded(1, Model.TOOL_CARDS_EXTRACT_NUMBER,
+                                "Tool card number: ", "readMove4");
+                        if (!playerHasBeenBanned) {
+                            saveMessageToSend(new UseToolCardMove(username, "server",
+                                    toolCardIDs[toolCardNumber - 1]));
+                        } else {
+                            saveChoiceToMemory(toolCardNumber);
+                        }
+                        break;
+                    }
+                    case 3: {
+                        System.out.println("You have chose to forfeit this turn.");
+                        saveMessageToSend(new NoActionMove(username, "server"));
+                        break;
+                    }
+                }
+            }
+            else {
+                saveChoiceToMemory(choice);
+            }
         } else {
-            if(choice<1 || choice>3){
-                System.out.println(ERROR_QUOTE);
-                choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE);
-            }
+            saveChoiceToMemory(choice);
         }
-        switch (choice){
-            case 1:{
-                int diceOnRoundDice;
-                System.out.println("Take a die from the draftPool:");
-                diceOnRoundDice = readChoiceBetweenValuesIncluded(1,
-                        Model.MAXIMUM_PLAYER_NUMBER*2 +1, "Die position: ");
-                message = new ChooseDiceMove(username,"server", diceOnRoundDice-1);
-                break;
-            }
-            case 2:{
-                toolCardNumber = readChoiceBetweenValuesIncluded(1, Model.TOOL_CARDS_EXTRACT_NUMBER,
-                        "Tool card number: ");
-                message = new UseToolCardMove(username, "server",
-                        toolCardIDs[toolCardNumber-1]);
-                break;
-            }
-            case 3:{
-                System.out.println("You have chose to forfeit this turn");
-                message = new NoActionMove(username,"server");
-                break;
-            }
-        }
-        return message;
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done thread safe, not required quit*/
-    private Message readChosenDie(){
+    private synchronized void readChosenDie(){
         int choice;
         System.out.println("Choose a die from the draft pool:");
         StringBuilder builder = new StringBuilder();
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                    "Position: ");
-        } else {
-            if (choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                        "Position: ");
+        if (!playerHasBeenBanned) {
+            if (choice == -1) {
+                choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER * 2 + 1,
+                        "Position: ", "readMove5");
+            } else {
+                if (choice < 1 || choice > Model.MAXIMUM_PLAYER_NUMBER * 2 + 1) {
+                    choice = readChoiceBetweenValuesIncluded(1, Model.MAXIMUM_PLAYER_NUMBER * 2 + 1,
+                            "Position: ", "readMove6");
+                }
             }
+            if (playerHasBeenBanned) {
+                builder.append("draftPoolDiePosition: ").append(choice - 1).append(" ");
+                new ToolCardActivationMessage(username, "server", toolCardUsageID,
+                        builder.toString());
+            } else {
+                saveChoiceToMemory(choice);
+            }
+        } else {
+            saveChoiceToMemory(choice);
         }
-        builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-        return new ToolCardActivationMessage(username, "server", toolCardUsageID,
-                builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done thread safe, quit safe*/
-    private Message readChosenDieToPlace(){
+    private synchronized void readChosenDieToPlace(){
         int choice;
         System.out.println("Choose a die from the draft pool:");
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
         StringBuilder builder = new StringBuilder();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                    "Position: ");
-        } else {
-            if (choice <1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
-                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+        if (!playerHasBeenBanned) {
+            if (choice == -1) {
+                choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER * 2 + 1,
                         "Position: ");
+            } else {
+                if (choice < 1 || choice > Model.MAXIMUM_PLAYER_NUMBER * 2 + 1) {
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER * 2 + 1,
+                            "Position: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if (playerHasBeenBanned) {
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("draftPoolDiePosition: ").append(choice - 1).append(" ");
+                    continueInput1(builder);
+                }
+            }
         } else {
-            builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-
+            saveChoiceToMemory(choice);
         }
+        playerEnableThreadHasEnded = true;
+    }
+
+    private synchronized void continueInput1(StringBuilder builder){
+        int choice;
         System.out.println("Choose where to place the selected die:");
         choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
                 "Row: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("row: ").append(choice-1).append(" ");
-        }
-        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
-                "Column: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("col: ").append(choice-1).append(" ");
-        }
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
-    }
-
-    /*done, not required quit*/
-    private Message readPositions(){
-        StringBuilder builder = new StringBuilder();
-        int choice;
-        System.out.println("Choose die position:");
-        waitThreadEnd();
-        choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
-                    "Row: ");
-        } else{
-            if (choice<1 || choice >Model.SCHEMA_CARD_ROWS_NUMBER){
-                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
-                        "Row: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("row: ").append(choice - 1).append(" ");
+                continueInput2(builder);
             }
+        } else {
+            saveChoiceToMemory(choice);
         }
-        builder.append("row: ").append(choice-1).append(" ");
-        choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
-                "Column: ");
-        builder.append("col: ").append(choice-1).append(" ");
-        builder.append("DraftPoolDiePosition: ")
-                .append(draftPoolDiceNumber)
-                .append(" ");
-        System.out.println(builder.toString());
-        return new DiePlacementMessage(username,"server", builder.toString());
     }
 
-    /*done, quit safe*/
-    private Message readToolPositions(){
+    private synchronized void continueInput2(StringBuilder builder){
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("col: ").append(choice - 1).append(" ");
+                saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, builder.toString()));
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void readPositions(){
+        StringBuilder builder = new StringBuilder();
+        int choice;
+        System.out.println("Choose die position:");
+        playerEnableThreadHasEnded = false;
+        choice = readFromMemory();
+        if (!playerHasBeenBanned) {
+            if (choice == -1) {
+                choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                        "Row: ", "readPositions");
+            } else {
+                if (choice < 1 || choice > Model.SCHEMA_CARD_ROWS_NUMBER) {
+                    choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                            "Row: ", "readPositions");
+                }
+            }
+            if (playerHasBeenBanned) {
+                saveChoiceToMemory(choice);
+            } else {
+                builder.append("row: ").append(choice - 1).append(" ");
+                continueInput3(builder);
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+        playerEnableThreadHasEnded = true;
+    }
+
+    private synchronized void continueInput3(StringBuilder builder){
+        int choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ", "readPositions");
+        if(!playerHasBeenBanned) {
+            builder.append("col: ").append(choice - 1).append(" ");
+            builder.append("DraftPoolDiePosition: ")
+                    .append(draftPoolDiceNumber)
+                    .append(" ");
+            System.out.println(builder.toString());
+            saveMessageToSend(new DiePlacementMessage(username, "server", builder.toString()));
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void readToolPositions(){
         StringBuilder builder = new StringBuilder();
         System.out.println("Choose die position:");
+        playerEnableThreadHasEnded = false;
         int choice;
-        waitThreadEnd();
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
-                    "Row: ");
-        } else {
-            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER) {
+        if(!playerHasBeenBanned) {
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
                         "Row: ");
+            } else {
+                if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER) {
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                            "Row: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if (playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("row: ").append(choice - 1).append(" ");
+                    continueInput4(builder);
+                }
+            }
         } else {
-            builder.append("row: ").append(choice-1).append(" ");
+            saveChoiceToMemory(choice);
         }
-        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
-                "Column: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("col: ").append(choice-1).append(" ");
-        }
-        builder.append("DraftPoolDiePosition: ");
-        builder.append(draftPoolDiceNumber);
-        System.out.println(builder.toString());
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done, quit safe*/
-    private Message readDieToModify() {
+    private synchronized void continueInput4(StringBuilder builder){
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("col: ").append(choice - 1).append(" ");
+                builder.append("DraftPoolDiePosition: ");
+                builder.append(draftPoolDiceNumber);
+                System.out.println(builder.toString());
+                saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, builder.toString()));
+            }
+        }
+    }
+
+    private synchronized void readDieToModify() {
         int choice;
         System.out.println(CHANGE_VALUE_QUOTE);
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                    "Die position number: ");
-
-        } else {
-            if (choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+        if(!playerHasBeenBanned){
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
                         "Die position number: ");
+
+            } else {
+                if (choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                            "Die position number: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if(playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("draftPoolDiePosition: ").append(choice - 1).append(" ");
+                    saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                            toolCardUsageID, builder.toString()));
+                }
+            }
         } else {
-            StringBuilder builder = new StringBuilder();
-            builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-            return new ToolCardActivationMessage(username, "server",
-                    toolCardUsageID, builder.toString());
+            saveChoiceToMemory(choice);
         }
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done, quit safe*/
-    private Message readDieToModifyAndIncreaseChoice(){
+    private synchronized void readDieToModifyAndIncreaseChoice(){
         int choice;
         StringBuilder builder = new StringBuilder();
         System.out.println(CHANGE_VALUE_QUOTE);
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
+        threadDisabledInputJoin();
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                    "Die position number: ");
-        } else {
-            if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+        if(!playerHasBeenBanned) {
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
                         "Die position number: ");
+            } else {
+                if(choice<1 || choice>Model.MAXIMUM_PLAYER_NUMBER*2+1){
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                            "Die position number: ");
+                }
             }
+            if(playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("draftPoolDiePosition: ").append(choice - 1).append(" ");
+                    continueInput7(builder);
+                }
+            }
+        } else {
+            saveChoiceToMemory(choice);
         }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        }
-        builder.append("draftPoolDiePosition: ").append(choice-1).append(" ");
-        System.out.println("Do you want to increase the die value? ");
-        String stringChoice = readYesOrNoWithQuit("( Y / N ) : ");
-        if(stringChoice.equals("Error")){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        }
-        builder.append("IncreaseValue: ")
-                .append(stringChoice)
-                .append(" ");
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done, quit safe*/
-    private Message readMultiplePositions(){
+    private synchronized void continueInput7(StringBuilder builder){
+        int choice;
+        System.out.println("Do you want to increase the die value? ");
+        String stringChoice = readYesOrNoWithQuit("( Y / N ) : ");
+        if(playerHasBeenBanned){
+            try{
+                choice = Integer.parseInt(stringChoice);
+                saveChoiceToMemory(choice);
+            } catch (NumberFormatException e){
+                choice = readChoiceBetweenValuesWithQuit(1,2, STANDARD_CHOICE_QUOTE);
+                saveChoiceToMemory(choice);
+            }
+        } else {
+            if (stringChoice.equals("Error")) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("IncreaseValue: ")
+                        .append(stringChoice)
+                        .append(" ");
+                saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, builder.toString()));
+            }
+        }
+    }
+
+    private synchronized void readMultiplePositions(){
         StringBuilder builder = new StringBuilder();
         int choice;
         System.out.println("Choose a die to move from your window:");
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
-                    "Row: ");
-        } else {
-            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+        if(!playerHasBeenBanned) {
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
                         "Row: ");
+            } else {
+                if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                            "Row: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if(playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("OldDieRow: ").append(choice - 1).append(" ");
+                    continueInput8(builder);
+                }
+            }
         } else {
-            builder.append("OldDieRow: ").append(choice-1).append(" ");
+            saveChoiceToMemory(choice);
         }
-        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
-                "Column: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("OldDieCol: ").append(choice-1).append(" ");
-        }
-        System.out.println("Choose a new position where to place the selected die:");
-        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
-                "Row: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("newDieRow: ").append(choice-1).append(" ");
-        }
-        choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
-                "Column: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("newDieCol: ").append(choice-1).append(" ");
-        }
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done, quit safe*/
-    private Message readValue(){
+    private synchronized void continueInput8(StringBuilder builder){
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("OldDieCol: ").append(choice - 1).append(" ");
+                continueInput9(builder);
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void continueInput9(StringBuilder builder){
+        System.out.println("Choose a new position where to place the selected die:");
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_ROWS_NUMBER,
+                "Row: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("newDieRow: ").append(choice - 1).append(" ");
+                continueInput10(builder);
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void continueInput10(StringBuilder builder){
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.SCHEMA_CARD_COLUMNS_NUMBER,
+                "Column: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("newDieCol: ").append(choice - 1).append(" ");
+                saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, builder.toString()));
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void readValue(){
         int choice;
         StringBuilder builder = new StringBuilder();
         System.out.println("Choose a new value for the drafted die:");
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_DIE_NUMBER,
-                    "Value: ");
-        } else {
-            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+        if(!playerHasBeenBanned) {
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_DIE_NUMBER,
                         "Value: ");
+            } else {
+                if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_DIE_NUMBER,
+                            "Value: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if(playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("NewValue: ").append(choice).append(" ");
+                    builder.append("draftPoolDiePosition: ").append(draftPoolDiceNumber).append(" ");
+                    saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                            toolCardUsageID, builder.toString()));
+                }
+            }
         } else {
-            builder.append("NewValue: ").append(choice).append(" ");
+            saveChoiceToMemory(choice);
         }
-        builder.append("draftPoolDiePosition: ").append(draftPoolDiceNumber).append(" ");
-        return new ToolCardActivationMessage(username, "server", toolCardUsageID, builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    /*done, quit safe*/
-    private Message readDraftPoolRoundTrackPositions(){
+    private synchronized void readDraftPoolRoundTrackPositions(){
         int choice;
         StringBuilder builder = new StringBuilder();
         System.out.println("Choose a die from the draft pool: ");
-        waitThreadEnd();
+        playerEnableThreadHasEnded = false;
         choice = readFromMemory();
-        if(choice == -1){
-            choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                    "Position: ");
-        } else {
-            if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+        if(!playerHasBeenBanned){
+            if(choice == -1){
                 choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
                         "Position: ");
+            } else {
+                if (choice<1 || choice>Model.SCHEMA_CARD_ROWS_NUMBER){
+                    choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                            "Position: ");
+                }
             }
-        }
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
+            if(playerHasBeenBanned){
+                saveChoiceToMemory(choice);
+            } else {
+                if (choice == -1) {
+                    saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                            "InputQuit", null));
+                } else {
+                    builder.append("DraftPoolPosition: ")
+                            .append(choice - 1)
+                            .append(" ");
+                    continueInput5(builder);
+                }
+            }
         } else {
-            builder.append("DraftPoolPosition: ")
-                    .append(choice-1)
-                    .append(" ");
+            saveChoiceToMemory(choice);
         }
-        System.out.println("Choose a round of the round track: ");
-        choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_ROUND_NUMBER, "Round: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("RoundNumber: ")
-                    .append(choice-1)
-                    .append(" ");
-        }
-        System.out.println("Choose a die from the Round Track:");
-        choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
-                "Position: ");
-        if(choice == -1){
-            return new ToolCardErrorMessage(username, "server", toolCardUsageID,
-                    "InputQuit", null);
-        } else {
-            builder.append("RoundTrackPosition: ")
-                    .append(choice-1)
-                    .append(" ");
-        }
-        return new ToolCardActivationMessage(username, "server",
-                toolCardUsageID, builder.toString());
+        playerEnableThreadHasEnded = true;
     }
 
-    private Message readPlayerDisabledInput(){
+    private synchronized void continueInput5(StringBuilder builder){
+        System.out.println("Choose a round of the round track: ");
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_ROUND_NUMBER, "Round: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("RoundNumber: ")
+                        .append(choice - 1)
+                        .append(" ");
+                continueInput6(builder);
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void continueInput6(StringBuilder builder){
+        System.out.println("Choose a die from the Round Track:");
+        int choice = readChoiceBetweenValuesWithQuit(1, Model.MAXIMUM_PLAYER_NUMBER*2+1,
+                "Position: ");
+        if(!playerHasBeenBanned) {
+            if (choice == -1) {
+                saveMessageToSend(new ToolCardErrorMessage(username, "server", toolCardUsageID,
+                        "InputQuit", null));
+            } else {
+                builder.append("RoundTrackPosition: ")
+                        .append(choice - 1)
+                        .append(" ");
+                saveMessageToSend(new ToolCardActivationMessage(username, "server",
+                        toolCardUsageID, builder.toString()));
+            }
+        } else {
+            saveChoiceToMemory(choice);
+        }
+    }
+
+    private synchronized void readPlayerDisabledInput(){
         NotifyingThread.setPlayerDisabledThreadHasEnded(false);
         System.out.println("player disabled thread started");
         while (!playerIsActive){
@@ -653,10 +853,10 @@ public class NotifyingThread extends Thread{
         }
         NotifyingThread.setPlayerDisabledThreadHasEnded(true);
         System.out.println("input_player_disabled while loop ended");
-        return new ErrorMessage(username, "doNotSend", "doNotSend");
+        saveMessageToSend(new ErrorMessage(username, "doNotSend", "doNotSend"));
     }
 
-    private int readChoiceBetweenValuesIncluded(int firstValue, int secondValue, String inputInstructions){
+    private synchronized int readChoiceBetweenValuesIncluded(int firstValue, int secondValue, String inputInstructions, String methodName){
         boolean wrongInput = true;
         String input;
         int choice;
@@ -664,6 +864,7 @@ public class NotifyingThread extends Thread{
             System.out.print(inputInstructions);
             try {
                 input = scanner.nextLine();
+                System.out.println("read scanner nextLine called by method: " + methodName);
                 choice = Integer.parseInt(input);
                 if(choice<firstValue || choice>secondValue){
                     wrongInput = true;
@@ -745,19 +946,15 @@ public class NotifyingThread extends Thread{
      * @return -1 if doesn't find anything to read from the other thread,
      *      else returns every values it reads
      */
-    private  int readFromMemory(){
+    private int readFromMemory(){
         int choice;
-
         String[] inputLines = inputMemoryString.split("\n");
         if(inputLines[inputLines.length-1].equals("null")){
-            System.out.println("player has typed nothing");
             /*player has typed nothing before his turn*/
             setInputMemoryString("null\n");
             return -1;
         } else {
             /*player has typed something before his turn*/
-            System.out.println("player has typed something: " + inputMemoryString);
-            System.out.println("reading: " + inputLines[inputLines.length - 1]);
             try {
                 choice = Integer.parseInt(inputLines[inputLines.length - 1]);
                 setInputMemoryString("null\n");
@@ -783,6 +980,17 @@ public class NotifyingThread extends Thread{
         }
     }
 
+    private void saveMessageToSend(Message message){
+        inputMessage = message;
+    }
+
+    private void saveChoiceToMemory(int choice){
+        StringBuilder builder = new StringBuilder();
+        builder.append(inputMemoryString)
+                .append("\n").append(choice).append("\n");
+        setInputMemoryString(builder.toString());
+    }
+
     public static void setInputMemoryString(String newMemory){
         inputMemoryString = newMemory;
     }
@@ -795,8 +1003,28 @@ public class NotifyingThread extends Thread{
         playerIsActive = isActive;
     }
 
-    private void waitThreadEnd(){
+    public static void setPlayerBanned(boolean isPlayerBanned){
+        System.out.println("player banned has beed set to: " + isPlayerBanned);
+        playerHasBeenBanned = isPlayerBanned;
+    }
+
+    public static void setMatchStarted(boolean isMatchStarted){
+        matchHasStarted = isMatchStarted;
+    }
+
+    private void threadDisabledInputJoin(){
         while (!playerDisabledThreadHasEnded){
+            try {
+                /*waiting for the player inactive thread to end*/
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+        }
+    }
+
+    private void threadEnabledInputJoin(){
+        while (!playerEnableThreadHasEnded){
             try {
                 /*waiting for the player inactive thread to end*/
                 Thread.sleep(10);

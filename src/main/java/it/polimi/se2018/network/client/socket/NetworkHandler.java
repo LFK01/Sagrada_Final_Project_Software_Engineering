@@ -1,5 +1,6 @@
 package it.polimi.se2018.network.client.socket;
 
+import it.polimi.se2018.model.events.messages.ErrorMessage;
 import it.polimi.se2018.model.events.messages.Message;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 
@@ -41,25 +42,25 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
 
     @Override
     public void run(){
-        boolean loop = true;
-        while (loop){
-            if(serverIsUp){
-                try{
-                    Message message = (Message) inputStream.readObject();
-                    if(message == null){
-                        loop=false;
-                    }else {
-                        try{
-                            Method notifyView = remoteViewSocket.getClass().getMethod("notifyView", message.getClass());
-                            notifyView.invoke(remoteViewSocket, message);
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (ClassNotFoundException | IOException e){
-                    System.out.println("Server disconnected.");
+        while (serverIsUp){
+            try{
+                Message message = (Message) inputStream.readObject();
+                if(message == null){
                     serverIsUp = false;
+                }else {
+                    try{
+                        Method notifyView = remoteViewSocket.getClass().getMethod("notifyView", message.getClass());
+                        notifyView.invoke(remoteViewSocket, message);
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        System.out.println("A method is missing from remoteViewSocket");
+                    }
                 }
+            } catch (IOException e){
+                remoteViewSocket.notifyView(new ErrorMessage("remoteView",
+                        remoteViewSocket.getUsername(), "ServerIsDown"));
+                serverIsUp = false;
+            } catch (ClassNotFoundException e){
+                System.out.println("Someone has sent an object that's not a Message");
             }
         }
         stopConnection();

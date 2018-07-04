@@ -138,7 +138,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
                     throw new ExecutingEffectException();
                 } else {
                     parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, true);
-                    parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, firstDieMovingColor);
+                    parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, firstDieMovingColor.toString());
                     placeDieWithToolCard(false, false, false);
                 }
             }

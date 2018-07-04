@@ -5,10 +5,7 @@ import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.events.moves.UseToolCardMove;
-import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.utils.ProjectObservable;
-
-import java.net.Socket;
 
 public class VirtualViewSocket extends ProjectObservable implements VirtualViewInterface {
 

@@ -12,11 +12,14 @@ import it.polimi.se2018.utils.ProjectObserver;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterface, ProjectObserver {
 
     private ServerRMIInterface server;
     private String username;
+    boolean isConnected;
 
     public RemoteViewRMI() throws RemoteException{}
 
@@ -26,7 +29,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             Method notifyView = this.getClass().getDeclaredMethod("notifyView", message.getClass());
             notifyView.invoke(this, message);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.SEVERE, "cant find method on remoteViewRmi class: {0}", message.getClass());
         }
     }
 
@@ -68,7 +71,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     private void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
-        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username) || showPrivateObjectiveCardsMessage.getRecipient().equals("all")){
+        if(showPrivateObjectiveCardsMessage.getRecipient().equals(username)){
             setChanged();
             notifyObservers(showPrivateObjectiveCardsMessage);
         }
@@ -82,7 +85,6 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     public void notifyView(SendWinnerMessage sendWinnerMessage){
-        System.out.println("rmView -> view: " + sendWinnerMessage);
         if(sendWinnerMessage.getRecipient().equals(username)){
             setChanged();
             notifyObservers(sendWinnerMessage);
@@ -107,6 +109,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(chooseDiceMove);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -116,15 +119,18 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(chooseSchemaMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
     @Override
     public void update(ComebackMessage comebackMessage) {
+        this.username = comebackMessage.getUsername();
         try{
             server.sendToServer(comebackMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -135,6 +141,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(createPlayerMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -144,6 +151,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(diePlacementMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -153,6 +161,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(errorMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -162,6 +171,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(sendGameboardMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -171,6 +181,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(noActionMove);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -180,6 +191,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(requestMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -189,6 +201,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(selectedSchemaMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -198,6 +211,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(showPrivateObjectiveCardsMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -208,6 +222,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         } catch (RemoteException e){
 
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -218,6 +233,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         } catch (RemoteException e){
 
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -227,6 +243,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(toolCardErrorMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
@@ -236,12 +253,18 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
             server.sendToServer(useToolCardMove);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
         }
     }
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        /*should never be called here*/
+        try{
+            server.sendToServer(sendWinnerMessage);
+        } catch (RemoteException e){
+            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
+            isConnected = false;
+        }
     }
 
 }

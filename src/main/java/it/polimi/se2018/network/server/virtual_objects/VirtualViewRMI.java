@@ -9,7 +9,6 @@ import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.utils.ProjectObservable;
 
-import java.net.Socket;
 import java.rmi.RemoteException;
 
 public class VirtualViewRMI extends ProjectObservable implements VirtualViewInterface {

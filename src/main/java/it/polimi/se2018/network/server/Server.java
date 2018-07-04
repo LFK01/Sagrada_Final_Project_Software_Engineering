@@ -11,8 +11,6 @@ import it.polimi.se2018.network.server.client_gatherer.ClientGathererSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualClientSocket;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
@@ -22,8 +20,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class Server {
 
@@ -31,7 +27,7 @@ public class Server {
     private ArrayList<VirtualViewInterface> playersVirtualView = new ArrayList<>();
     private final Controller controller;
 
-    public Server() {
+    private Server() {
         FileParser fileParser = new FileParser();
 
         int timer = fileParser.readTimer(INPUT_FILE_ADDRESS);
@@ -55,42 +51,6 @@ public class Server {
         }
     }
 
-    private int readFilePortSocket(String fileAddress) {
-        int filePort = 1111;
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream(fileAddress));
-            String line = "";
-            boolean hasNextLine = true;
-            try{
-                line = inputFile.nextLine();
-            } catch (NoSuchElementException e){
-                hasNextLine = false;
-            }
-            while(hasNextLine){
-                String[] words = line.split(" ");
-                int i = 0;
-                while(i<words.length){
-                    if(words[i].trim().equals("PortSocket:")){
-                        filePort = Integer.parseInt(words[i+1]);
-                        hasNextLine = false;
-                    }
-                    i++;
-                }
-                try{
-                    line = inputFile.nextLine();
-                } catch (NoSuchElementException e){
-                    hasNextLine = false;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
-        }
-        return filePort;
-    }
-
     public void addClient(Socket newClient){
         if(playersVirtualView.size()<4){
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
@@ -99,7 +59,8 @@ public class Server {
         }else{
             try{
                 ObjectOutputStream temporaryWriter = new ObjectOutputStream(newClient.getOutputStream());
-                temporaryWriter.writeObject(new ErrorMessage("server", newClient.getRemoteSocketAddress().toString(), "PlayerNumberExceeded"));
+                temporaryWriter.writeObject(new ErrorMessage("server",
+                        newClient.getRemoteSocketAddress().toString(), "PlayerNumberExceeded"));
                 System.out.println("Mando messaggio di errore a :" + newClient.getRemoteSocketAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -112,11 +73,10 @@ public class Server {
     }
 
     public void removeClient(VirtualViewInterface oldClient){
-        System.out.println("server has detected a problem in the connection." +
-                "\n" + oldClient.getUsername() + "will be disconnected");
         playersVirtualView.remove(oldClient);
         controller.removeObserver(oldClient);
         controller.removeObserverFromModel(oldClient);
+        System.out.println("calling blockPlayer from Server.removeClient");
         controller.blockPlayer(oldClient.getUsername());
     }
 
@@ -126,11 +86,6 @@ public class Server {
 
     public Controller getController() {
         return controller;
-    }
-
-    @Override
-    public String toString(){
-        return "server";
     }
 
     public static void main(String args[]){

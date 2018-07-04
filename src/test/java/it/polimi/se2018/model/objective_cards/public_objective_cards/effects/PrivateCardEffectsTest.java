@@ -41,9 +41,9 @@ public class PrivateCardEffectsTest {
         card1.countPoints(model,card1.getName(),card1.getPoints());
 
         assertEquals(2,model.getParticipants().get(0).getPoints());
-        //assertEquals(8,model.getParticipants().get(0).getPoints());
-        //assertEquals(4,model.getParticipants().get(0).getPoints());
-        //assertEquals(4,model.getParticipants().get(0).getPoints());
+        //assertEquals(8,model.getRankings().get(0).getPoints());
+        //assertEquals(4,model.getRankings().get(0).getPoints());
+        //assertEquals(4,model.getRankings().get(0).getPoints());
 
     }
 }

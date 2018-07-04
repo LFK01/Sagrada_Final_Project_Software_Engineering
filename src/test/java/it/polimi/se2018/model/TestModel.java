@@ -6,7 +6,6 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.file_parser.FileParser;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.game_equipment.*;
@@ -48,7 +47,7 @@ public class TestModel {
         Dice dice3 = new Dice(Color.RED,1);
         Dice dice4 = new Dice(Color.BLUE,2);
 
-        model.getGameBoard().getRoundDice()[0] = new RoundDice(2,model.getGameBoard().getDiceBag(),0);
+        model.getGameBoard().getRoundDice()[0] = new RoundDice(model.getGameBoard().getDiceBag());
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice1);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice2);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice3);

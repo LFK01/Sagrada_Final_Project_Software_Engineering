@@ -21,7 +21,9 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     private ObjectOutputStream writer;
     private ObjectInputStream inputStream;
     private VirtualViewSocket virtualViewSocket;
+
     private boolean isConnected;
+
     private String username;
 
     public VirtualClientSocket(Server server, Socket clientConnection){
@@ -49,24 +51,29 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
             while (isConnected){
                 try{
                     message = (Message) inputStream.readObject();
-                } catch (ClassNotFoundException e){
-                    e.printStackTrace();
-                } catch (IOException e){
-                    System.out.println("Player: " + username +" disconnected");
+                } catch (IOException | ClassNotFoundException e){
                     this.isConnected = false;
                 }
                 if(message == null){
                     this.isConnected = false;
-                }else {
-                    try {
-                        Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
-                        updateServer.invoke(virtualViewSocket, message);
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
+                } else {
+                    System.out.println("message class: " + message.getClass().toString());
+                    if(message.getClass().equals(ErrorMessage.class) &&
+                            message.toString().equalsIgnoreCase("quit") &&
+                            message.getSender().equalsIgnoreCase(username)){
+                        this.isConnected = false;
+                    } else {
+                        try {
+                            Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
+                            updateServer.invoke(virtualViewSocket, message);
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            System.out.println("Virtual View Socket miss a method");
+                        }
                     }
                 }
             }
             clientConnection.close();
+            server.removeClient(virtualViewSocket);
         } catch (IOException e){
             server.removeClient(virtualViewSocket);
         }
@@ -84,6 +91,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(chooseSchemaMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientSocket 1");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -92,6 +100,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(requestMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 2");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -100,6 +109,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(errorMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 3");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -108,6 +118,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(sendGameboardMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 4");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -116,6 +127,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(showPrivateObjectiveCardsMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 5");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -124,6 +136,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(successCreatePlayerMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 6");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -132,6 +145,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         try{
             writer.writeObject(sendWinnerMessage);
         } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 7");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -155,4 +169,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         this.username = username;
     }
 
+    public boolean isConnected() {
+        return isConnected;
+    }
 }

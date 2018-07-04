@@ -5,13 +5,20 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * class that implements ObjectiveCardEffectInterface with a method for calculating scores in columns
  */
 public class ColumnCardsCS implements ObjectiveCardEffectInterface {
-
+    /**
+     * Count the scores of all players by scrolling along the columns.
+     * He can look for both colors and values
+     * @param model model of the game
+     * @param cardName name of the card
+     * @param point card score
+     */
     @Override
     public void countPoints(Model model, String cardName, int point) {
         boolean searchColor = false;
-        if(cardName.equals("Colori Diversi Colonne")){
+        if(cardName.equals("Column Color Variety")){
             searchColor = true;
         }
         else {

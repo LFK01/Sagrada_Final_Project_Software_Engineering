@@ -10,6 +10,8 @@ import java.util.Scanner;
 
 /**
  * @author Giovanni
+ * Class that is initialized through a parser and represents the Objective cards.
+ * Based on a parameter, you can understand if they are public or private
  */
 
 public class ObjectiveCard {
@@ -34,9 +36,9 @@ public class ObjectiveCard {
         return isPrivate;
     }
 
-    public int countPoints(SchemaCard schemaCard) {
+    /*public int countPoints(SchemaCard schemaCard) {
         return 0;
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -54,6 +56,13 @@ public class ObjectiveCard {
         return effect;
     }
 
+    /**
+     * Generic method that calculates points for each player
+     * Each card implements its own point calculation using this method
+     * @param model model of the game
+     * @param name name of the ObjectiveCard
+     * @param points points of the ObjectiveCard
+     */
     public void countPoints(Model model,String name, int points){
         effect.countPoints(model,name,points);
     }

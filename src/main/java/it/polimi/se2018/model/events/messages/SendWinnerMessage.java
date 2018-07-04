@@ -8,15 +8,22 @@ import java.util.ArrayList;
  * @author giovanni
  */
 public class SendWinnerMessage extends Message {
-    private ArrayList<Player> participants;
+    private ArrayList<String> ranking;
+    private ArrayList<Integer> score;
 
-    public SendWinnerMessage(String sender, String recipient,ArrayList<Player> participants) {
+
+    public SendWinnerMessage(String sender, String recipient,ArrayList<String> ranking,ArrayList<Integer> score) {
         super(sender, recipient);
-        this.participants = participants;
+        this.ranking = ranking;
+        this.score = score;
 
     }
 
-    public ArrayList<Player> getParticipants() {
-        return participants;
+    public ArrayList<String> getParticipants() {
+        return ranking;
+    }
+
+    public ArrayList<Integer> getScore() {
+        return score;
     }
 }

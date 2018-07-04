@@ -15,7 +15,10 @@ import java.util.Arrays;
 
 /**
  * @author giovanni
+ *  This class, through update (Message), sends information and asks for input to the various players.
+ *  This class, through update (Message) sends information and asks for input to the various players
  */
+
 public class View extends ProjectObservable implements ProjectObserver, ThreadCompleteListener{
 
     private boolean playerIsBanned;
@@ -319,12 +322,11 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        System.out.println("The Winner is: " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()).getName());
-        System.out.println("with " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()).getPoints());
-        System.out.println("Other scores: ");
-        for(int i=0;i<sendWinnerMessage.getParticipants().size();i++){
-            System.out.println("Name" + " " + sendWinnerMessage.getParticipants().get(i).getName());
-            System.out.println("Score" + " " + sendWinnerMessage.getParticipants().get(i).getPoints() + "\n");
+        System.out.println("The winner is: " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()-1)+
+                " " + "with: " + sendWinnerMessage.getScore().get(sendWinnerMessage.getScore().size()-1));
+        for(int i =0;i<sendWinnerMessage.getParticipants().size()-1;i++){
+            System.out.println("Player: " +sendWinnerMessage.getParticipants().get(i)+
+                    "\n"+ "score: " + sendWinnerMessage.getScore().get(i));
         }
     }
 
@@ -369,6 +371,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     public void askOldUsername(){
+        playerIsBanned = false;
         inputManager = InputManager.INPUT_OLD_PLAYER_NAME;
         inputThread = new NotifyingThread(inputManager, username);
         inputThread.addListener(this);

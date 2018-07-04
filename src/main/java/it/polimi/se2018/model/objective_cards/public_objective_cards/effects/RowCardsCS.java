@@ -5,9 +5,18 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * class that implements ObjectiveCardEffectInterface
+ * with a method for calculating scores in rows
  */
 
 public class RowCardsCS implements ObjectiveCardEffectInterface {
+    /**
+     * Count the scores of all players by scrolling along the rows.
+     * He can look for both colors and values
+     * @param model model of the game
+     * @param cardName name of the card
+     * @param point card score
+     */
     @Override
     public void countPoints(Model model, String cardName, int point) {
         boolean searchColor=false;

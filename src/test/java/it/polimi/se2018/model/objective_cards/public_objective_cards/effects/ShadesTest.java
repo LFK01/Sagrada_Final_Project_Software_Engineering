@@ -59,6 +59,8 @@ public class ShadesTest {
 
         ObjectiveCard card1 = parser.createObjectiveCard(false,9);
         card1.countPoints(model,card1.getName(),card1.getPoints());
+        System.out.println(schemaCard1);
+        System.out.println(schemaCard2);
         assertEquals(6,model.getParticipants().get(0).getPoints());
         assertEquals(6,model.getParticipants().get(1).getPoints());
     }

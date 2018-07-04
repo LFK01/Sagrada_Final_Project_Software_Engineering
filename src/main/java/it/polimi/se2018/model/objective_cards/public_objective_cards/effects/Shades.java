@@ -5,21 +5,30 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * class that implements ObjectiveCardEffectInterface
+ * with a method for calculating scores based on dice values
  */
 public class Shades implements ObjectiveCardEffectInterface {
+
+    /**
+     *Count the scores of all players based on dice value
+     * @param model model of the game
+     * @param cardName name of the card
+     * @param point card score
+     */
     @Override
     public void countPoints(Model model, String cardName, int point) {
         int check1 = 0;
         int check2 = 0;
-        if (cardName.equals("Sfumature Chiare")) {
+        if (cardName.equals("Light Shades")) {
             check1 = 1;
             check2 = 2;
         }
-        if (cardName.equals("Sfumature Medie")) {
+        if (cardName.equals("Medium Shades")) {
             check1 = 3;
             check2 = 4;
         }
-        if (cardName.equals("Sfumature Scure")) {
+        if (cardName.equals("Deep Shades")) {
             check1 = 5;
             check2 = 6;
         }

@@ -1,5 +1,6 @@
 package it.polimi.se2018.utils;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import it.polimi.se2018.model.events.messages.Message;
 
 import java.lang.reflect.InvocationTargetException;
@@ -62,8 +63,11 @@ public class ProjectObservable {
         System.out.println("notifying " + observers.size() + " observers w/: " + memorizedMessage.toString() +
                 "\n Recipient: " + memorizedMessage.getRecipient());
         synchronized (observers){
+            System.out.println("STO MANDANDO AL GIOCATORE UN MESSAGGIO");
             if(changed){
+                System.out.println("STO NOTIFICANDO AGLI OSSERVATORI");
                 for(ProjectObserver observer: observers){
+                    System.out.println("NOTIFICO");
                     try{
                         Method update = observer.getClass().getMethod("update", memorizedMessage.getClass());
                         update.invoke(observer, memorizedMessage);

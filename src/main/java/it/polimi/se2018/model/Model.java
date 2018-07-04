@@ -1,10 +1,10 @@
 package it.polimi.se2018.model;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.exceptions.FullCellException;
 import it.polimi.se2018.model.game_equipment.*;
-import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.utils.ProjectObservable;
@@ -187,6 +187,9 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+    /**
+     * Increases the parameter that represents the turn of the round from the first player to the last
+     */
     private void increaseTurnNumber(){
         if(turnOfTheRound == participants.size()-1){
             turnOfTheRound = participants.size()-1;
@@ -197,20 +200,24 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+    /**
+     * Decreases the parameter that represents the turn of the round from the last player to the first.
+     * Arrived at the first player increases the parameter representing the rounds
+     */
     private void decreaseTurnNumber(){
         turnOfTheRound--;
         if(turnOfTheRound<0){
             turnOfTheRound = 0;
             firstDraftOfDice = true;
             updateRound();
-            if(roundNumber == 9){
+            if(roundNumber == MAXIMUM_ROUND_NUMBER-1){
                 countPoints();
             }
         }
     }
 
     /**
-     * method to add a new player
+     * method to add a new player in the arrayList representing the players in the game
      * @param name
      */
     public void addPlayer(String name){
@@ -224,8 +231,8 @@ public class Model extends ProjectObservable implements Runnable{
      * method to extract and set ToolCard
      */
     public void extractToolCards() {
-        FileParser parser = new FileParser();
-        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, null);
+       FileParser parser = new FileParser();
+        /*parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, null);
         parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
                 -1, -1, -1, -1);
         parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, false);
@@ -236,12 +243,12 @@ public class Model extends ProjectObservable implements Runnable{
         Collections.shuffle(cardIndex);
         for(int i = 0; i < Model.TOOL_CARDS_EXTRACT_NUMBER; i++) {
             gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, cardIndex.get(i)), i);
-        }
-        /*
+        }*/
+
         gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 1), 0);
         gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 2), 1);
         gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 3), 2);
-        */
+
     }
 
     /**
@@ -314,6 +321,12 @@ public class Model extends ProjectObservable implements Runnable{
         participants.get(playerPos).setSchemaCard(schema);
     }
 
+    /**
+     * Each player is set by default a schemaCard among those he can choose.
+     * Expired the timer for the choice, if there was not the player starts the game with this schemeCard
+     * @param player
+     * @param schemaCard
+     */
     private void setDefaultSchemaCard(Player player, SchemaCard schemaCard){
         player.setSchemaCard(schemaCard);
     }
@@ -412,6 +425,10 @@ public class Model extends ProjectObservable implements Runnable{
         }
     }
 
+    /**
+     * Creates a String containing all the information of the gameboard to send to all players
+     * @return A String with information
+     */
     private StringBuilder buildMessage(){
         StringBuilder builderGameboard = new StringBuilder();
         builderGameboard.append("PublicObjectiveCards:/");
@@ -466,9 +483,15 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     /**
-     * method that counts points of all players and sorts them according to the winner
+     * Method that counts points of all players and sorts them according to the winner
+     * The calculation is done by activating the card account method
+     * (this method automatically calculates the scores for each player).
+     * Then checks are made to see if there are players with the same score.
      */
     public void countPoints(){
+        ArrayList<Player> participantsCopy = new ArrayList<>();
+        participantsCopy.addAll(participants);
+        ArrayList<Player> deadHeat = null;
         Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
                 objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
         );
@@ -477,14 +500,100 @@ public class Model extends ProjectObservable implements Runnable{
                         .countPoints(this, p.getPrivateObjective().getName(), p.getPrivateObjective().getPoints())
         );
         Collections.sort(participants, Comparator.comparingInt( p -> p.getPoints()));
-        participants.stream().filter(
-                Player::isConnected
-        ).forEach(
-                p -> {
-                    this.setChanged();
-                    this.notifyObservers(new SendWinnerMessage("model", p.getName(), participants));
+        deadHeat = searchIfEqualsValuePublic(participants.size()-1,participants);
+        if(deadHeat.size()==1){
+            sendWinner(participants);
+        }
+        resetPoint(deadHeat);
+        for(int j=0;j<deadHeat.size();j++){
+            deadHeat.get(j).getPrivateObjective().countPoints(this,deadHeat.get(j).getPrivateObjective().getName(),deadHeat.get(j).getPrivateObjective().getPoints());
+        }
+        Collections.sort(deadHeat, Comparator.comparingInt( p -> p.getPoints()));
+        deadHeat = searchIfEqualsValuePublic(deadHeat.size()-1,deadHeat);
+        if(deadHeat.size()==1){     //aggiorno la posizione
+            participants.remove(deadHeat.get(0));
+            participants.add(deadHeat.get(0));
+            sendWinner(participants);
+        }
+        System.out.println("STO CONTROLLANDO I FAVOR TOKENS");
+        Collections.sort(deadHeat,Comparator.comparingInt(p->p.getFavorTokens()));
+        ArrayList<Player> moreTokens = new ArrayList<>();
+        for(int s =0;s<deadHeat.size()-1;s++){
+            if(deadHeat.get(s).getFavorTokens()==deadHeat.get(deadHeat.size()-1).getFavorTokens()){
+                moreTokens.add(deadHeat.get(s));
+            }
+        }
+        moreTokens.add(deadHeat.get(deadHeat.size()-1));
+
+        if(moreTokens.size()==1){
+            participants.remove(moreTokens.get(0));
+            participants.add(moreTokens.get(0));
+            sendWinner(participants);
+        }
+        else {
+            System.out.println("STO ANDANDO DOVE NON DOVREI");
+            //Collections.sort(moreTokens,Comparator.comparingInt(i->participants.indexOf(i);
+            //ordine in base a idexOf
+            boolean winnerFound = false;
+            Player winner =null;
+            for(int i =0;i<participantsCopy.size() && !winnerFound;i++){
+                for(int j =0;j<moreTokens.size() && !winnerFound;j++){
+                    if(participantsCopy.get(i).getName().equalsIgnoreCase(moreTokens.get(j).getName())){
+                        winner = moreTokens.get(j);
+                        winnerFound = true;
+                    }
                 }
-        );
+            }
+            participantsCopy.remove(winner);
+            participantsCopy.add(winner);
+            sendWinner(participantsCopy);
+        }
+    }
+
+    /**
+     * sets the score field for each player to 0 and return the arrayList
+     * @param deadHeat
+     */
+    public void resetPoint(ArrayList<Player> deadHeat ){
+        for(int i =0;i<deadHeat.size();i++){
+            deadHeat.get(i).setPointTo0();
+        }
+    }
+
+    /**
+     * search for players with the same score as the current winner
+     * @param arrayDimension dimension of the ArrayList
+     * @param precDeadHeat ArrayList used in the method
+     * @return Changed arrayList
+     */
+    public ArrayList<Player> searchIfEqualsValuePublic(int arrayDimension,ArrayList<Player> precDeadHeat){
+        ArrayList<Player> deadHeat = new ArrayList<Player>();
+        for(int i=0;i<arrayDimension;i++){
+            if (precDeadHeat.get(i).getPoints()==precDeadHeat.get(precDeadHeat.size()-1).getPoints()){
+                deadHeat.add(precDeadHeat.get(i));
+            }
+        }
+        deadHeat.add(precDeadHeat.get(precDeadHeat.size()-1));
+        return deadHeat;
+    }
+
+    /**
+     *
+     * @param participants  ArrayList of players with the winner in last place
+     */
+    public void sendWinner(ArrayList<Player> participants){
+        ArrayList<String> ranking = new ArrayList<>();
+        ArrayList<Integer> score = new ArrayList<>();
+        for(int j=0;j<participants.size();j++){
+            ranking.add(participants.get(j).getName());
+            score.add(participants.get(j).getPoints());
+
+        }
+        for(int i=0; i<participants.size();++i){
+            setChanged();
+            notifyObservers(new SendWinnerMessage("model",participants.get(i).getName(), ranking, score));
+        }
+
     }
 
     public void singlePlayerWinning(Player player){
@@ -495,7 +604,7 @@ public class Model extends ProjectObservable implements Runnable{
         setChanged();
         ArrayList<Player> singlePlayerWinner = new ArrayList<>();
         singlePlayerWinner.add(player);
-        notifyObservers(new SendWinnerMessage("server", player.getName(), singlePlayerWinner));
+        //notifyObservers(new SendWinnerMessage("server", player.getName(), singlePlayerWinner));
     }
 
     @Override

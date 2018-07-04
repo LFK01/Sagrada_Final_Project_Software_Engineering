@@ -7,9 +7,16 @@ import java.io.Serializable;
 
 /**
  * @author Giovanni
+ * class representing the player.
+ * Has a name, the number of favor tokens,
+ * a parameter representing his private objective card,
+ * the score (initially 0),
+ * a parameter for your schemacard,
+ * an array representing the possible moves a player can make for each turn
+ * and a Boolean to figure out if the player is active or no.
  */
 
-public class Player implements Serializable {
+public class Player  {
 
     private String name;
     private boolean isConnected;
@@ -27,7 +34,7 @@ public class Player implements Serializable {
         this.schemaCard = null;
         this.points=0;
         this.playerTurns = new Round[Model.MAXIMUM_ROUND_NUMBER];
-        for(int i =0; i<10;i++){
+        for(int i =0; i<Model.MAXIMUM_ROUND_NUMBER;i++){
             playerTurns[i] = new Round();
         }
     }
@@ -66,14 +73,18 @@ public class Player implements Serializable {
         this.schemaCard = schema;
         this.favorTokens = schema.getDifficultyLevel();
     }
+    public void setPointTo0(){
+        this.points =0;
+    }
 
+    /**
+     * sets player's points, adding the new score to the old one each time
+     * @param points new points to add to the score
+     */
     public void setPoints(int points) {
         this.points = this.points + points;
     }
 
-    public void setDiagonalPoints(int points){
-        this.points = points;
-    }
 
     public void setConnected(boolean connected) {
         this.isConnected = connected;

@@ -4,7 +4,7 @@ import java.util.Random;
 
 /**
  * Dice class
- * @author Giorgia
+ * @author Giovanni
  */
 public class Dice {
 
@@ -87,6 +87,10 @@ public class Dice {
         this.paintingTool = paintingTool;
    }
 
+    /**
+     *
+     * @return
+     */
    public PaintingTool getPaintingTool(){
         return paintingTool;
    }
@@ -132,11 +136,17 @@ public class Dice {
             "\u2685"
     };
 
+    /**
+     * used to turn the die
+     */
     public void roll(){
         this.value = new Random().nextInt(faces.length)+1;
         this.face = faces[value-1];
     }
 
+    /**
+     * used in Tool Cards to change face to a die
+     */
     public void turnDieFace(){
         switch (this.face){
             case "\u2680":{

@@ -1,5 +1,10 @@
 package it.polimi.se2018.model.player;
 
+/**
+ * @author luciano
+ * Class with a boolean to know if the player
+ * has already performed a tool card move or not
+ */
 public class ToolCardMove {
 
     private boolean beenUsed;

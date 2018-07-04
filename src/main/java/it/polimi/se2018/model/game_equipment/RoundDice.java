@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * Class to track the extracted dice on the table since the beginning of the round
- * @author Giorgia
+ * @author Giovanni
  *
  * edited Luciano 14/05/2018
  */

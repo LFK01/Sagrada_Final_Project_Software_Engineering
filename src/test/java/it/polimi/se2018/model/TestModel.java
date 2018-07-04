@@ -175,22 +175,45 @@ public class TestModel {
         Model model = new Model();
         model.addPlayer("p1");
         model.addPlayer("p2");
+        model.addPlayer("p3");
+        model.addPlayer("p4");
+        model.setChanged();
         model.extractPublicObjectiveCards();
         model.sendPrivateObjectiveCard();
-        Dice dice1 = new Dice(Color.RED,2);
-        Dice dice2 = new Dice(Color.GREEN,1);
-        Dice dice3 = new Dice(Color.BLUE,3);
-        Dice dice4 = new Dice(Color.YELLOW,6);
-         FileParser parser = new FileParser();
-         SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
-         SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 14);
 
-        schemaCard2.placeDie(dice2,3,0,false,false,false);
-        schemaCard2.placeDie(dice1,2,0,false,false,false);
-         schemaCard2.placeDie(dice3,1,0,false,false,false);
-         schemaCard2.placeDie(dice4,0,0,false,false,false);
-        model.getParticipants().get(0).setSchemaCard(schemaCard1);
-        model.getParticipants().get(1).setSchemaCard(schemaCard2);
+        Dice dice1 = new Dice(Color.RED,2);
+        Dice dice2 = new Dice(Color.BLUE,3);
+        Dice dice3 = new Dice(Color.GREEN,1);
+        Dice dice4 = new Dice(Color.YELLOW,6);
+
+         Dice dice5 = new Dice(Color.RED,2);
+         Dice dice6 = new Dice(Color.BLUE,3);
+         Dice dice7 = new Dice(Color.GREEN,1);
+         Dice dice8= new Dice(Color.YELLOW,6);
+
+        FileParser parser = new FileParser();
+         SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
+         SchemaCard schemaCard2 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
+         SchemaCard schemaCard3 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
+         SchemaCard schemaCard4 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
+
+
+        schemaCard1.placeDie(dice1,3,0,false,false,false);
+        schemaCard1.placeDie(dice2,2,0,false,false,false);
+        schemaCard1.placeDie(dice3,1,0,false,false,false);
+        schemaCard1.placeDie(dice4,0,0,false,false,false);
+
+        schemaCard2.placeDie(dice5,3,0,false,false,false);
+        schemaCard2.placeDie(dice6,2,0,false,false,false);
+        schemaCard2.placeDie(dice7,1,0,false,false,false);
+        schemaCard2.placeDie(dice8,0,0,false,false,false);
+
+
+
+         model.getParticipants().get(0).setSchemaCard(schemaCard1);
+         model.getParticipants().get(1).setSchemaCard(schemaCard2);
+         model.getParticipants().get(2).setSchemaCard(schemaCard3);
+         model.getParticipants().get(3).setSchemaCard(schemaCard4);
 
         model.countPoints();
 

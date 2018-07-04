@@ -3,8 +3,8 @@ package it.polimi.se2018.model.game_equipment;
 import java.util.*;
 
 /**
- * Dice bag class
- * @author Giorgia
+ * Dice bag class containing ninety dice
+ * @author giovanni
  */
 
 public class DiceBag {          //Oggetto composto da 90 dadi suddivisi per colore a cui viene associato un valore randomico da 1 a 6

@@ -6,8 +6,17 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * class that implements ObjectiveCardEffectInterface
+ * with a method for calculating scores by searching
+ * for different values between dice
  */
 public class DifferentShades implements ObjectiveCardEffectInterface {
+    /**
+     * calculate the score by looking for groups of six dice with different faces
+     * @param model model of the game
+     * @param cardName name of the card
+     * @param point card score
+     */
     @Override
     public void countPoints(Model model, String cardName, int point) {
         for (int k = 0; k < model.getParticipants().size(); k++) {

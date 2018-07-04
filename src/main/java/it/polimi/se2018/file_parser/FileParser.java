@@ -187,7 +187,7 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    System.out.println("reading: " + words[i]);
+                    //System.out.println("reading: " + words[i]);
                     if(words[i].trim().equalsIgnoreCase("number:") &&
                             toolCardNumber == Integer.parseInt(words[i+1])){
                         cardFound = true;
@@ -760,7 +760,7 @@ public class FileParser {
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()) {
             if (fileEntry.isFile()) {
-                System.out.println("reading: " + fileEntry.getName());
+                //System.out.println("reading: " + fileEntry.getName());
                 try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
                     String line = "";
                     boolean hasNextLine = true;
@@ -776,7 +776,7 @@ public class FileParser {
                         while(i<words.length){
                             if(words[i].trim().equalsIgnoreCase("number:") &&
                                     TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
-                                System.out.println("found card");
+                                //System.out.println("found card");
                                 cardFound = true;
                                 i++;
                             }

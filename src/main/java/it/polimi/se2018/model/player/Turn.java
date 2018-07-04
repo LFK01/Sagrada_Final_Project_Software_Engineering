@@ -1,5 +1,11 @@
 package it.polimi.se2018.model.player;
 
+/**
+ * @author luciano
+ * Class representing the possible moves in a turn
+ * Each player has two moves per turn
+ */
+
 public class Turn {
 
     private ToolCardMove toolMove;

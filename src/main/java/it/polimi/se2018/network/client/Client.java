@@ -34,7 +34,7 @@ public class Client {
 
     private boolean connectionEstablished;
 
-    public Client() {
+    public Client() throws InterruptedException {
         connectionEstablished = false;
         boolean gameHasEnded = false;
 
@@ -42,6 +42,7 @@ public class Client {
         view.setServerIsUp(false);
 
         while(!gameHasEnded){
+            Thread.sleep(10);
             if(view.isServerUp()){
                 if(!view.isPlayerBanned()){
                     gameHasEnded = view.hasGameEnded();
@@ -172,7 +173,7 @@ public class Client {
         return choice;
     }
 
-    public static void main(String args[]){
+    public static void main(String args[]) throws InterruptedException {
         new Client();
     }
 }

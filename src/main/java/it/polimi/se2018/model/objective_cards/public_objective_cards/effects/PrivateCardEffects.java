@@ -6,24 +6,32 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * class that implements ObjectiveCardEffectInterface
+ * with a method for calculating scores of all PrivateObjecive Cards
  */
 public class PrivateCardEffects implements ObjectiveCardEffectInterface {
+    /**
+     * calculates the score based on the color of the card
+     * @param model model of the game
+     * @param cardName name of the card
+     * @param point card score
+     */
     @Override
     public void countPoints(Model model, String cardName, int point) {
         Color color = null;
-        if(cardName.equalsIgnoreCase("Sfumature Verdi"))   {
+        if(cardName.equalsIgnoreCase("Green Shades"))   {
             color = Color.GREEN;
         }
-        if(cardName.equalsIgnoreCase("Sfumature Blu"))   {
+        if(cardName.equalsIgnoreCase("Blue Shades"))   {
             color =Color.BLUE;
         }
-        if(cardName.equalsIgnoreCase("Sfumature Viola"))   {
+        if(cardName.equalsIgnoreCase("Purple Shades"))   {
             color =Color.PURPLE;
         }
-        if(cardName.equalsIgnoreCase("Sfumature Gialle"))   {
+        if(cardName.equalsIgnoreCase("Yellow Shades"))   {
             color =Color.YELLOW;
         }
-        if(cardName.equalsIgnoreCase("Sfumature Rosse"))   {
+        if(cardName.equalsIgnoreCase("Red Shades"))   {
             color =Color.RED;
         }
         for(int k=0;k<model.getParticipants().size();k++){

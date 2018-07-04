@@ -1,5 +1,10 @@
 package it.polimi.se2018.model.player;
 
+/**
+ * @author luciano
+ * Class representing the turns available for each round.
+ * Each player has two turns per round.
+ */
 public class Round {
 
     private Turn turn1;

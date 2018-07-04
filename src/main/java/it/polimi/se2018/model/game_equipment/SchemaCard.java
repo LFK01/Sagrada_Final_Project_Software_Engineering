@@ -8,7 +8,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
- * Schema Cards class
+ * A class representing the schema Cards,
+ * the cards are read from files using a FileParser class
  * @author Luciano
  */
 
@@ -31,10 +32,6 @@ public class SchemaCard {
         this.difficultyLevel = difficultyLevel;
     }
 
-    public SchemaCard(String schemaName){
-
-    }
-
     /**
      *
      * @return name1 first name of schemacard
@@ -55,7 +52,7 @@ public class SchemaCard {
 
     /**
      *
-     * @return fiffivulty level
+     * @return diffivulty level
      */
     public int getDifficultyLevel () {
             return difficultyLevel;
@@ -98,7 +95,18 @@ public class SchemaCard {
         }
         return true;
     }
-    
+
+    /**
+     * Place the die in a specific cell, checking if it has to comply with restrictions
+     * @param die die to place
+     * @param row row in which to place it
+     * @param col col in which to place it
+     * @param avoidColorRestrictions for control on color restraints
+     * @param avoidValueRestrictions for control in value restraints
+     * @param usingCorkBackedStraightEdge to know if the player is using Cork Backed Straight Edge card
+     * @throws RestrictionsNotRespectedException launched if the die does not comply with the restrictions
+     * @throws FullCellException launched if the cell eis already full
+     */
     public void placeDie(Dice die, int row, int col, boolean avoidColorRestrictions, boolean avoidValueRestrictions, boolean usingCorkBackedStraightEdge) throws RestrictionsNotRespectedException, FullCellException{
         boolean isPlacingFirstDie = (this.isEmpty() && ((row==0||row==3) || (col==0||col==4)));
         if (isPlacingFirstDie){
@@ -491,6 +499,10 @@ public class SchemaCard {
         else return false;
     }
 
+    /**
+     * Create a string of SchemaCard to be able to send it by message
+     * @return the String of SchemaCard
+     */
     @Override
     public String toString(){
         StringBuilder schema = new StringBuilder();

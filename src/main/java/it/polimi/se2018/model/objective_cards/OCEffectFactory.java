@@ -2,8 +2,17 @@ package it.polimi.se2018.model.objective_cards;
 
 import it.polimi.se2018.model.objective_cards.public_objective_cards.effects.*;
 
+/**
+ * @author giovanni
+ * Factory method that assigns its effect to each Objective card
+ */
 public class OCEffectFactory {
 
+    /**
+     * An effect is created based on the parameter of the ObjectiveCard in the text file
+     * @param effectName name of the card effect
+     * @return object of ObjectiveCardEffectInterface type
+     */
     public ObjectiveCardEffectInterface assigneEffect(String effectName) {
         switch (effectName) {
 

@@ -2,6 +2,7 @@ package it.polimi.se2018.model.game_equipment;
 
 /**
  * @author giovanni
+ * Class used to color the dice and cells of the schema cards
  */
 
 public enum PaintingTool {

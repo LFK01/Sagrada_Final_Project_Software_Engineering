@@ -21,7 +21,6 @@ public class GameBoard {
     private ArrayList<ObjectiveCard> privateObjectiveCards;
     private ToolCard toolCards[];
     private RoundTrack roundTrack;
-    private PointTrack pointTrack;
 
     public GameBoard() {
         this.diceBag = new DiceBag();
@@ -79,9 +78,6 @@ public class GameBoard {
         return diceBag;
     }
 
-    public PointTrack getPointTrack() {
-        return pointTrack;
-    }
 
     public void setPublicObjectiveCards (ObjectiveCard publicObjectiveCards, int index) {
         this.publicObjectiveCards[index] = publicObjectiveCards;

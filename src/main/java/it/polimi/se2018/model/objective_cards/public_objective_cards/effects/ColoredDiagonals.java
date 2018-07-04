@@ -6,6 +6,7 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 
 /**
  * @author giovanni
+ * Count points based on the colored diagonals
  */
 public class ColoredDiagonals implements ObjectiveCardEffectInterface {
     private int coloredDice =1;
@@ -42,6 +43,15 @@ public class ColoredDiagonals implements ObjectiveCardEffectInterface {
         }
     }
 
+    /**
+     * Iterative method that checks if there are dice of the same color along the right diagonal
+     * @param row row of the first die
+     * @param col col of the first die
+     * @param model model to use arrayList participants
+     * @param playerPosition position of the player
+     * @param color color of the comparison die
+     */
+
     private void searchDownRight(int row,int col,Model model, int playerPosition, Color color) {
         if (row<4 && col<5 && row>-1 && col >-1) {
             numberOfCycles = numberOfCycles +1;
@@ -68,6 +78,14 @@ public class ColoredDiagonals implements ObjectiveCardEffectInterface {
         }
     }
 
+    /**
+     * Iterative method that checks if there are dice of the same color along the right diagonal
+     * @param row row of the first die
+     * @param col col of the first die
+     * @param model model to use arrayList participants
+     * @param playerPosition position of the player
+     * @param color color of the comparison die
+     */
     private void searchDownLeft(int row,int col,Model model, int playerPosition, Color color) {
         if (row<4 && col<5&&row>-1 && col >-1) {
             numberOfCycles = numberOfCycles +1;

@@ -1,6 +1,7 @@
 package it.polimi.se2018.model.game_equipment;
 /**
- *@author Giorgia
+ *@author Giovanni
+ * enumerative class containing the possible colors of the dice
  */
 public enum Color {
 

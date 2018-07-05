@@ -1,0 +1,7 @@
+Number: 17
+name: Sun's/Glory
+difficulty: 6
+[1] [P] [Y] [] [4]
+[P] [Y] [] [] [6]
+[Y] [] [] [5] [3]
+[] [5] [4] [2] [1]

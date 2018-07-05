@@ -39,9 +39,9 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
     public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
-    public static final String FOLDER_ADDRESS_TOOL_CARDS = "src/main/resources";
-    public static final String FOLDER_ADDRESS_SCHEMA_CARDS = "src/main/resources";
-    public static final String OBJECTIVE_CARD_FILE_ADDRESS = "ObjectiveCards.txt";
+    public static final String FOLDER_ADDRESS_TOOL_CARDS = "src/main/resources/tool_card_resources";
+    public static final String FOLDER_ADDRESS_SCHEMA_CARDS = "src/main/resources/schema_card_resources";
+    public static final String OBJECTIVE_CARD_FILE_ADDRESS = "src/main/resources/ObjectiveCards.txt";
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/

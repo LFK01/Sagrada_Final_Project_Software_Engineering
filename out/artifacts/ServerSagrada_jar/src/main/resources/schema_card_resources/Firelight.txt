@@ -1,0 +1,7 @@
+Number: 8
+name: Firelight
+difficulty: 5
+[3] [4] [1] [5] []
+[] [6] [2] [] [Y]
+[] [] [] [Y] [R]
+[5] [] [Y] [R] [6]

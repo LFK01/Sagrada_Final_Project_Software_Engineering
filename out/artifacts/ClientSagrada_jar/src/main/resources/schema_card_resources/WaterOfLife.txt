@@ -1,0 +1,7 @@
+Number: 21
+name: Water/of/Life
+difficulty: 6
+[6] [B] [] [] [1]
+[] [5] [B] [] []
+[4] [R] [2] [B] []
+[G] [6] [G] [3] [P]

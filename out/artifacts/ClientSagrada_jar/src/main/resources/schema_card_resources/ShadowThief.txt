@@ -1,0 +1,7 @@
+Number: 20
+name: Shadow/Thief
+difficulty: 5
+[6] [P] [] [] [5]
+[5] [] [P] [] []
+[R] [6] [] [P] []
+[Y] [Y] [5] [4] [3]

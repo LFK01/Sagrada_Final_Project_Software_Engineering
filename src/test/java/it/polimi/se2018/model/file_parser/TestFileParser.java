@@ -5,13 +5,19 @@ import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Color;
 import it.polimi.se2018.model.game_equipment.SchemaCard;
+import it.polimi.se2018.model.objective_cards.ObjectiveCard;
 import org.junit.Test;
 
 public class TestFileParser {
 
     @Test
     public void objectiveCard(){
-
+        FileParser parser = new FileParser();
+        for (int i=1; i<=Model.PUBLIC_OBJECTIVE_CARDS_NUMBER; i++){
+            ObjectiveCard card = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false, i);
+            System.out.println("card: " + card.toString());
+            System.out.println("description: " + card.getDescription());
+        }
     }
 
     @Test
@@ -27,8 +33,9 @@ public class TestFileParser {
     public void constructorSchemaCardTest(){
         for(int i=1; i<=Model.SCHEMA_CARDS_NUMBER+1; i++){
             FileParser parser = new FileParser();
-            SchemaCard temporarySchema = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, i);
-            System.out.println(temporarySchema.toString());
+            SchemaCard nameSchema = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, i);
+            SchemaCard testSchema = parser.createSchemaCardByName(Model.FOLDER_ADDRESS_SCHEMA_CARDS, nameSchema.getName());
+            System.out.println(testSchema.toString());
         }
     }
 

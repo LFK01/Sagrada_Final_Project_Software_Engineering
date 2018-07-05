@@ -1,0 +1,7 @@
+Number: 6
+name: Aurorae/Magnificus
+difficulty: 5
+[5] [G] [B] [P] [2]
+[P] [] [] [] [Y]
+[Y] [] [6] [G] [P]
+[1] [] [] [] [4]

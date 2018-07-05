@@ -32,8 +32,9 @@ difficulty: 10
 * [5] ==> 5
 * [6] ==> 6
 *
-* Once you've finished personalizing place this file
+* Once you've finished personalizing place this file in  the src/main/resources/schema_card_resources folder
 * If you want to create multiple schema cards and not just this one,
-* copy and paste this text on a new .txt file on this folder and
+* copy and paste this text on a new .txt file, name the file as you 
+*like and the place it in the same folder as the last one. 
 * personalize your new schema card as you want.
 */

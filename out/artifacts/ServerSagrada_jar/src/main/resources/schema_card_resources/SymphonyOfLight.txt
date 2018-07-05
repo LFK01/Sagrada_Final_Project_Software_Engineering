@@ -1,0 +1,7 @@
+Number: 7
+name: Symphony/of/Light
+difficulty: 6
+[2] [] [5] [] [1]
+[Y] [6] [P] [2] [R]
+[] [B] [4] [G] []
+[] [3] [] [5] []

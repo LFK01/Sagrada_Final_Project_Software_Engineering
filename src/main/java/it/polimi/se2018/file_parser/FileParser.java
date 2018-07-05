@@ -24,17 +24,16 @@ import java.util.logging.Logger;
  */
 public class FileParser {
 
-    private static final String FILE_NOT_FOUND = "Impossible to find the file";
+    private static final String FILE_NOT_FOUND = "Impossible to find the file, src directory might have been modified";
     private static final int LATHEKIN_NUMBER = 4;
     private static final int TAP_WHEEL_NUMBER = 12;
 
     public int readPortSocket(String fileAddress) {
         int filePortSocket = 1099;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
-        try (Scanner inputFile = new Scanner(inputStream)) {
+        try (InputStream inputStream = new FileInputStream(fileAddress);
+                Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
-            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -44,10 +43,7 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("InputFile")){
-                        foundFile = true;
-                    }
-                    if(foundFile && words[i].trim().equals("PortSocket:")){
+                    if(words[i].trim().equals("PortSocket:")){
                         filePortSocket = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -59,17 +55,18 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return filePortSocket;
     }
 
     public int readPortRMI(String fileAddress){
         int filePort = -1;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
-        try (Scanner inputFile = new Scanner(inputStream)) {
+        try (InputStream inputStream = new FileInputStream(fileAddress);
+                Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
-            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -79,10 +76,7 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("InputFile")){
-                        foundFile = true;
-                    }
-                    if(foundFile && words[i].trim().equals("PortRMI:")){
+                    if(words[i].trim().equals("PortRMI:")){
                         filePort = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -94,17 +88,18 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return filePort;
     }
 
     public String readServerIP(String fileAddress){
-        String fileIP = "";
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
-        try (Scanner inputFile = new Scanner(inputStream)){
+        String readFromFileIP = "";
+        try (InputStream inputStream = new FileInputStream(fileAddress);
+                Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
-            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -114,11 +109,8 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("InputFile")){
-                        foundFile = true;
-                    }
-                    if(foundFile && words[i].trim().equals("ServerIP:")){
-                        fileIP = words[i+1];
+                    if(words[i].trim().equals("ServerIP:")){
+                        readFromFileIP = words[i+1];
                         hasNextLine = false;
                     }
                     i++;
@@ -129,17 +121,18 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
-        return fileIP;
+        return readFromFileIP;
     }
 
     public int readTimer(String fileAddress){
         int fileTimer = -1;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
-        try (Scanner inputFile = new Scanner(inputStream)){
+        try (InputStream inputStream = new FileInputStream(fileAddress);
+                Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
-            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -149,10 +142,7 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("InputFile")){
-                        foundFile = true;
-                    }
-                    if(foundFile && words[i].trim().equals("Timer:")){
+                    if(words[i].trim().equals("Timer:")){
                         fileTimer = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -164,6 +154,8 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return fileTimer;
     }
@@ -172,11 +164,9 @@ public class FileParser {
         ToolCard newToolCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            if(fileEntry.getName().contains("ToolCard")) {
-                newToolCard = readSingleToolCard(fileEntry, toolCardNumber);
-                if (!newToolCard.getIdentificationName().equals("")) {
-                    return newToolCard;
-                }
+            newToolCard = readSingleToolCard(fileEntry, toolCardNumber);
+            if (!newToolCard.getIdentificationName().equals("")) {
+                return newToolCard;
             }
         }
         return newToolCard;
@@ -190,9 +180,8 @@ public class FileParser {
         ArrayList<InputManager> inputManagerList = new ArrayList<>();
         ArrayList<String> specificEffectsList = new ArrayList<>();
         EffectsFactory effectsFactory = new EffectsFactory();
-        System.out.println("file name: " + file.getName());
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("input.txt");
-        try (Scanner inputFile = new Scanner(inputStream)){
+        try (InputStream inputStream = new FileInputStream(Model.FOLDER_ADDRESS_TOOL_CARDS + "/" + file.getName());
+                Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -251,6 +240,8 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return new ToolCard(name, identificationName, description, inputManagerList,
                 effectsList, specificEffectsList, true);
@@ -262,8 +253,8 @@ public class FileParser {
         int points = 0;
         OCEffectFactory factory = new OCEffectFactory();
         ObjectiveCardEffectInterface effectOC = null;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
-        try (Scanner inputFile = new Scanner(inputStream)){
+        try (InputStream inputStream = new FileInputStream(fileAddress);
+             Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -368,6 +359,8 @@ public class FileParser {
                 }
 
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return new ObjectiveCard(name, description, points,effectOC);
     }
@@ -376,11 +369,9 @@ public class FileParser {
         SchemaCard newSchemaCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            if(fileEntry.getName().contains("SchemaCard")) {
-                newSchemaCard = readSingleSchemaCardByNumber(fileEntry, schemaCardNumber);
-                if (!newSchemaCard.getName().equals("")) {
-                    return newSchemaCard;
-                }
+            newSchemaCard = readSingleSchemaCardByNumber(fileEntry, schemaCardNumber);
+            if (!newSchemaCard.getName().equals("")) {
+                return newSchemaCard;
             }
         }
         return newSchemaCard;
@@ -390,11 +381,9 @@ public class FileParser {
         SchemaCard newSchemaCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            if(fileEntry.getName().contains("SchemaCard")) {
-                newSchemaCard = readSingleSchemaCardByName(fileEntry, schemaName);
-                if (!newSchemaCard.getName().equals("")) {
-                    return newSchemaCard;
-                }
+            newSchemaCard = readSingleSchemaCardByName(fileEntry, schemaName);
+            if (!newSchemaCard.getName().equals("")) {
+                return newSchemaCard;
             }
         }
         return newSchemaCard;
@@ -404,8 +393,8 @@ public class FileParser {
         Cell[][] cells = new Cell[4][5];
         String name = "";
         int difficultyLevel = -1;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
-        try (Scanner inputFile = new Scanner(inputStream)){
+        try (InputStream inputStream = new FileInputStream(Model.FOLDER_ADDRESS_SCHEMA_CARDS + "/" + file.getName());
+                 Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -438,56 +427,8 @@ public class FileParser {
                         }
                         if(words[i].startsWith("[")){
                             for(int col=0; col<words.length; col++){
-                                switch(words[col].trim()){
-                                    case "[]":{
-                                        cells[row][col] = new Cell(null, 0);
-                                        break;
-                                    }
-                                    case "[1]":{
-                                        cells[row][col] = new Cell(null, 1);
-                                        break;
-                                    }
-                                    case "[2]":{
-                                        cells[row][col] = new Cell(null, 2);
-                                        break;
-                                    }
-                                    case "[3]":{
-                                        cells[row][col] = new Cell(null, 3);
-                                        break;
-                                    }
-                                    case "[4]":{
-                                        cells[row][col] = new Cell(null, 4);
-                                        break;
-                                    }
-                                    case "[5]":{
-                                        cells[row][col] = new Cell(null, 5);
-                                        break;
-                                    }
-                                    case "[6]":{
-                                        cells[row][col] = new Cell(null, 6);
-                                        break;
-                                    }
-                                    case "[Y]":{
-                                        cells[row][col] = new Cell(Color.YELLOW, 0);
-                                        break;
-                                    }
-                                    case "[R]":{
-                                        cells[row][col] = new Cell(Color.RED, 0);
-                                        break;
-                                    }
-                                    case "[B]":{
-                                        cells[row][col] = new Cell(Color.BLUE, 0);
-                                        break;
-                                    }
-                                    case "[G]":{
-                                        cells[row][col] = new Cell(Color.GREEN, 0);
-                                        break;
-                                    }
-                                    case "[P]":{
-                                        cells[row][col] = new Cell(Color.PURPLE, 0);
-                                        break;
-                                    }
-                                }
+                                cells[row][col] = analizeCell(words[i]);
+                                i++;
                             }
                             row++;
                             if(row>3){
@@ -505,6 +446,8 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return new SchemaCard(name, cells, difficultyLevel);
     }
@@ -513,8 +456,8 @@ public class FileParser {
         Cell[][] cells = new Cell[4][5];
         String name = "";
         int difficultyLevel = -1;
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
-        try (Scanner inputFile = new Scanner(inputStream)){
+        try (InputStream inputStream = new FileInputStream(Model.FOLDER_ADDRESS_SCHEMA_CARDS + "/" + file.getName());
+             Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -544,56 +487,8 @@ public class FileParser {
                         }
                         if(words[i].startsWith("[")){
                             for(int col=0; col<words.length; col++){
-                                switch(words[col].trim()){
-                                    case "[]":{
-                                        cells[row][col] = new Cell(null, 0);
-                                        break;
-                                    }
-                                    case "[1]":{
-                                        cells[row][col] = new Cell(null, 1);
-                                        break;
-                                    }
-                                    case "[2]":{
-                                        cells[row][col] = new Cell(null, 2);
-                                        break;
-                                    }
-                                    case "[3]":{
-                                        cells[row][col] = new Cell(null, 3);
-                                        break;
-                                    }
-                                    case "[4]":{
-                                        cells[row][col] = new Cell(null, 4);
-                                        break;
-                                    }
-                                    case "[5]":{
-                                        cells[row][col] = new Cell(null, 5);
-                                        break;
-                                    }
-                                    case "[6]":{
-                                        cells[row][col] = new Cell(null, 6);
-                                        break;
-                                    }
-                                    case "[Y]":{
-                                        cells[row][col] = new Cell(Color.YELLOW, 0);
-                                        break;
-                                    }
-                                    case "[R]":{
-                                        cells[row][col] = new Cell(Color.RED, 0);
-                                        break;
-                                    }
-                                    case "[B]":{
-                                        cells[row][col] = new Cell(Color.BLUE, 0);
-                                        break;
-                                    }
-                                    case "[G]":{
-                                        cells[row][col] = new Cell(Color.GREEN, 0);
-                                        break;
-                                    }
-                                    case "[P]":{
-                                        cells[row][col] = new Cell(Color.PURPLE, 0);
-                                        break;
-                                    }
-                                }
+                                cells[row][col] = analizeCell(words[i]);
+                                i++;
                             }
                             row++;
                             if(row>3){
@@ -611,19 +506,61 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return new SchemaCard(name, cells, difficultyLevel);
+    }
+    
+    private Cell analizeCell(String cell){
+        switch(cell){
+            case "[]":{
+                return new Cell(null, 0);
+            }
+            case "[1]":{
+                return new Cell(null, 1);
+            }
+            case "[2]":{
+                return new Cell(null, 2);
+            }
+            case "[3]":{
+                return new Cell(null, 3);
+            }
+            case "[4]":{
+                return new Cell(null, 4);
+            }
+            case "[5]":{
+                return new Cell(null, 5);
+            }
+            case "[6]":{
+                return new Cell(null, 6);
+            }
+            case "[Y]":{
+                return new Cell(Color.YELLOW, 0);
+            }
+            case "[R]":{
+                return new Cell(Color.RED, 0);
+            }
+            case "[B]":{
+                return new Cell(Color.BLUE, 0);
+            }
+            case "[G]":{
+                return new Cell(Color.GREEN, 0);
+            }
+            case "[P]":{
+                return new Cell(Color.PURPLE, 0);
+            }
+            default:{
+                return new Cell(null, 0);
+            }
+        }
     }
 
     public int countExcessSchemaCards(String folderAddress){
         int actualSchemaCardNumber = 0;
         File folder = new File(folderAddress);
-        for (final File fileEntry : folder.listFiles()) {
-            if(fileEntry.getName().contains("SchemaCard")) {
-                if (fileEntry.isFile()) {
-                    actualSchemaCardNumber++;
-                }
-            }
+        for (File file : folder.listFiles()) {
+            actualSchemaCardNumber++;
         }
         return actualSchemaCardNumber - Model.SCHEMA_CARDS_NUMBER;
     }
@@ -631,19 +568,17 @@ public class FileParser {
     public String searchIDByNumber(String folderAddress, int toolCardNumber){
         File folder = new File(folderAddress);
         for(final File fileEntry : folder.listFiles()){
-            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
-                String foundID = getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
-                if(!foundID.equals("")) {
-                    return getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
-                }
+            String foundID = getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
+            if(!foundID.equals("")) {
+                return getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
             }
         }
         return "";
     }
 
     private String getIdByNumberOnSingleFile(File file, int toolCardNumber){
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
-        try (Scanner inputFile = new Scanner(inputStream)) {
+        try (InputStream inputStream = new FileInputStream(Model.FOLDER_ADDRESS_TOOL_CARDS + "/" + file.getName());
+                Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -672,6 +607,8 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
+        } catch (IOException e) {
+            System.out.println(FILE_NOT_FOUND);
         }
         return "";
     }
@@ -679,39 +616,39 @@ public class FileParser {
     public boolean getTapWheelUsingValue(String folderAddress){
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("isBeingUsed:")){
+                            return Boolean.valueOf(words[i+1]);
+                        }
+                        i++;
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("isBeingUsed:")){
-                                return Boolean.valueOf(words[i+1]);
-                            }
-                            i++;
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
         return false;
@@ -721,48 +658,48 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound && words[i].trim().equalsIgnoreCase("isBeingUsed:")){
+                            line = "isBeingUsed: " + Boolean.toString(isBeingUsed);
+                        }
+                        i++;
+                    }
+                    if(cardFound){
+                        fileBackup.append(line).append("\n");
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("isBeingUsed:")){
-                                line = "isBeingUsed: " + Boolean.toString(isBeingUsed);
-                            }
-                            i++;
-                        }
-                        if(cardFound){
-                            fileBackup.append(line).append("\n");
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
-                    if(cardFound) {
-                        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
-                            writer.write(fileBackup.toString());
-                        } catch (IOException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
-                        }
+                }
+                if(cardFound) {
+                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
+                        writer.write(fileBackup.toString());
+                    } catch (IOException e) {
+                        System.out.println(FILE_NOT_FOUND);
                     }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
     }
@@ -770,43 +707,43 @@ public class FileParser {
     public Color getTapWheelFirstColor(String folderAddress){
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound && words[i].trim().equalsIgnoreCase("color:")){
+                            try {
+                                Color.valueOf(words[i+1]);
+                            } catch (IllegalArgumentException e){
+                                return Color.NO_COLOR;
+                            }
+                            return Color.valueOf(words[i+1]);
+                        }
+                        i++;
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("color:")){
-                                try {
-                                    Color.valueOf(words[i+1]);
-                                } catch (IllegalArgumentException e){
-                                    return Color.NO_COLOR;
-                                }
-                                return Color.valueOf(words[i+1]);
-                            }
-                            i++;
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
         return null;
@@ -816,48 +753,48 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound && words[i].trim().equalsIgnoreCase("Color:")){
+                            line = "Color: " + firstDieMovingColor;
+                        }
+                        i++;
+                    }
+                    if(cardFound){
+                        fileBackup.append(line).append("\n");
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    TAP_WHEEL_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound && words[i].trim().equalsIgnoreCase("Color:")){
-                                line = "Color: " + firstDieMovingColor;
-                            }
-                            i++;
-                        }
-                        if(cardFound){
-                            fileBackup.append(line).append("\n");
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
-                    if(cardFound) {
-                        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
-                            writer.write(fileBackup.toString());
-                        } catch (IOException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
-                        }
+                }
+                if(cardFound) {
+                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
+                        writer.write(fileBackup.toString());
+                    } catch (IOException e) {
+                        System.out.println(FILE_NOT_FOUND);
                     }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
     }
@@ -866,43 +803,43 @@ public class FileParser {
         int[] positions = new int[2];
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
+                            positions[0] = Integer.parseInt(words[i+1]);
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
+                            positions[1] = Integer.parseInt(words[i+1]);
+                        }
+                        i++;
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
-                                positions[0] = Integer.parseInt(words[i+1]);
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
-                                positions[1] = Integer.parseInt(words[i+1]);
-                            }
-                            i++;
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
         return positions;
@@ -912,43 +849,43 @@ public class FileParser {
         int[] positions = new int[2];
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
-                try (Scanner inputFile = new Scanner(inputStream)) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                    Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
+                            positions[0] = Integer.parseInt(words[i+1]);
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
+                            positions[1] = Integer.parseInt(words[i+1]);
+                        }
+                        i++;
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
-                                positions[0] = Integer.parseInt(words[i+1]);
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
-                                positions[1] = Integer.parseInt(words[i+1]);
-                            }
-                            i++;
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
                 }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
         return positions;
@@ -959,62 +896,61 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
-                    String line = "";
-                    boolean hasNextLine = true;
-                    boolean cardFound = false;
+            try (InputStream inputStream = new FileInputStream(folderAddress + "/" +  fileEntry.getName());
+                 Scanner inputFile = new Scanner(inputStream)) {
+                String line = "";
+                boolean hasNextLine = true;
+                boolean cardFound = false;
+                try{
+                    line = inputFile.nextLine();
+                } catch (NoSuchElementException e){
+                    hasNextLine = false;
+                }
+                while(hasNextLine){
+                    String[] words = line.split(" ");
+                    int i = 0;
+                    while(i<words.length){
+                        if(words[i].trim().equalsIgnoreCase("number:") &&
+                                LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
+                            cardFound = true;
+                            i++;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
+                            line = "firstPlacedDieOldRow: " + oldDieRow;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
+                            line = "firstPlacedDieOldCol: " + oldDieCol;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
+                            line = "firstPlacedDieNewRow: " + newDieRow;
+                        }
+                        if(cardFound &&
+                                words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
+                            line = "firstPlacedDieNewCol: " + newDieCol;
+                        }
+                        i++;
+                    }
+                    if(cardFound){
+                        fileBackup.append(line).append("\n");
+                    }
                     try{
                         line = inputFile.nextLine();
                     } catch (NoSuchElementException e){
                         hasNextLine = false;
                     }
-                    while(hasNextLine){
-                        String[] words = line.split(" ");
-                        int i = 0;
-                        while(i<words.length){
-                            if(words[i].trim().equalsIgnoreCase("number:") &&
-                                    LATHEKIN_NUMBER == Integer.parseInt(words[i+1])){
-                                cardFound = true;
-                                i++;
-                            }
-                            if(cardFound && 
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldRow:")){
-                                line = "firstPlacedDieOldRow: " + oldDieRow;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieOldCol:")){
-                                line = "firstPlacedDieOldCol: " + oldDieCol;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewRow:")){
-                                line = "firstPlacedDieNewRow: " + newDieRow;
-                            }
-                            if(cardFound &&
-                                    words[i].trim().equalsIgnoreCase("firstPlacedDieNewCol:")){
-                                line = "firstPlacedDieNewCol: " + newDieCol;
-                            }
-                            i++;
-                        }
-                        if(cardFound){
-                            fileBackup.append(line).append("\n");
-                        }
-                        try{
-                            line = inputFile.nextLine();
-                        } catch (NoSuchElementException e){
-                            hasNextLine = false;
-                        }
-                    }
-                    if(cardFound) {
-                        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
-                            writer.write(fileBackup.toString());
-                        } catch (IOException e) {
-                            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
+                if(cardFound) {
+                    try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileEntry)))) {
+                        writer.write(fileBackup.toString());
+                    } catch (IOException e) {
+                        System.out.println(FILE_NOT_FOUND);
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(FILE_NOT_FOUND);
             }
         }
     }

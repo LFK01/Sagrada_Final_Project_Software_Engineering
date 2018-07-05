@@ -1,0 +1,12 @@
+ServerIP: localhost
+PortRMI: 1099
+PortSocket: 1111
+Timer: 150
+
+/*In this file you can set parameters for your gaming experience. If you want to connect to
+* a specific server running sagrada, write its gateway address on the ServerIp field instead of localhost.
+* If you're playing sagrada locally ServerIP must not be changed.
+* If you are unable to connect with RMI or socket try to change the port.
+* Timer represents how much time every player has to finish his move, this property can be set up
+* only by who runs the server.
+* IMPORTANT: PUT A SPACE BETWEEN FIELD TAG AND FIELD VALUES

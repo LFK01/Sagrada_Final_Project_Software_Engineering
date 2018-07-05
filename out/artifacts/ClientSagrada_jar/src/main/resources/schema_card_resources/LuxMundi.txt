@@ -1,0 +1,7 @@
+Number: 3
+name: Lux/Mundi
+difficulty: 6
+[] [] [1] [] []
+[1] [G] [3] [B] [2]
+[B] [5] [4] [5] [G]
+[] [B] [5] [G] []

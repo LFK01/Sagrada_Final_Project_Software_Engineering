@@ -102,23 +102,23 @@ public class MoveDieOnWindow implements TCEffectInterface {
             throw new ExecutingEffectException();
         }
         if(effectParameter.equals("NoColorRestrictions")){
-            placeDieWithToolCard(true, false, false);
+            placeDieWithToolCard(true, false);
         }
         if(effectParameter.equals("NoValueRestrictions")){
-            placeDieWithToolCard(false, true, false);
+            placeDieWithToolCard(false, true);
         }
         if(effectParameter.equals("AllRestrictions")){
             FileParser parser = new FileParser();
             parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
                     oldDieRow, oldDieCol, newDieRow, newDieCol);
-            placeDieWithToolCard(false, false, false);
+            placeDieWithToolCard(false, false);
         }
 
         if(effectParameter.equals("SameColorDice")){
             FileParser parser = new FileParser();
             if(parser.getTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS)) {
                 if (checkSameColorDice()) {
-                    placeDieWithToolCard(false, false, false);
+                    placeDieWithToolCard(false, false);
                 } else {
                     throw new ExecutingEffectException();
                 }
@@ -139,7 +139,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
                 } else {
                     parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, true);
                     parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, firstDieMovingColor.toString());
-                    placeDieWithToolCard(false, false, false);
+                    placeDieWithToolCard(false, false);
                 }
             }
         }
@@ -152,11 +152,10 @@ public class MoveDieOnWindow implements TCEffectInterface {
         return (dieToBeMoved.getDiceColor().equals(firstDieMovingColor));
     }
 
-    private void placeDieWithToolCard(boolean avoidColorRestrictions, boolean avoidValueRestrictions,
-                                    boolean avoidNearnessRestrictions) throws ExecutingEffectException {
+    private void placeDieWithToolCard(boolean avoidColorRestrictions, boolean avoidValueRestrictions) throws ExecutingEffectException {
         try {
             activePlayer.getSchemaCard().placeDie(dieToBeMoved, newDieRow, newDieCol,
-                    avoidColorRestrictions, avoidValueRestrictions, avoidNearnessRestrictions);
+                    avoidColorRestrictions, avoidValueRestrictions, false);
         } catch (RestrictionsNotRespectedException | FullCellException e) {
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,

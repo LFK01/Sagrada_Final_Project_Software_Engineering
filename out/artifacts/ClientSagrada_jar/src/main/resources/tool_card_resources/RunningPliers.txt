@@ -1,0 +1,7 @@
+Number: 8
+Name: Running/Pliers
+ID: toc
+description: After/your/first/turn,/immediately/draft/a/die./Skip/your/next/turn/this/round
+effects: PlaceDie
+parameters: null
+inputManager: INPUT_CHOOSE_DIE_PLACE_DIE

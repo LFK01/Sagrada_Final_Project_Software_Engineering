@@ -20,6 +20,7 @@ public class TestSchemaCard {
         FileParser parser = new FileParser();
         for(int i=0; i<Model.SCHEMA_CARDS_NUMBER; i++){
             SchemaCard schemaCard = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, i+1);
+            System.out.println(schemaCard.toString());
             assertNotNull(schemaCard);
         }
     }

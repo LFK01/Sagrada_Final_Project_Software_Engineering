@@ -1,0 +1,7 @@
+Number: 2
+Name: Eglomise/Brush
+ID: mzq
+description: Move/any/one/die/in/your/window/ignoring/color/restrictions./You/must/obey/all/other/placement/restrinctions
+effects: MoveDieOnWindow
+parameters: NoColorRestrictions
+inputManager: INPUT_MOVE_DIE_ON_WINDOW

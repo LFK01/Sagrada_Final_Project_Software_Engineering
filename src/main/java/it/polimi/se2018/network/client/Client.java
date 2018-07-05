@@ -97,8 +97,8 @@ public class Client {
 
     private void readPortsFromFile() {
         FileParser parser = new FileParser();
-        serverIP = parser.readServerIP(Server.RESOURCE_FOLDER_ADDRESS);
-        portSocket = parser.readPortSocket(Server.RESOURCE_FOLDER_ADDRESS);
+        serverIP = parser.readServerIP(Server.SERVER_INPUT_FILE_ADDRESS);
+        portSocket = parser.readPortSocket(Server.SERVER_INPUT_FILE_ADDRESS);
     }
 
     private void setupRMIConnection() {

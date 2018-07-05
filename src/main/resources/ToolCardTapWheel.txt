@@ -6,4 +6,4 @@ effects: MoveDieOnWindow/MoveDieOnWindow
 parameters: SameColorDice/SameColorDice
 inputManager: INPUT_MOVE_DIE_ON_WINDOW/INPUT_MOVE_DIE_ON_WINDOW
 isBeingUsed: false
-Color: null
+Color: RED

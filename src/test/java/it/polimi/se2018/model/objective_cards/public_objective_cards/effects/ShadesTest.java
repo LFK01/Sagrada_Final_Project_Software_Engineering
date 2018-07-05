@@ -57,7 +57,7 @@ public class ShadesTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard1);
         model.getParticipants().get(1).setSchemaCard(schemaCard2);
 
-        ObjectiveCard card1 = parser.createObjectiveCard(false,9);
+        ObjectiveCard card1 = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,9);
         card1.countPoints(model,card1.getName(),card1.getPoints());
         System.out.println(schemaCard1);
         System.out.println(schemaCard2);

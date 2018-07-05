@@ -79,7 +79,7 @@ public class ProjectObservable {
                                 update.invoke(observer, memorizedMessage);
                                 System.out.println("notified observer: " + observer.toString());
                             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                System.out.println("error on invoking a method on observable 2" +
+                                System.out.println("exception: " + e.getClass().toString() + " on observable 2" +
                                         "\nwith message: " + memorizedMessage +
                                         "\nwith recipient: " + memorizedMessage.getRecipient() +
                                         "\non observer: " + observer.toString());

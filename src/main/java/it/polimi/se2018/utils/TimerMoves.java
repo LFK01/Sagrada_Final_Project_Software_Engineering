@@ -34,7 +34,7 @@ public class TimerMoves extends TimerTask {
             model.getParticipants().stream().filter(
                     p -> !p.equals(activePlayer) && p.isConnected()
             ).forEach(
-                    p -> model.singlePlayerWinning(p)
+                    p -> model.singlePlayerWinning(p, controller.isMatchStarted())
             );
         }
     }

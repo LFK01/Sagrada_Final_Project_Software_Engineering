@@ -8,7 +8,6 @@ import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.utils.ProjectObservable;
 
-import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,10 +39,9 @@ public class Model extends ProjectObservable implements Runnable{
     public static final int TOOL_CARDS_EXTRACT_NUMBER = 3;
     public static final int SCHEMA_CARD_ROWS_NUMBER = 4;
     public static final int SCHEMA_CARD_COLUMNS_NUMBER = 5;
-    public static final String FOLDER_ADDRESS_TOOL_CARDS =
-            "src\\main\\java\\it\\polimi\\se2018\\controller\\tool_cards\\resources_tool_cards";
-    public static final String FOLDER_ADDRESS_SCHEMA_CARDS =
-            "src\\main\\java\\it\\polimi\\se2018\\model\\resources_schema_card";
+    public static final String FOLDER_ADDRESS_TOOL_CARDS = "src/main/resources";
+    public static final String FOLDER_ADDRESS_SCHEMA_CARDS = "src/main/resources";
+    public static final String OBJECTIVE_CARD_FILE_ADDRESS = "ObjectiveCards.txt";
     private GameBoard gameBoard;
     /*local instance of the gameBoard used to access all objects and
      * methods of the game instrumentation*/
@@ -61,6 +59,10 @@ public class Model extends ProjectObservable implements Runnable{
      * Constructor method initializing turnOfTheRound and the participant list
      */
     public Model() {
+        FileParser parser = new FileParser();
+        parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, false);
+        parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS, -1, -1,
+                -1, -1);
         this.gameBoard = new GameBoard();
         turnOfTheRound = 0;
         firstDraftOfDice = true;
@@ -266,7 +268,8 @@ public class Model extends ProjectObservable implements Runnable{
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++) {
-            gameBoard.setPublicObjectiveCards(parser.createObjectiveCard(false,cardIndex.get(i)), i);
+            gameBoard.setPublicObjectiveCards(parser.createObjectiveCard(OBJECTIVE_CARD_FILE_ADDRESS, false,
+                    cardIndex.get(i)), i);
         }
     }
 
@@ -354,7 +357,7 @@ public class Model extends ProjectObservable implements Runnable{
         participants.stream().forEach(
                 p -> {
                     int playerIndex = participants.indexOf(p);
-                    p.setPrivateObjectiveCard(parser.createObjectiveCard(true, cardIndex.get(playerIndex)));
+                    p.setPrivateObjectiveCard(parser.createObjectiveCard(OBJECTIVE_CARD_FILE_ADDRESS, true, cardIndex.get(playerIndex)));
                 }
         );
         participants.stream().filter(
@@ -618,16 +621,27 @@ public class Model extends ProjectObservable implements Runnable{
 
     }
 
-    public void singlePlayerWinning(Player player){
-
-        Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
-                objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
-        );
-        player.getPrivateObjective().countPoints(this, player.getName(), player.getPoints());
-        setChanged();
-        ArrayList<Player> singlePlayerWinner = new ArrayList<>();
-        singlePlayerWinner.add(player);
-        //notifyObservers(new SendWinnerMessage("server", player.getName(), singlePlayerWinner));
+    public void singlePlayerWinning(Player player, boolean matchStarted){
+        if(matchStarted) {
+            Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
+                    objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
+            );
+            player.getPrivateObjective().countPoints(this, player.getName(), player.getPoints());
+            setChanged();
+            ArrayList<String> singlePlayerWinnerName = new ArrayList<>();
+            singlePlayerWinnerName.add(player.getName());
+            ArrayList<Integer> singlePlayerWinningPoints = new ArrayList<>();
+            singlePlayerWinningPoints.add(player.getPoints());
+            notifyObservers(new SendWinnerMessage("server", player.getName(),
+                    singlePlayerWinnerName, singlePlayerWinningPoints));
+        } else {
+            ArrayList<String> singlePlayerWinnerName = new ArrayList<>();
+            singlePlayerWinnerName.add(player.getName());
+            ArrayList<Integer> singlePlayerWinningPoints = new ArrayList<>();
+            singlePlayerWinningPoints.add(0);
+            notifyObservers(new SendWinnerMessage("server", player.getName(),
+                    singlePlayerWinnerName, singlePlayerWinningPoints));
+        }
     }
 
     @Override

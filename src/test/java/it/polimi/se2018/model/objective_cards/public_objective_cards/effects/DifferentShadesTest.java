@@ -44,7 +44,7 @@ public class DifferentShadesTest {
         schemaCard.placeDie(dice9,1,1,false,false,false);
         schemaCard.placeDie(dice10,1,2,false,false,false);
         model.getParticipants().get(0).setSchemaCard(schemaCard);
-        ObjectiveCard card = parser.createObjectiveCard(false,5);
+        ObjectiveCard card = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,5);
         card.countPoints(model,card.getName(),card.getPoints());
         assertEquals(5,model.getParticipants().get(0).getPoints());
     }

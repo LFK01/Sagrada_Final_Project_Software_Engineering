@@ -42,28 +42,22 @@ public class Client {
         view.setServerIsUp(false);
 
         while(!gameHasEnded){
-            //System.out.println("gameHasNotEnded");
             if(view.isServerUp()){
                 if(!view.isPlayerBanned()){
-                    //System.out.println("PlayerIsNotBanned");
                     gameHasEnded = view.hasGameEnded();
                 } else {
-                    //System.out.println("PlayerHasBeenBanned");
                     if (view.playerWantsToContinue()){
-                        //System.out.println("PlayerWantsToContinue");
                         doComeBackConnection();
                     } else {
-                        //System.out.println("PlayerWantsToQuit");
                         gameHasEnded = true;
                     }
                 }
             } else {
-                //System.out.println("ServerIsNotUp");
                 establishConnection();
                 gameHasEnded = view.hasGameEnded();
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -84,12 +78,10 @@ public class Client {
             switch (choice){
                 case 1:{
                     setupRMIConnection();
-                    view.createPlayer();
                     break;
                 }
                 case 2:{
                     setupSocketConnection();
-                    view.createPlayer();
                     break;
                 }
                 case 3:{
@@ -99,12 +91,14 @@ public class Client {
             }
         }
         view.setServerIsUp(true);
+        System.out.println("createPlayer() called from establish connection");
+        view.createPlayer();
     }
 
     private void readPortsFromFile() {
         FileParser parser = new FileParser();
-        serverIP = parser.readServerIP(Server.INPUT_FILE_ADDRESS);
-        portSocket = parser.readPortSocket(Server.INPUT_FILE_ADDRESS);
+        serverIP = parser.readServerIP(Server.RESOURCE_FOLDER_ADDRESS);
+        portSocket = parser.readPortSocket(Server.RESOURCE_FOLDER_ADDRESS);
     }
 
     private void setupRMIConnection() {
@@ -158,6 +152,7 @@ public class Client {
                 }
             }
         }
+        view.setServerIsUp(true);
         view.askOldUsername();
     }
 

@@ -35,7 +35,7 @@ public class RowCardsCSTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard);
 
 
-        ObjectiveCard card1 = parser.createObjectiveCard(false,7);
+        ObjectiveCard card1 = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,7);
         card1.countPoints(model,card1.getName(),card1.getPoints());
 
         assertEquals(5,model.getParticipants().get(0).getPoints());

@@ -24,16 +24,17 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Server {
 
-    public static final String INPUT_FILE_ADDRESS = "src\\main\\java\\it\\polimi\\se2018\\in.txt";
+    public static final String RESOURCE_FOLDER_ADDRESS = "input.txt";
     private ArrayList<VirtualViewInterface> playersVirtualView = new ArrayList<>();
     private final Controller controller;
 
     private Server() {
         FileParser fileParser = new FileParser();
 
-        int timer = fileParser.readTimer(INPUT_FILE_ADDRESS);
-        int portSocket = fileParser.readPortSocket(INPUT_FILE_ADDRESS);
-        int portRMI = fileParser.readPortRMI(INPUT_FILE_ADDRESS);
+        int timer = fileParser.readTimer(RESOURCE_FOLDER_ADDRESS);
+        System.out.println("timer: " + timer);
+        int portSocket = fileParser.readPortSocket(RESOURCE_FOLDER_ADDRESS);
+        int portRMI = fileParser.readPortRMI(RESOURCE_FOLDER_ADDRESS);
 
         controller = new Controller();
         controller.setTimer(timer);

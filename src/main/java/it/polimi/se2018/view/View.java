@@ -94,6 +94,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ErrorMessage errorMessage) {
         if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
             System.out.println("Username not available!");
+            System.out.println("create");
             this.createPlayer();
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){

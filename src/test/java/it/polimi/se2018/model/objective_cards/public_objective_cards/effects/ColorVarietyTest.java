@@ -45,7 +45,7 @@ public class ColorVarietyTest {
         schemaCard.placeDie(dice10,2,4,false,false,false);
 
 
-        ObjectiveCard objectiveCard = parser.createObjectiveCard(false,10);
+        ObjectiveCard objectiveCard = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,10);
         objectiveCard.countPoints(model,objectiveCard.getName(),objectiveCard.getPoints());
         assertEquals(8,model.getParticipants().get(0).getPoints());
     }

@@ -36,7 +36,7 @@ public class PrivateCardEffectsTest {
         model.getParticipants().get(0).setSchemaCard(schemaCard);
 
 
-        ObjectiveCard card1 = parser.createObjectiveCard(true,5);
+        ObjectiveCard card1 = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, true,5);
         model.getParticipants().get(0).setPrivateObjectiveCard(card1);
         card1.countPoints(model,card1.getName(),card1.getPoints());
 

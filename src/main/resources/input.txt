@@ -1,4 +1,5 @@
+InputFile
 ServerIP: localhost
 PortRMI: 1099
 PortSocket: 1111
-Timer: 1000
+Timer: 150

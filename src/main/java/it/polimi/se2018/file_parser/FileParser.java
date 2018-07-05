@@ -13,6 +13,8 @@ import it.polimi.se2018.model.objective_cards.ObjectiveCardEffectInterface;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +30,11 @@ public class FileParser {
 
     public int readPortSocket(String fileAddress) {
         int filePortSocket = 1099;
-        try ( Scanner inputFile = new Scanner(new FileInputStream(fileAddress))) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
+        try (Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
+            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -40,7 +44,10 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("PortSocket:")){
+                    if(words[i].trim().equals("InputFile")){
+                        foundFile = true;
+                    }
+                    if(foundFile && words[i].trim().equals("PortSocket:")){
                         filePortSocket = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -52,17 +59,17 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return filePortSocket;
     }
 
     public int readPortRMI(String fileAddress){
         int filePort = -1;
-        try (Scanner inputFile = new Scanner(new FileInputStream(fileAddress))) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
+        try (Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
+            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -72,7 +79,10 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("PortRMI:")){
+                    if(words[i].trim().equals("InputFile")){
+                        foundFile = true;
+                    }
+                    if(foundFile && words[i].trim().equals("PortRMI:")){
                         filePort = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -84,17 +94,17 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return filePort;
     }
 
     public String readServerIP(String fileAddress){
         String fileIP = "";
-        try (Scanner inputFile = new Scanner(new FileInputStream(fileAddress))){
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
+            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -104,7 +114,10 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("ServerIP:")){
+                    if(words[i].trim().equals("InputFile")){
+                        foundFile = true;
+                    }
+                    if(foundFile && words[i].trim().equals("ServerIP:")){
                         fileIP = words[i+1];
                         hasNextLine = false;
                     }
@@ -116,17 +129,17 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return fileIP;
     }
 
     public int readTimer(String fileAddress){
         int fileTimer = -1;
-        try (Scanner inputFile = new Scanner(new FileInputStream(fileAddress))){
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
+            boolean foundFile = false;
             try{
                 line = inputFile.nextLine();
             } catch (NoSuchElementException e){
@@ -136,7 +149,10 @@ public class FileParser {
                 String[] words = line.split(" ");
                 int i = 0;
                 while(i<words.length){
-                    if(words[i].trim().equals("Timer:")){
+                    if(words[i].trim().equals("InputFile")){
+                        foundFile = true;
+                    }
+                    if(foundFile && words[i].trim().equals("Timer:")){
                         fileTimer = Integer.parseInt(words[i+1]);
                         hasNextLine = false;
                     }
@@ -148,8 +164,6 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return fileTimer;
     }
@@ -158,9 +172,11 @@ public class FileParser {
         ToolCard newToolCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            newToolCard = readSingleToolCard(fileEntry, toolCardNumber);
-            if(!newToolCard.getIdentificationName().equals("")){
-                return newToolCard;
+            if(fileEntry.getName().contains("ToolCard")) {
+                newToolCard = readSingleToolCard(fileEntry, toolCardNumber);
+                if (!newToolCard.getIdentificationName().equals("")) {
+                    return newToolCard;
+                }
             }
         }
         return newToolCard;
@@ -174,7 +190,9 @@ public class FileParser {
         ArrayList<InputManager> inputManagerList = new ArrayList<>();
         ArrayList<String> specificEffectsList = new ArrayList<>();
         EffectsFactory effectsFactory = new EffectsFactory();
-        try (Scanner inputFile = new Scanner(new FileInputStream(file))){
+        System.out.println("file name: " + file.getName());
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("input.txt");
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -233,22 +251,19 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return new ToolCard(name, identificationName, description, inputManagerList,
                 effectsList, specificEffectsList, true);
     }
 
-    public ObjectiveCard createObjectiveCard(boolean isPrivate, int cardNumber){
+    public ObjectiveCard createObjectiveCard(String fileAddress, boolean isPrivate, int cardNumber){
         String name = "";
         String description = "";
-        int points =0;
+        int points = 0;
         OCEffectFactory factory = new OCEffectFactory();
-        ObjectiveCardEffectInterface effectOC = null;;
-        Scanner inputFile = null;
-        try{
-            inputFile = new Scanner(new FileInputStream("src\\main\\java\\it\\polimi\\se2018\\model\\objective_cards\\ObjectiveCards"));
+        ObjectiveCardEffectInterface effectOC = null;
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileAddress);
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -353,10 +368,6 @@ public class FileParser {
                 }
 
             }
-        }catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            inputFile.close();
         }
         return new ObjectiveCard(name, description, points,effectOC);
     }
@@ -365,9 +376,11 @@ public class FileParser {
         SchemaCard newSchemaCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            newSchemaCard = readSingleSchemaCardByNumber(fileEntry, schemaCardNumber);
-            if(!newSchemaCard.getName().equals("")){
-                return newSchemaCard;
+            if(fileEntry.getName().contains("SchemaCard")) {
+                newSchemaCard = readSingleSchemaCardByNumber(fileEntry, schemaCardNumber);
+                if (!newSchemaCard.getName().equals("")) {
+                    return newSchemaCard;
+                }
             }
         }
         return newSchemaCard;
@@ -377,9 +390,11 @@ public class FileParser {
         SchemaCard newSchemaCard = null;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            newSchemaCard = readSingleSchemaCardByName(fileEntry, schemaName);
-            if(!newSchemaCard.getName().equals("")){
-                return newSchemaCard;
+            if(fileEntry.getName().contains("SchemaCard")) {
+                newSchemaCard = readSingleSchemaCardByName(fileEntry, schemaName);
+                if (!newSchemaCard.getName().equals("")) {
+                    return newSchemaCard;
+                }
             }
         }
         return newSchemaCard;
@@ -389,7 +404,8 @@ public class FileParser {
         Cell[][] cells = new Cell[4][5];
         String name = "";
         int difficultyLevel = -1;
-        try (Scanner inputFile = new Scanner(new FileInputStream(file))){
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -489,8 +505,6 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return new SchemaCard(name, cells, difficultyLevel);
     }
@@ -499,7 +513,8 @@ public class FileParser {
         Cell[][] cells = new Cell[4][5];
         String name = "";
         int difficultyLevel = -1;
-        try (Scanner inputFile = new Scanner(new FileInputStream(file))){
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
+        try (Scanner inputFile = new Scanner(inputStream)){
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -596,8 +611,6 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
         return new SchemaCard(name, cells, difficultyLevel);
     }
@@ -606,8 +619,10 @@ public class FileParser {
         int actualSchemaCardNumber = 0;
         File folder = new File(folderAddress);
         for (final File fileEntry : folder.listFiles()) {
-            if(fileEntry.isFile()){
-                actualSchemaCardNumber++;
+            if(fileEntry.getName().contains("SchemaCard")) {
+                if (fileEntry.isFile()) {
+                    actualSchemaCardNumber++;
+                }
             }
         }
         return actualSchemaCardNumber - Model.SCHEMA_CARDS_NUMBER;
@@ -616,7 +631,7 @@ public class FileParser {
     public String searchIDByNumber(String folderAddress, int toolCardNumber){
         File folder = new File(folderAddress);
         for(final File fileEntry : folder.listFiles()){
-            if(fileEntry.isFile()){
+            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
                 String foundID = getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
                 if(!foundID.equals("")) {
                     return getIdByNumberOnSingleFile(fileEntry, toolCardNumber);
@@ -627,7 +642,8 @@ public class FileParser {
     }
 
     private String getIdByNumberOnSingleFile(File file, int toolCardNumber){
-        try (Scanner inputFile = new Scanner(new FileInputStream(file))) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file.getName());
+        try (Scanner inputFile = new Scanner(inputStream)) {
             String line = "";
             boolean hasNextLine = true;
             boolean cardFound = false;
@@ -656,8 +672,6 @@ public class FileParser {
                     hasNextLine = false;
                 }
             }
-        } catch (FileNotFoundException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
         }
         return "";
     }
@@ -665,8 +679,9 @@ public class FileParser {
     public boolean getTapWheelUsingValue(String folderAddress){
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile()){
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -696,8 +711,6 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -708,8 +721,9 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -748,8 +762,6 @@ public class FileParser {
                             Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -758,8 +770,9 @@ public class FileParser {
     public Color getTapWheelFirstColor(String folderAddress){
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -793,8 +806,6 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -805,8 +816,9 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile()) {
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -845,8 +857,6 @@ public class FileParser {
                             Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -856,8 +866,9 @@ public class FileParser {
         int[] positions = new int[2];
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile()){
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -891,8 +902,6 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -903,8 +912,9 @@ public class FileParser {
         int[] positions = new int[2];
         File folder = new File(folderAddress);
         for(File fileEntry: folder.listFiles()){
-            if(fileEntry.isFile()){
-                try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
+            if(fileEntry.isFile() && fileEntry.getName().contains("ToolCard")){
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileEntry.getName());
+                try (Scanner inputFile = new Scanner(inputStream)) {
                     String line = "";
                     boolean hasNextLine = true;
                     boolean cardFound = false;
@@ -938,8 +948,6 @@ public class FileParser {
                             hasNextLine = false;
                         }
                     }
-                } catch (FileNotFoundException e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, FILE_NOT_FOUND);
                 }
             }
         }
@@ -951,7 +959,7 @@ public class FileParser {
         File folder = new File(folderAddress);
         StringBuilder fileBackup = new StringBuilder();
         for(File fileEntry: folder.listFiles()) {
-            if (fileEntry.isFile()) {
+            if (fileEntry.isFile() && fileEntry.getName().contains("ToolCard")) {
                 try (Scanner inputFile = new Scanner(new FileInputStream(fileEntry))) {
                     String line = "";
                     boolean hasNextLine = true;
@@ -1010,4 +1018,5 @@ public class FileParser {
             }
         }
     }
+
 }

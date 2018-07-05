@@ -103,7 +103,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public synchronized void update(CreatePlayerMessage createPlayerMessage){
-        if(!timerLobbyTask.isStarted() && countConnectedPlayer() > 1) {
+        if(!timerLobbyTask.isStarted() && countConnectedPlayer() > 0) {
             timerLobbyTask.setStarted(true);
             System.out.println("lobby timer started");
             timer.schedule(timerLobbyTask, 1000L * time);
@@ -461,7 +461,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             ).forEach(
                     p -> {
                         System.out.println(" - " + p.getName());
-                        model.singlePlayerWinning(p);
+                        model.singlePlayerWinning(p, matchStarted);
                     }
             );
         } else {
@@ -489,6 +489,9 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         ).count();
     }
 
+    public boolean isMatchStarted(){
+        return matchStarted;
+    }
     @Override
     public String toString(){
         return "controller";

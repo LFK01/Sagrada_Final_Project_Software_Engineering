@@ -48,7 +48,7 @@ public class ColoredDiagonalsTest {
         schemaCard.placeDie(dice12,2,1,false,false,false);
         schemaCard.placeDie(dice13,3,0,false,false,false);
         model.getParticipants().get(0).setSchemaCard(schemaCard);
-        ObjectiveCard card = parser.createObjectiveCard(false,3);
+        ObjectiveCard card = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,3);
         card.countPoints(model,card.getName(),card.getPoints());
         System.out.println(schemaCard);
         assertEquals(11,model.getParticipants().get(0).getPoints());
@@ -105,7 +105,7 @@ public class ColoredDiagonalsTest {
         schemaCard.placeDie(dice20,3,4,false,false,false);
 
         model.getParticipants().get(0).setSchemaCard(schemaCard);
-        ObjectiveCard card = parser.createObjectiveCard(false,3);
+        ObjectiveCard card = parser.createObjectiveCard(Model.OBJECTIVE_CARD_FILE_ADDRESS, false,3);
         card.countPoints(model,card.getName(),card.getPoints());
         System.out.println(schemaCard);
         assertEquals(33,model.getParticipants().get(0).getPoints());

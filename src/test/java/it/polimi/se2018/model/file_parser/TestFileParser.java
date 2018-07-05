@@ -1,11 +1,36 @@
 package it.polimi.se2018.model.file_parser;
 
+import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.game_equipment.Color;
+import it.polimi.se2018.model.game_equipment.SchemaCard;
 import org.junit.Test;
 
 public class TestFileParser {
+
+    @Test
+    public void objectiveCard(){
+
+    }
+
+    @Test
+    public void constructorToolCardTest(){
+        for(int i = 1; i<=12; i++){
+            String fileAddress = Model.FOLDER_ADDRESS_TOOL_CARDS;
+            FileParser parser = new FileParser();
+            ToolCard toolCard = parser.createToolCard(fileAddress, i);
+        }
+    }
+
+    @Test
+    public void constructorSchemaCardTest(){
+        for(int i=1; i<=Model.SCHEMA_CARDS_NUMBER+1; i++){
+            FileParser parser = new FileParser();
+            SchemaCard temporarySchema = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, i);
+            System.out.println(temporarySchema.toString());
+        }
+    }
 
     @Test
     public void searchIDByNumber(){

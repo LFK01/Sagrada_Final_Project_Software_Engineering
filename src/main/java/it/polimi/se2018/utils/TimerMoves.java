@@ -23,6 +23,7 @@ public class TimerMoves extends TimerTask {
     @Override
     public void run() {
         this.hasEnded = true;
+        System.out.println("timer moves ended");
         Player activePlayer = model.getPlayer(model.getTurnOfTheRound());
         if(controller.countConnectedPlayer()>2) {
             controller.setChanged();
@@ -31,7 +32,7 @@ public class TimerMoves extends TimerTask {
             controller.blockPlayer(activePlayer.getName());
         } else {
             model.getParticipants().stream().filter(
-                    p -> !p.equals(activePlayer)
+                    p -> !p.equals(activePlayer) && p.isConnected()
             ).forEach(
                     p -> model.singlePlayerWinning(p)
             );

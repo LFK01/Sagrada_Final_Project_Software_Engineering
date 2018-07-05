@@ -12,6 +12,7 @@ public class ViewTest {
     @Test
     public void update() {
         View view = new View();
+        System.out.println(view.toString());
         ArrayList<String> ranking = new ArrayList<>();
         ArrayList<Integer> score = new ArrayList<>();
         ranking.add("p1");

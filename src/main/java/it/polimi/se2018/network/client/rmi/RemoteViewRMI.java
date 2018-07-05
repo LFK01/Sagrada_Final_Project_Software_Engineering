@@ -267,4 +267,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("RemoteViewRMI(").append(username).append(")");
+        return builder.toString();
+    }
+
 }

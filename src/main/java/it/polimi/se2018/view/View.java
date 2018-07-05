@@ -39,6 +39,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      * Initializes view
      */
     public View(){
+        username = super.toString();
         playerIsBanned = false;
         gameHasEnded = false;
         toolCardNames = new String[Model.TOOL_CARDS_EXTRACT_NUMBER];
@@ -94,8 +95,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ErrorMessage errorMessage) {
         if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
             System.out.println("Username not available!");
-            NotifyingThread.setPlayerIsActive(true);
-            NotifyingThread.setPlayerBanned(false);
             this.createPlayer();
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){
@@ -115,6 +114,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             serverIsUp = false;
         }
         if(errorMessage.toString().equalsIgnoreCase("OldUsernameFound")){
+            username = errorMessage.getRecipient();
             serverIsUp = true;
         }
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
@@ -175,6 +175,10 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equalsIgnoreCase("LobbyTimeEnded")){
             System.out.println("Match has already started!");
+            setServerIsUp(false);
+        }
+        if(errorMessage.toString().equalsIgnoreCase("AlreadyExistingPlayer")){
+            System.out.println("Unable to connect!");
             setServerIsUp(false);
         }
     }
@@ -429,6 +433,13 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     public void setServerIsUp(boolean serverIsUp) {
         this.serverIsUp = serverIsUp;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("View(").append(username).append(")");
+        return builder.toString();
     }
 
 }

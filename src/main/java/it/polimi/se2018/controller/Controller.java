@@ -1,4 +1,5 @@
 package it.polimi.se2018.controller;
+
 import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.controller.tool_cards.effects.MoveDieOnWindow;
 import it.polimi.se2018.file_parser.FileParser;
@@ -25,6 +26,7 @@ import java.util.*;
 
 public class Controller extends ProjectObservable implements ProjectObserver {
 
+    private static final String SERVER_SIGNATURE = "Server";
     private Model model;
     private int time;
     private Timer timer;
@@ -39,39 +41,41 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     public Controller() {
         this.model = new Model();
         this.timer = new Timer();
+        matchStarted = false;
         timerLobbyTask = new TimerLobbyTask(this, model);
     }
 
     /*placing die controller*/
     @Override
     public void update(ChooseDiceMove message) {
-        if(message.getDraftPoolPos()>model.getGameBoard().getRoundTrack().getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
+        if(message.getDraftPoolPos() > model.getGameBoard().getRoundTrack()
+                .getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
             setChanged();
-            notifyObservers(new ErrorMessage("server", model.getParticipants().
+            notifyObservers(new ErrorMessage(SERVER_SIGNATURE, model.getParticipants().
                     get(model.getTurnOfTheRound()).getName(), "NotValidDraftPoolPosition"));
         }else {
             if (model.isFirstDraftOfDice()) {
                 if (model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
                         [model.getRoundNumber()].getTurn1().getDieMove().isBeenUsed()) {
                     setChanged();
-                    notifyObservers(new ErrorMessage("server", model.getParticipants().
+                    notifyObservers(new ErrorMessage(SERVER_SIGNATURE, model.getParticipants().
                             get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
                 } else {
                     String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
                     setChanged();
-                    notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, message.getSender(), draftPoolDiePosition,
                             InputManager.INPUT_PLACE_DIE));
                 }
             } else {
                 if ((model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()
                         [model.getRoundNumber()].getTurn2().getDieMove().isBeenUsed())) {
                     setChanged();
-                    notifyObservers(new ErrorMessage("server", model.getParticipants().
+                    notifyObservers(new ErrorMessage(SERVER_SIGNATURE, model.getParticipants().
                             get(model.getTurnOfTheRound()).getName(), "DiceMoveAlreadyUsed"));
                 } else {
                     String draftPoolDiePosition = "DraftPoolDiePosition: " + message.getDraftPoolPos();
                     setChanged();
-                    notifyObservers(new RequestMessage("server", message.getSender(), draftPoolDiePosition,
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, message.getSender(), draftPoolDiePosition,
                             InputManager.INPUT_PLACE_DIE));
                 }
             }
@@ -85,36 +89,44 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        if(model.getParticipants().stream().filter(
-                player -> player.getName().equalsIgnoreCase(comebackMessage.getUsername())
-        ).count()>0) {
+        if(model.getParticipants().stream().anyMatch(
+                player -> player.getName().equalsIgnoreCase(comebackMessage.getUsername()) &&
+                        !player.isConnected()
+        )) {
             unblockPlayer(comebackMessage.getUsername());
         } else {
             setChanged();
-            notifyObservers(new ErrorMessage("server",
+            notifyObservers(new ErrorMessage(SERVER_SIGNATURE,
                     comebackMessage.getSender(), "OldUsernameNotFound"));
         }
     }
 
     @Override
-    public void update(CreatePlayerMessage createPlayerMessage){
-        if(!timerLobbyTask.isStarted()) {
-            if (countConnectedPlayer() > 1) {
-                timerLobbyTask.setStarted(true);
-                System.out.println("lobby timer started");
-                timer.schedule(timerLobbyTask, 1000L * time);
-            }
+    public synchronized void update(CreatePlayerMessage createPlayerMessage){
+        if(!timerLobbyTask.isStarted() && countConnectedPlayer() > 1) {
+            timerLobbyTask.setStarted(true);
+            System.out.println("lobby timer started");
+            timer.schedule(timerLobbyTask, 1000L * time);
         }
         if(!timerLobbyTask.isEnded()) {
-            model.addPlayer(createPlayerMessage.getPlayerName());
-            if (countConnectedPlayer() == 4) {
-                timer.cancel();
-                model.sendPrivateObjectiveCard();
-                waitSchemaCards();
+            if(!model.getParticipants().stream().anyMatch(
+                    player -> player.getName().equalsIgnoreCase(createPlayerMessage.getPlayerName())
+            )){
+                model.addPlayer(createPlayerMessage.getPlayerName());
+                if (model.getParticipants().size() == Model.MAXIMUM_PLAYER_NUMBER) {
+                    System.out.println("maximum player number reached");
+                    timer.cancel();
+                    model.sendPrivateObjectiveCard();
+                    waitSchemaCards();
+                }
+            } else {
+                setChanged();
+                notifyObservers(new ErrorMessage(SERVER_SIGNATURE, createPlayerMessage.getPlayerName(),
+                        "AlreadyExistingPlayer"));
             }
         } else {
             setChanged();
-            notifyObservers(new ErrorMessage("server", createPlayerMessage.getPlayerName(),
+            notifyObservers(new ErrorMessage(SERVER_SIGNATURE, createPlayerMessage.getPlayerName(),
                     "LobbyTimeEnded"));
         }
     }
@@ -126,7 +138,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         int row=-1;
         int col = -1;
         int draftPoolPosition=-1;
-        System.out.println("è ARRIVATO QUESTO VALORE: " + diePlacementMessage);
+        System.out.println("Message Die Placing Move: " + diePlacementMessage);
         for(int i =0;i<words.length;i++){
             if(words[i].trim().equalsIgnoreCase("row:")){
                 row = Integer.parseInt(words[i+1]);
@@ -135,17 +147,18 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 col = Integer.parseInt(words[i+1]);
             }
             if(words[i].trim().equalsIgnoreCase("DraftPoolDiePosition:")){
-                draftPoolPosition=Integer.parseInt(words[i+1]);
-                System.out.println("è ARRIVATO QUESTO VALORE: " + draftPoolPosition);
+                draftPoolPosition = Integer.parseInt(words[i+1]);
+                System.out.println("DraftPoolDie Position: " + draftPoolPosition);
             }
         }
-        System.out.println(draftPoolPosition + " " + row + " "+ col);
-        model.doDiceMove(draftPoolPosition,row,col);
+        System.out.println("draftPoolDiePosition: " + draftPoolPosition +
+                "\nRow: " + row + "\nCol: "+ col);
+        model.doDiceMove(draftPoolPosition, row, col);
     }
 
     @Override
     public void update(ErrorMessage errorMessage) {
-
+        /*should never be called*/
     }
 
     @Override
@@ -165,15 +178,15 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                         playerNumberDoneSelecting++;
                     }
             );
-        }
-        if(playerNumberDoneSelecting == model.getParticipantsNumber()){
-            matchStarted = true;
-            timer.cancel();
-            model.extractPublicObjectiveCards();
-            model.extractToolCards();
-            model.extractRoundTrack();
-            model.updateGameboard();
-            waitMoves();
+            if(playerNumberDoneSelecting == countConnectedPlayer()){
+                matchStarted = true;
+                timer.cancel();
+                model.extractPublicObjectiveCards();
+                model.extractToolCards();
+                model.extractRoundTrack();
+                model.updateGameboard();
+                waitMoves();
+            }
         }
     }
 
@@ -196,12 +209,13 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 }
         );
         model.updateTurnOfTheRound();
-        if(model.getRoundNumber()<Model.MAXIMUM_ROUND_NUMBER-1 && countConnectedPlayer()>1) {
+        if(model.getRoundNumber()<Model.MAXIMUM_ROUND_NUMBER-1) {
             if(!model.getParticipants().get(model.getTurnOfTheRound()).isConnected()){
-                update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), "server"));
+                update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), SERVER_SIGNATURE));
+            } else {
+                model.updateGameboard();
+                waitMoves();
             }
-            model.updateGameboard();
-            waitMoves();
         }
     }
 
@@ -318,19 +332,19 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                     }
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
-                    notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, useToolCardMove.getSender(),
                             valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();
-                    notifyObservers(new ErrorMessage("server", activePlayer.getName(),
+                    notifyObservers(new ErrorMessage(SERVER_SIGNATURE, activePlayer.getName(),
                             "PlayerUnableToUseToolCard"));
                 }
             } else {
                 System.out.println("player favor tokens: " + activePlayer.getFavorTokens() +
                         "\nneeds at least 1 favor tokens");
                 setChanged();
-                notifyObservers(new ErrorMessage("server", activePlayer.getName(),"NotEnoughFavorTokens"));
+                notifyObservers(new ErrorMessage(SERVER_SIGNATURE, activePlayer.getName(),"NotEnoughFavorTokens"));
             }
         } else {
             if(activePlayer.getFavorTokens()>=2){
@@ -354,17 +368,17 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                     }
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
-                    notifyObservers(new RequestMessage("server", useToolCardMove.getSender(),
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, useToolCardMove.getSender(),
                             valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
                     setChanged();
-                    notifyObservers(new ErrorMessage("server", activePlayer.getName(), "PlayerUnableToUseToolCard"));
+                    notifyObservers(new ErrorMessage(SERVER_SIGNATURE, activePlayer.getName(), "PlayerUnableToUseToolCard"));
                 }
             }
             else{
                 setChanged();
-                notifyObservers(new ErrorMessage("server", activePlayer.getName(), "NotEnoughFavorTokens"));
+                notifyObservers(new ErrorMessage(SERVER_SIGNATURE, activePlayer.getName(), "NotEnoughFavorTokens"));
             }
         }
     }
@@ -399,11 +413,11 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 waitMovesTask, time*1000L);
     }
 
-    public void addObserverToModel(ProjectObserver observer){
+    public synchronized void addObserverToModel(ProjectObserver observer){
         model.addObserver(observer);
     }
 
-    public void removeObserverFromModel(ProjectObserver observer){
+    public synchronized void removeObserverFromModel(ProjectObserver observer){
         model.removeObserver(observer);
     }
 
@@ -431,7 +445,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         }
     }
 
-    public void blockPlayer(String username) {
+    public synchronized void blockPlayer(String username) {
         model.getParticipants().stream().filter(
                 p -> p.getName().equals(username)
         ).forEach(
@@ -441,36 +455,42 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                 }
         );
         if(countConnectedPlayer()<2){
+            System.out.println("players still connected:");
             model.getParticipants().stream().filter(
                     Player::isConnected
             ).forEach(
                     p -> {
-                        System.out.println("players still connected: " + p.getName());
+                        System.out.println(" - " + p.getName());
                         model.singlePlayerWinning(p);
                     }
             );
         } else {
             model.getParticipants().stream().filter(
-                    p -> p.getName().equals(username)
+                    p -> p.getName().equals(username) && model.isPlayerTurn(p)
             ).forEach(
-                    player -> update(new NoActionMove(player.getName(), "server"))
+                    player -> update(new NoActionMove("server", SERVER_SIGNATURE))
             );
         }
     }
 
-    public void unblockPlayer(String username) {
+    public synchronized void unblockPlayer(String username) {
         model.getParticipants().stream().filter(
                 p -> p.getName().equals(username)
         ).forEach(
                 p -> p.setConnected(true)
         );
         setChanged();
-        notifyObservers(new ErrorMessage("server", username, "OldUsernameFound"));
+        notifyObservers(new ErrorMessage(SERVER_SIGNATURE, username, "OldUsernameFound"));
     }
 
-    public long countConnectedPlayer(){
+    public synchronized long countConnectedPlayer(){
         return model.getParticipants().stream().filter(
                 Player::isConnected
         ).count();
+    }
+
+    @Override
+    public String toString(){
+        return "controller";
     }
 }

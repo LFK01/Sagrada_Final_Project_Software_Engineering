@@ -1,6 +1,5 @@
 package it.polimi.se2018.model;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.exceptions.FullCellException;
@@ -9,6 +8,7 @@ import it.polimi.se2018.exceptions.RestrictionsNotRespectedException;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.utils.ProjectObservable;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,9 +116,11 @@ public class Model extends ProjectObservable implements Runnable{
      * @param col Col where I want to insert the die
      */
     public void doDiceMove(int draftPoolPos,int row,int col){
+        System.out.println("doing doDiceMove");
         try{
             placeDie(participants.get(turnOfTheRound).getSchemaCard(),draftPoolPos,row,col, false, false,false);
             removeDieFromDraftPool(draftPoolPos);
+            System.out.println("removed Die from draftPool");
             if(isFirstDraftOfDice()) {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
                 if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getToolMove().isBeenUsed()){
@@ -137,10 +139,12 @@ public class Model extends ProjectObservable implements Runnable{
             }
         }
         catch(FullCellException e){
+            System.out.println("fullCellException caught");
             setChanged();
-            notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(),"FullCellError"));
+            notifyObservers(new ErrorMessage("model", participants.get(turnOfTheRound).getName(),"FullCellError"));
         }
         catch(RestrictionsNotRespectedException e){
+            System.out.println("fullCellException caught");
             setChanged();
             notifyObservers(new ErrorMessage("model",participants.get(turnOfTheRound).getName(), "InvalidPositionError"));
         }
@@ -258,12 +262,10 @@ public class Model extends ProjectObservable implements Runnable{
         FileParser parser = new FileParser();
         ArrayList<Integer> cardIndex = new ArrayList<>();
         for(int i = 1; i <= PUBLIC_OBJECTIVE_CARDS_NUMBER; i++){
-            System.out.println("added: " + i);
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
         for(int i = 0; i < PUBLIC_OBJECTIVE_CARDS_EXTRACT_NUMBER; i++) {
-            System.out.println("extracted: " + cardIndex.get(i));
             gameBoard.setPublicObjectiveCards(parser.createObjectiveCard(false,cardIndex.get(i)), i);
         }
     }
@@ -272,16 +274,16 @@ public class Model extends ProjectObservable implements Runnable{
      * Extracts Dice from DiceBag and puts them on the RoundTrack
      */
     public void extractRoundTrack(){
-        getGameBoard().getRoundTrack().getRoundDice()[roundNumber] = new RoundDice(participants.size(),getGameBoard().getDiceBag(),turnOfTheRound);
+        getGameBoard().getRoundTrack().getRoundDice()[roundNumber] = new RoundDice(participants.size(),getGameBoard().getDiceBag());
     }
 
     /**
      * method that extract and sends players the schemaCards to choose from
      */
     public void sendSchemaCard(){
-        Thread sendingMessageThread;
         ArrayList<Integer> randomValues = new ArrayList<>();
         FileParser parser = new FileParser();
+        HashMap<Player, String[]> playersExtractedSchemaCardsMap = new HashMap<>();
         int cardsExtractedIndex = 0;
         int actualSchemaCardNumber = SCHEMA_CARDS_NUMBER + parser.countExcessSchemaCards(FOLDER_ADDRESS_SCHEMA_CARDS);
         for(int i = 1; i<= actualSchemaCardNumber; i++){
@@ -289,25 +291,33 @@ public class Model extends ProjectObservable implements Runnable{
         }
         Collections.shuffle(randomValues);
         for(Player player: participants) {
-            SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER *2];
-            String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER *2];
-            sendingMessageThread = new Thread(this);
-            for(int i = 0; i< SCHEMA_CARDS_EXTRACT_NUMBER*2; i++){
+            SchemaCard[] extractedSchemaCards = new SchemaCard[SCHEMA_CARDS_EXTRACT_NUMBER * 2];
+            String[] schemaCards = new String[SCHEMA_CARDS_EXTRACT_NUMBER * 2];
+            for (int i = 0; i < SCHEMA_CARDS_EXTRACT_NUMBER * 2; i++) {
                 extractedSchemaCards[i] = parser
                         .createSchemaCardByNumber(FOLDER_ADDRESS_SCHEMA_CARDS, randomValues.get(cardsExtractedIndex));
                 schemaCards[i] = extractedSchemaCards[i].toString();
                 cardsExtractedIndex++;
             }
+            playersExtractedSchemaCardsMap.put(player, schemaCards);
             setDefaultSchemaCard(player, extractedSchemaCards[0]);
-            try{
-                Message sentMessage = new ChooseSchemaMessage("model", player.getName(), schemaCards);
-                memorizeMessage(sentMessage);
-                sendingMessageThread.start();
-                sendingMessageThread.join();
-            } catch (InterruptedException e) {
-                Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
-            }
         }
+        participants.stream().filter(
+                Player::isConnected
+        ).forEach(
+                player -> {
+                    Thread sendingMessageThread = new Thread(this);
+                    try{
+                        Message sentMessage = new ChooseSchemaMessage("model", player.getName(),
+                                playersExtractedSchemaCardsMap.get(player));
+                        memorizeMessage(sentMessage);
+                        sendingMessageThread.start();
+                        sendingMessageThread.join();
+                    } catch (InterruptedException e) {
+                        Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
+                    }
+                }
+        );
     }
 
 
@@ -334,14 +344,14 @@ public class Model extends ProjectObservable implements Runnable{
     /**
      *method that extracts and sends each player his PrivateObjectivecard
      */
-    public void sendPrivateObjectiveCard(){
+    public synchronized void sendPrivateObjectiveCard(){
         FileParser parser = new FileParser();
         ArrayList<Integer> cardIndex = new ArrayList<>(3);
         for(int i = 1; i <= PRIVATE_OBJECTIVE_CARDS_NUMBER; i++){
             cardIndex.add(i);
         }
         Collections.shuffle(cardIndex);
-        participants.forEach(
+        participants.stream().forEach(
                 p -> {
                     int playerIndex = participants.indexOf(p);
                     p.setPrivateObjectiveCard(parser.createObjectiveCard(true, cardIndex.get(playerIndex)));
@@ -444,10 +454,22 @@ public class Model extends ProjectObservable implements Runnable{
             builderGameboard.append("Description:/").append(gameBoard.getToolCardDescription(i)).append("/");
         }
         builderGameboard.append("SchemaCards:/");
-        for (int i=participants.size()-1; i>=0;i--){
-            builderGameboard.append(participants.get(i).getName()).append("\n");
-            builderGameboard.append(participants.get(i).getSchemaCard().toString()).append("/");
-        }
+        participants.stream().filter(
+                player -> !isPlayerTurn(player) && player.isConnected()
+        ).forEach(
+                player -> {
+                    builderGameboard.append(player.getName()).append("\n");
+                    builderGameboard.append(player.getSchemaCard().toString()).append("/");
+                }
+        );
+        participants.stream().filter(
+                player -> isPlayerTurn(player)
+        ).forEach(
+                player -> {
+                    builderGameboard.append(player.getName()).append("\n");
+                    builderGameboard.append(player.getSchemaCard().toString()).append("/");
+                }
+        );
         builderGameboard.append("schemaStop:/");
         builderGameboard.append("DiceList:/");
         RoundDice currentRoundDice = gameBoard.getRoundDice()[roundNumber];

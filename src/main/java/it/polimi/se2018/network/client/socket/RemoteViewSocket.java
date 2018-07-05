@@ -18,14 +18,10 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
 
     private ServerSocketInterface server;
     private String username;
-    private boolean isConnected;
 
     public RemoteViewSocket(String localhost, int port) throws java.net.ConnectException {
-        try {
-            server = new NetworkHandler(localhost, port, this);
-        } catch (java.net.ConnectException e) {
-            throw e;
-        }
+        server = new NetworkHandler(localhost, port, this);
+        username = this.toString();
     }
 
     public void notifyView(ChooseSchemaMessage chooseSchemaMessage){
@@ -104,7 +100,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(chooseDiceMove);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -114,7 +109,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(chooseSchemaMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -125,7 +119,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(comebackMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -136,7 +129,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(createPlayerMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -146,7 +138,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(diePlacementMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -156,7 +147,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(errorMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -166,7 +156,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(sendGameboardMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -176,7 +165,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(noActionMove);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -195,7 +183,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(showPrivateObjectiveCardsMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -205,7 +192,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(successCreatePlayerMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -215,7 +201,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(requestMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -225,7 +210,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(toolCardActivationMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -235,7 +219,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(toolCardErrorMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -245,7 +228,6 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(useToolCardMove);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
@@ -255,11 +237,17 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
             server.sendToServer(sendWinnerMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
         }
     }
 
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("RemoteViewSocket(").append(username).append(")");
+        return builder.toString();
     }
 }

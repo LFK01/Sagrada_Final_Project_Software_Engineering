@@ -47,7 +47,7 @@ public class TestModel {
         Dice dice3 = new Dice(Color.RED,1);
         Dice dice4 = new Dice(Color.BLUE,2);
 
-        model.getGameBoard().getRoundDice()[0] = new RoundDice(model.getGameBoard().getDiceBag());
+        model.getGameBoard().getRoundDice()[0] = new RoundDice(model.getParticipants().size(),model.getGameBoard().getDiceBag());
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice1);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice2);
         model.getGameBoard().getRoundTrack().getRoundDice()[0].getDiceList().add(dice3);

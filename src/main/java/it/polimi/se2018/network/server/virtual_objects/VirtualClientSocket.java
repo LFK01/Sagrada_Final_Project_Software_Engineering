@@ -21,6 +21,9 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     private ObjectOutputStream writer;
     private ObjectInputStream inputStream;
     private VirtualViewSocket virtualViewSocket;
+    private Message lastSentMessage = new ErrorMessage("defaultMessage",
+            "defaultMessage", "defaultMessage");
+    private boolean messageIsValid;
 
     private boolean isConnected;
 
@@ -30,6 +33,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         this.server = server;
         this.clientConnection = clientConnection;
         this.isConnected = true;
+        this.messageIsValid = false;
         try{
             writer = new ObjectOutputStream(clientConnection.getOutputStream());
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
@@ -61,20 +65,31 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
                     if(message.getClass().equals(ErrorMessage.class) &&
                             message.toString().equalsIgnoreCase("quit") &&
                             message.getSender().equalsIgnoreCase(username)){
-                        this.isConnected = false;
-                    } else {
+                        messageIsValid = false;
+                    }
+                    if (lastSentMessage.getSender().equalsIgnoreCase("defaultMessage")) {
+                        messageIsValid = true;
+                    }
+                    if (lastSentMessage.hashCode() == message.hashCode()){
+                        messageIsValid = false;
+                    }
+                    if (messageIsValid) {
                         try {
+                            lastSentMessage = message;
                             Method updateServer = virtualViewSocket.getClass().getMethod("updateServer", message.getClass());
                             updateServer.invoke(virtualViewSocket, message);
                         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                             System.out.println("Virtual View Socket miss a method");
                         }
+                    } else {
+                        this.isConnected = false;
                     }
                 }
             }
             clientConnection.close();
-            server.removeClient(virtualViewSocket);
         } catch (IOException e){
+            System.out.println("unable to close connection");
+        } finally {
             server.removeClient(virtualViewSocket);
         }
     }

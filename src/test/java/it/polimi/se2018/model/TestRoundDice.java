@@ -25,7 +25,7 @@ public class TestRoundDice {
 
        try {
            DiceBag diceBag = new DiceBag();
-           roundDice = new RoundDice(diceBag);
+           //roundDice = new RoundDice(diceBag);
        } catch (NullPointerException e) {
            fail();
        }

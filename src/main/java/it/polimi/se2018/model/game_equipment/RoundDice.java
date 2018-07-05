@@ -20,8 +20,9 @@ public class RoundDice {
      * containing the extracted dice in that specific round.
      * @param diceBag the match dice bag
      */
-    public RoundDice(DiceBag diceBag) {
+    public RoundDice(int participantsNumber,DiceBag diceBag) {
         for(int i = 0; i < (this.participantsNumber *2+1); i++) {
+            this.participantsNumber =participantsNumber;
             diceList.add(diceBag.getDice(i));
             diceBag.getDiceList().remove(i);
         }

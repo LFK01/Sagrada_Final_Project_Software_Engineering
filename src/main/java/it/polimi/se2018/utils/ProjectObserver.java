@@ -39,4 +39,7 @@ public interface ProjectObserver {
     void update(UseToolCardMove useToolCardMove);
 
     void update(SendWinnerMessage sendWinnerMessage);
+
+    @Override
+    String toString();
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.Semaphore;
 
 public class ProjectObservable {
 
-    private ArrayList<ProjectObserver> observers;
+    private final ArrayList<ProjectObserver> observers;
     private Message memorizedMessage;
 
     private boolean changed;
@@ -43,16 +43,21 @@ public class ProjectObservable {
 
     public void notifyObservers(Message message){
         System.out.println("notifying " + observers.size() + " observers w/: " + message.toString() +
-                            "\n Recipient: " + message.getRecipient());
+                            "\n Recipient: " + message.getRecipient() +
+                            "\nSender: " + message.getSender());
         synchronized (observers){
             if(changed){
                 observers.stream().forEach(
-                        o -> {
+                        observer -> {
                             try{
-                                Method update = o.getClass().getMethod("update", message.getClass());
-                                update.invoke(o, message);
+                                Method update = observer.getClass().getMethod("update", message.getClass());
+                                update.invoke(observer, message);
                             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                System.out.println("Error on invoking a method on observer");
+                                System.out.println("Error on invoking a method on observable 1" +
+                                        "\nwith message: " + message.toString() +
+                                        "\nwith recipient: " + message.getRecipient() +
+                                        "\nwith sender: " + message.getSender() +
+                                        "\nto observer: " + observer.toString());
                             }
                         }
                 );
@@ -63,20 +68,24 @@ public class ProjectObservable {
 
     public void notifyObservers(){
         System.out.println("notifying " + observers.size() + " observers w/: " + memorizedMessage.toString() +
-                "\n Recipient: " + memorizedMessage.getRecipient());
+                "\nRecipient: " + memorizedMessage.getRecipient() +
+                "\nSender: " + memorizedMessage.getSender());
         synchronized (observers){
-            System.out.println("STO MANDANDO AL GIOCATORE UN MESSAGGIO");
             if(changed){
-                System.out.println("STO NOTIFICANDO AGLI OSSERVATORI");
-                for(ProjectObserver observer: observers){
-                    System.out.println("NOTIFICO");
-                    try{
-                        Method update = observer.getClass().getMethod("update", memorizedMessage.getClass());
-                        update.invoke(observer, memorizedMessage);
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
+                observers.stream().forEach(
+                        observer -> {
+                            try{
+                                Method update = observer.getClass().getMethod("update", memorizedMessage.getClass());
+                                update.invoke(observer, memorizedMessage);
+                                System.out.println("notified observer: " + observer.toString());
+                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                System.out.println("error on invoking a method on observable 2" +
+                                        "\nwith message: " + memorizedMessage +
+                                        "\nwith recipient: " + memorizedMessage.getRecipient() +
+                                        "\non observer: " + observer.toString());
+                            }
+                        }
+                );
                 changed = false;
             }
         }

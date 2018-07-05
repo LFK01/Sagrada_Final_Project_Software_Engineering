@@ -68,7 +68,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
 
     @Override
     public void sendToServer(Message message) throws IOException {
-            outputStream.writeObject(message);
+        outputStream.writeObject(message);
+        outputStream.flush();
     }
 
     @Override

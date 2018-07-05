@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Server {
 
@@ -51,7 +52,7 @@ public class Server {
         }
     }
 
-    public void addClient(Socket newClient){
+    public synchronized void addClient(Socket newClient){
         if(playersVirtualView.size()<4){
             VirtualClientSocket virtualClientSocket = new VirtualClientSocket(this, newClient);
             virtualClientSocket.start();
@@ -68,16 +69,21 @@ public class Server {
         }
     }
 
-    public void addClient(VirtualViewInterface newClient){
+    public synchronized void addClient(VirtualViewInterface newClient){
         playersVirtualView.add(newClient);
     }
 
-    public void removeClient(VirtualViewInterface oldClient){
+    public synchronized void removeClient(VirtualViewInterface oldClient){
+        ReentrantLock lock = new ReentrantLock();
+        lock.lock();
         playersVirtualView.remove(oldClient);
+        System.out.println("removed client " + oldClient.getUsername() + " from list");
         controller.removeObserver(oldClient);
+        System.out.println("removed controller observer " + oldClient.getUsername());
         controller.removeObserverFromModel(oldClient);
-        System.out.println("calling blockPlayer from Server.removeClient");
+        System.out.println("removed model observer " + oldClient.getUsername());
         controller.blockPlayer(oldClient.getUsername());
+        System.out.println("called blockPlayer from Server.removeClient");
     }
 
     public List<VirtualViewInterface> getVirtualViewInterfacesList(){

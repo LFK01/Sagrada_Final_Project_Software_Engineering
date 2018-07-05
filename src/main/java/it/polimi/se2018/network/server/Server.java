@@ -62,7 +62,7 @@ public class Server {
                 ObjectOutputStream temporaryWriter = new ObjectOutputStream(newClient.getOutputStream());
                 temporaryWriter.writeObject(new ErrorMessage("server",
                         newClient.getRemoteSocketAddress().toString(), "PlayerNumberExceeded"));
-                System.out.println("Mando messaggio di errore a :" + newClient.getRemoteSocketAddress().toString());
+                System.out.println("Send Message to :" + newClient.getRemoteSocketAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

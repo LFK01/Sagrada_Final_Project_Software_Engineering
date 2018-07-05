@@ -168,13 +168,7 @@ public class TestSchemaCard {
             fail();
         }
     }
-
-
-
-
-
-
-   @Test
+    @Test
     public void schemaTest(){
        FileParser parser = new FileParser();
        SchemaCard schema = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS, 1);
@@ -190,6 +184,26 @@ public class TestSchemaCard {
         }
 
    }
+   @Test
+    public void hasLessThanTwoDie() throws RestrictionsNotRespectedException, FullCellException {
+        FileParser parser = new FileParser();
+        SchemaCard schemaCard1 = parser.createSchemaCardByNumber(Model.FOLDER_ADDRESS_SCHEMA_CARDS,1);
+        boolean hasLessThanTwoDie = false;
+        hasLessThanTwoDie = schemaCard1.hasLessThanTwoDie();
+        assertEquals(true,hasLessThanTwoDie);
+
+        Dice dice1 = new Dice(Color.YELLOW,2);
+        Dice dice2 = new Dice(Color.GREEN,3);
+        Dice dice3 = new Dice(Color.BLUE,4);
+
+        schemaCard1.placeDie(dice1,0,0,false,false,false);
+        schemaCard1.placeDie(dice2,1,0,false,false,false);
+        schemaCard1.placeDie(dice3,0,1,false,false,false);
+        hasLessThanTwoDie = schemaCard1.hasLessThanTwoDie();
+        assertEquals(false,hasLessThanTwoDie);
+
+    }
+
 
 
 

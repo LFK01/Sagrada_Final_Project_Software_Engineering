@@ -70,6 +70,10 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
         setChanged();
         notifyObservers(toolCardErrorMessage);
     }
+    public void updateServer(ComebackMessage comebackMessage){
+        setChanged();
+        notifyObservers(comebackMessage);
+    }
 
     @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
@@ -78,7 +82,7 @@ public class VirtualViewSocket extends ProjectObservable implements VirtualViewI
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        virtualClientSocket.notifyClient(comebackMessage);
+        //not used
     }
 
     @Override

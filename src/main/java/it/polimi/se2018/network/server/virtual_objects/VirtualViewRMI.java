@@ -96,7 +96,6 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(ComebackMessage comebackMessage) {
-        virtualClientRMI.notifyClient(comebackMessage);
     }
 
     @Override

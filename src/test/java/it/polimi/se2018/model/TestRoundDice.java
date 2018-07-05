@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.game_equipment.Color;
+import it.polimi.se2018.model.game_equipment.Dice;
 import it.polimi.se2018.model.game_equipment.DiceBag;
 import it.polimi.se2018.model.game_equipment.RoundDice;
 import org.junit.Test;
@@ -7,17 +9,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Test for the RoundDice class
- * @author Giorgia
+ *
+ * @author Giovanni
  */
 
 public class TestRoundDice {
 
-
-    /**
-     * Tests the class constructor, throwing exceptions in case diceBag generates errors. It checks that the number of the dice extracted from the dice bag is correct
-     * (must be number_of_players*2+1)
-     */
     @Test
     public void roundDiceTest() {
 
@@ -25,7 +22,7 @@ public class TestRoundDice {
 
        try {
            DiceBag diceBag = new DiceBag();
-           //roundDice = new RoundDice(diceBag);
+           roundDice = new RoundDice(1,diceBag);
        } catch (NullPointerException e) {
            fail();
        }
@@ -34,25 +31,17 @@ public class TestRoundDice {
 
     }
 
-    /**
-     * Test to check that the dice extracted from the dice bag are the correct dice associated to the actual round
-     */
     @Test
-    public void validExtractionTest() {
+    public void removeDieFromDiceListTest(){
+        DiceBag dicebag = new DiceBag();
+        Dice dice1 = new Dice(Color.BLUE,2);
+        dicebag.getDiceList().add(dice1);
+        RoundDice roundDice = new RoundDice(4,dicebag);
+        roundDice.setDice(dice1,8);
+        Dice dice2 = roundDice.getDice(8);
+        roundDice.toString();
+        assertEquals(2,dice2.getValue());
 
-      /*  DiceBag diceBag = new DiceBag();
-        RoundDice roundDice = new RoundDice(3, diceBag, 7);
-        int n = 0;
-
-        assertNotNull(diceBag);
-        assertNotNull(roundDice);
-
-        for (int i = (roundDice.getRound()-1)*(roundDice.getParticipantsNumber()*2+1); i < roundDice.getRound()*(roundDice.getParticipantsNumber()*2+1); i++) {
-            assertEquals(diceBag.getDice(i), roundDice.getDice(n));
-            n++;
-        }
-
-    */
     }
 
 }

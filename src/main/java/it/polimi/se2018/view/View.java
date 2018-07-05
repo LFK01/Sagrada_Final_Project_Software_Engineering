@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * @author giovanni
+ * @author Giovanni
  *  This class, through update (Message), sends information and asks for input to the various players.
- *  This class, through update (Message) sends information and asks for input to the various players
  */
 public class View extends ProjectObservable implements ProjectObserver, ThreadCompleteListener{
 
@@ -354,13 +353,21 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        System.out.println("The winner is: " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size()-1)+
-                " " + "with: " + sendWinnerMessage.getScore().get(sendWinnerMessage.getScore().size()-1));
-        for(int i =0;i<sendWinnerMessage.getParticipants().size()-1;i++){
-            System.out.println("Player: " +sendWinnerMessage.getParticipants().get(i)+
-                    "\n"+ "score: " + sendWinnerMessage.getScore().get(i));
+        if(sendWinnerMessage.getParticipants().size()==1){
+            System.out.println(
+                    "You won the game.\n" +
+                    "All other players have disconnected");
+            gameHasEnded = true;
         }
-        gameHasEnded = true;
+        else {
+            System.out.println("The winner is: " + sendWinnerMessage.getParticipants().get(sendWinnerMessage.getParticipants().size() - 1) +
+                    " " + "with: " + sendWinnerMessage.getScore().get(sendWinnerMessage.getScore().size() - 1));
+            for (int i = 0; i < sendWinnerMessage.getParticipants().size() - 1; i++) {
+                System.out.println("Player: " + sendWinnerMessage.getParticipants().get(i) +
+                        "\n" + "score: " + sendWinnerMessage.getScore().get(i));
+            }
+            gameHasEnded = true;
+        }
     }
 
     @Override

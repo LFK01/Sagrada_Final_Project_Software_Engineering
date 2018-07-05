@@ -619,6 +619,7 @@ public class Model extends ProjectObservable implements Runnable{
     }
 
     public void singlePlayerWinning(Player player){
+
         Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(
                 objectiveCard -> objectiveCard.countPoints(this, objectiveCard.getName(), objectiveCard.getPoints())
         );

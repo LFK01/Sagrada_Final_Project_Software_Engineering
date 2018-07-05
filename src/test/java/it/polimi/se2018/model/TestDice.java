@@ -47,19 +47,17 @@ public class TestDice {
      */
     @Test
     public void setValueTest() {
-        /*Dice dice = new Dice(Color.YELLOW, 7);
-        dice.setValue(7);
+        Dice dice = new Dice(Color.YELLOW, 4);
+        dice.setValue(2);
 
         assertNotNull(dice);
-        assertEquals(7, dice.getValue());
+        assertEquals(2, dice.getValue());
         assertNotEquals(5, dice.getValue());
-        */
+
     }
 
     @Test
     public void colorTest() {
-        //String redString =  PaintingTool.ANSI_RED.escape() + "Hello" + PaintingTool.ANSI_BLUE.escape() + "World" + PaintingTool.RESET;
-        //System.out.println(redString)
         DiceBag  diceBag = new DiceBag();
         int j=0;
         for(int i = 0; i < diceBag.getDiceList().size(); i++){

@@ -13,7 +13,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class inputControllerThread extends Thread{
+public class InputControllerThread extends Thread{
 
     private static final String QUIT_QUOTE = "Type \"quit\" to interrupt the move\n";
     private static final String ERROR_QUOTE = "Wrong input!";
@@ -36,7 +36,7 @@ public class inputControllerThread extends Thread{
     private String[] schemaNames;
     private String[] toolCardIDs;
 
-    inputControllerThread(InputManager inputManager, String username) {
+    InputControllerThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -46,7 +46,7 @@ public class inputControllerThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    inputControllerThread(InputManager inputManager, String username, String[] names) {
+    InputControllerThread(InputManager inputManager, String username, String[] names) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -56,7 +56,7 @@ public class inputControllerThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    inputControllerThread(InputManager inputManager, String username, String toolCardUsageID,
+    InputControllerThread(InputManager inputManager, String username, String toolCardUsageID,
                           int draftPoolDiceNumber) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
@@ -828,16 +828,16 @@ public class inputControllerThread extends Thread{
     }
 
     private synchronized void readPlayerDisabledInput(){
-        inputControllerThread.setPlayerDisabledThreadHasEnded(false);
+        InputControllerThread.setPlayerDisabledThreadHasEnded(false);
         while (!playerIsActive){
             StringBuilder builder = new StringBuilder();
             builder.append(inputMemoryString);
             String playerDisableInput = scanner.nextLine();
             builder.append(playerDisableInput)
                     .append("\n");
-            inputControllerThread.setInputMemoryString(builder.toString());
+            InputControllerThread.setInputMemoryString(builder.toString());
         }
-        inputControllerThread.setPlayerDisabledThreadHasEnded(true);
+        InputControllerThread.setPlayerDisabledThreadHasEnded(true);
         saveMessageToSend(new ErrorMessage(username, "doNotSend", "doNotSend"));
     }
 
@@ -996,7 +996,7 @@ public class inputControllerThread extends Thread{
     }
 
     public static void setPlayerIsConnected(Boolean playerIsConnected){
-        inputControllerThread.playerIsConnected = playerIsConnected;
+        InputControllerThread.playerIsConnected = playerIsConnected;
     }
     private void threadDisabledInputJoin(){
         while (!playerDisabledThreadHasEnded){

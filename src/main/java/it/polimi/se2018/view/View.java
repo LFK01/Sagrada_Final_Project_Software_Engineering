@@ -16,7 +16,7 @@ import java.util.Arrays;
 /**
  * @author Giovanni
  *  This class, through update (Message), sends information and asks for input to the various players.
- *  Input is requested through the class inputControllerThread.
+ *  Input is requested through the class InputControllerThread.
  *  In the class we save the username, his status, the status of the server
  *  and information about the Tool Card.
  *
@@ -30,7 +30,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
 
     private String username;
 
-    private inputControllerThread inputThread;
+    private InputControllerThread inputThread;
 
     private InputManager inputManager;
     private String[] schemaName = new String[4];
@@ -53,9 +53,9 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      * shows up a login window where the user can choose her/his name
      */
     public void createPlayer(){
-        inputControllerThread.setPlayerIsConnected(true);
+        InputControllerThread.setPlayerIsConnected(true);
         inputManager = InputManager.INPUT_PLAYER_NAME;
-        inputThread = new inputControllerThread(inputManager, username);
+        inputThread = new InputControllerThread(inputManager, username);
         inputThread.addListener(this);
         inputThread.start();
     }
@@ -83,9 +83,9 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             schemaName[i]= chooseSchemaMessage.getSchemaCards(i).split("\n")[0];
         }
         inputManager = InputManager.INPUT_SCHEMA_CARD;
-        inputControllerThread.setPlayerIsActive(true);
-        inputControllerThread.setPlayerBanned(false);
-        inputThread = new inputControllerThread(inputManager, username, schemaName);
+        InputControllerThread.setPlayerIsActive(true);
+        InputControllerThread.setPlayerBanned(false);
+        inputThread = new InputControllerThread(inputManager, username, schemaName);
         inputThread.addListener(this);
         inputThread.start();
     }
@@ -121,10 +121,10 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerUnableToUseToolCard")){
             System.out.println("Professor Oak: \"it's not the time to use that!\"");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+            inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
@@ -137,54 +137,54 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
         }
         if(errorMessage.toString().equalsIgnoreCase("NotEnoughFavorTokens")){
             System.out.println("You need more tokens to activate this card!");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+            inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equals("FullCellError")){
             System.out.println("You can't place a die over another die!");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+            inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equals("InvalidPositionError")){
             System.out.println("Selected die doesn't respect cell's restrictions");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager =InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+            inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equals("DiceMoveAlreadyUsed")){
             System.out.println("You have already used all your moves in this round");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+            inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("NotValidDraftPoolPosition")){
             System.out.println("Not Valid DraftPoolPosition");
-            inputControllerThread.setPlayerIsActive(true);
-            inputControllerThread.setPlayerBanned(false);
+            InputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(false);
             inputManager = InputManager.INPUT_CHOOSE_MOVE;
-            inputThread = new inputControllerThread(inputManager, username);
+            inputThread = new InputControllerThread(inputManager, username);
             inputThread.addListener(this);
             inputThread.start();
         }
         if(errorMessage.toString().equalsIgnoreCase("TimeElapsed")){
-            inputControllerThread.setPlayerBanned(true);
-            inputControllerThread.setPlayerIsActive(true);
+            InputControllerThread.setPlayerBanned(true);
+            InputControllerThread.setPlayerIsActive(true);
             inputManager = InputManager.INPUT_NEW_CONNECTION;
-            inputThread = new inputControllerThread(inputManager, username);
+            inputThread = new InputControllerThread(inputManager, username);
             inputThread.addListener(this);
             inputThread.start();
         }
@@ -211,7 +211,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(SendGameboardMessage sendGameboardMessage) {
         String playingPlayer;
         boolean alreadyRead = false;
-        inputControllerThread.setMatchStarted(true);
+        InputControllerThread.setMatchStarted(true);
         String[] words = sendGameboardMessage.getGameboardInformation().split("/");
         for(int i =0; i<words.length;i++){
             int cardNumber=1;
@@ -280,19 +280,19 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 playingPlayer = words[i+1];
                 System.out.println("Private Objective Card: " + privateObjectiveCardDescription + "\n");
                 if(playingPlayer.equals(username)){
-                    inputControllerThread.setPlayerIsActive(true);
-                    inputControllerThread.setPlayerBanned(false);
+                    InputControllerThread.setPlayerIsActive(true);
+                    InputControllerThread.setPlayerBanned(false);
                     inputManager = InputManager.INPUT_CHOOSE_MOVE;
-                    inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+                    inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
                     inputThread.addListener(this);
                     inputThread.start();
                 }else{
                     System.out.println("It's not your turn!");
                     if(!inputThread.isAlive()) {
                         inputManager = InputManager.INPUT_PLAYER_DISABLED;
-                        inputControllerThread.setPlayerIsActive(false);
-                        inputControllerThread.setPlayerBanned(false);
-                        inputThread = new inputControllerThread(inputManager, username, toolCardIDs);
+                        InputControllerThread.setPlayerIsActive(false);
+                        InputControllerThread.setPlayerBanned(false);
+                        inputThread = new InputControllerThread(inputManager, username, toolCardIDs);
                         inputThread.addListener(this);
                         inputThread.start();
                     }
@@ -343,9 +343,9 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             }
         }
         inputManager = requestMessage.getInputManager();
-        inputControllerThread.setPlayerIsActive(true);
-        inputControllerThread.setPlayerBanned(false);
-        inputThread = new inputControllerThread(inputManager, username, toolCardUsageName,
+        InputControllerThread.setPlayerIsActive(true);
+        InputControllerThread.setPlayerBanned(false);
+        inputThread = new InputControllerThread(inputManager, username, toolCardUsageName,
                 draftPoolDiceNumber);
         inputThread.addListener(this);
         inputThread.start();
@@ -367,11 +367,11 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      */
     @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
-        inputControllerThread.setPlayerIsConnected(true);
+        InputControllerThread.setPlayerIsConnected(true);
         username = successCreatePlayerMessage.getRecipient();
         serverIsUp = true;
         System.out.println("Successful  login, new username: " + username);
-        inputThread = new inputControllerThread(InputManager.INPUT_PLAYER_DISABLED, username);
+        inputThread = new InputControllerThread(InputManager.INPUT_PLAYER_DISABLED, username);
         inputThread.addListener(this);
         inputThread.start();
     }
@@ -426,11 +426,11 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         String[] myString =toolCardErrorMessage.getErrorInformation().split(" ");
         int draftPoolPosition = Integer.parseInt(myString[1]);
-        inputControllerThread.setPlayerIsActive(true);
-        inputControllerThread.setPlayerBanned(false);
+        InputControllerThread.setPlayerIsActive(true);
+        InputControllerThread.setPlayerBanned(false);
         inputManager = toolCardErrorMessage.getInputManager();
         System.out.println("Wrong Input Parameters! Choose different values:");
-        inputThread = new inputControllerThread(inputManager, username, toolCardErrorMessage.getToolCardID(),draftPoolPosition);
+        inputThread = new InputControllerThread(inputManager, username, toolCardErrorMessage.getToolCardID(),draftPoolPosition);
         inputThread.addListener(this);
         inputThread.start();
     }
@@ -457,7 +457,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      */
     public void askOldUsername(){
         inputManager = InputManager.INPUT_OLD_PLAYER_NAME;
-        inputThread = new inputControllerThread(inputManager, username);
+        inputThread = new InputControllerThread(inputManager, username);
         inputThread.addListener(this);
         inputThread.start();
     }

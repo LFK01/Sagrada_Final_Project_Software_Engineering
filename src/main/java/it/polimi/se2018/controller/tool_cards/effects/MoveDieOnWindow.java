@@ -117,26 +117,34 @@ public class MoveDieOnWindow implements TCEffectInterface {
         if(effectParameter.equals("SameColorDice")){
             FileParser parser = new FileParser();
             if(parser.getTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS)) {
+                System.out.println("tap Wheel is being used");
                 if (checkSameColorDice()) {
+                    System.out.println("same color dice found");
                     placeDieWithToolCard(false, false);
                 } else {
+                    System.out.println("not found same color");
                     throw new ExecutingEffectException();
                 }
             } else{
+                System.out.println("tap wheel is not being used");
                 firstDieMovingColor = dieToBeMoved.getDiceColor();
+                System.out.println("color to find: " + firstDieMovingColor.toString());
                 boolean foundSameColor = false;
                 for(RoundDice roundDice: model.getGameBoard().getRoundDice()){
                     if(Arrays.asList(model.getGameBoard().getRoundDice()).indexOf(roundDice)<model.getRoundNumber()){
                         for (Dice die: roundDice.getDiceList()){
                             if(die.getDiceColor().equals(firstDieMovingColor)){
                                 foundSameColor = true;
+                                System.out.println("found same color");
                             }
                         }
                     }
                 }
                 if(!foundSameColor){
+                    System.out.println("not found same color");
                     throw new ExecutingEffectException();
                 } else {
+                    System.out.println("writing values on the file");
                     parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, true);
                     parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, firstDieMovingColor.toString());
                     placeDieWithToolCard(false, false);
@@ -159,7 +167,7 @@ public class MoveDieOnWindow implements TCEffectInterface {
         } catch (RestrictionsNotRespectedException | FullCellException e) {
             try {
                 activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldDieRow, oldDieCol,
-                        true, true, true);
+                        true, true, false);
                 throw  new ExecutingEffectException();
             } catch (RestrictionsNotRespectedException | FullCellException e1) {
                 System.out.println("Something has gone completely wrong on MoveDieOnWindow.placeDieWithToolCard()");
@@ -195,14 +203,14 @@ public class MoveDieOnWindow implements TCEffectInterface {
             dieToBeMoved = activePlayer.getSchemaCard().getCell(newPositions[0], newPositions[1]).removeDieFromCell();
             System.out.println("dieToBeMoved: " + dieToBeMoved.toString());
         } catch (InvalidCellPositionException e) {
-            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions");
+            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions1");
         }
         try {
             activePlayer.getSchemaCard().placeDie(dieToBeMoved, oldPositions[0], oldPositions[1],
-                    true, true, true);
+                    true, true, false);
             System.out.println("die on old position");
         } catch (RestrictionsNotRespectedException | FullCellException e) {
-            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions");
+            System.out.println("Something has gone completely wrong on MoveDieOnWindow.backupTwoDicePositions2");
         }
         parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
                 -1, -1, -1, -1);

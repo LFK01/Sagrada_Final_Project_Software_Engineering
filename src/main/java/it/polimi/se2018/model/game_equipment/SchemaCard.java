@@ -114,7 +114,7 @@ public class SchemaCard {
         }
         else{
             if(this.isEmpty()){
-                throw (new RestrictionsNotRespectedException("NotAlongTheEdges"));
+                throw (new RestrictionsNotRespectedException());
             }
             else{
                 boolean hasADieNear = this.hasADieNear(row, col,die.getDiceColor(),die.getValue());
@@ -125,7 +125,7 @@ public class SchemaCard {
                     this.getCell(row, col).setAssignedDice(die, avoidColorRestrictions, avoidValueRestrictions);
                 }
                 else{
-                    throw (new RestrictionsNotRespectedException("NoNearDieFound"));
+                    throw (new RestrictionsNotRespectedException());
                 }
             }
         }

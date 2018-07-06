@@ -1,13 +1,13 @@
-package it.polimi.se2018.model.events.moves;
+package it.polimi.se2018.model.events.messages;
 import it.polimi.se2018.model.events.messages.Message;
 
 /**
  * @author Giovanni
  * Message launched by the client to pass the turn
  */
-public class NoActionMove extends Message {
+public class NoActionMessage extends Message {
 
-    public NoActionMove(String sender,String recipient){
+    public NoActionMessage(String sender, String recipient){
         super(sender,recipient);
     }
 

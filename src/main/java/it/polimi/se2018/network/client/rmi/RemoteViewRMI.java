@@ -2,9 +2,9 @@ package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.network.server.ServerRMIInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
@@ -33,14 +33,6 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(Message message){
-        if(message.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI -> View: " + message.toString());
-            setChanged();
-            notifyObservers(message);
-        }
-    }
-
     private void notifyView(ChooseSchemaMessage chooseSchemaMessage){
         if(chooseSchemaMessage.getRecipient().equals(username)){
             setChanged();
@@ -55,6 +47,14 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
+    private void notifyView(RequestMessage requestMessage){
+        if(requestMessage.getRecipient().equals(username)){
+            setChanged();
+            notifyObservers(requestMessage);
+        }
+
+    }
+
     private void notifyView(SendGameboardMessage sendGameboardMessage){
         if(sendGameboardMessage.getRecipient().equals(username)){
             setChanged();
@@ -62,12 +62,11 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    private void notifyView(RequestMessage requestMessage){
-        if(requestMessage.getRecipient().equals(username)){
+    public void notifyView(SendWinnerMessage sendWinnerMessage){
+        if(sendWinnerMessage.getRecipient().equals(username)){
             setChanged();
-            notifyObservers(requestMessage);
+            notifyObservers(sendWinnerMessage);
         }
-
     }
 
     private void notifyView(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage){
@@ -84,16 +83,8 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
         }
     }
 
-    public void notifyView(SendWinnerMessage sendWinnerMessage){
-        if(sendWinnerMessage.getRecipient().equals(username)){
-            setChanged();
-            notifyObservers(sendWinnerMessage);
-        }
-    }
-
     private void notifyView(ToolCardErrorMessage toolCardErrorMessage){
         if(toolCardErrorMessage.getRecipient().equals(username)){
-            System.out.println("RemoteVRMI -> View: " + toolCardErrorMessage.toString());
             setChanged();
             notifyObservers(toolCardErrorMessage);
         }
@@ -104,9 +95,9 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(ChooseDiceMove chooseDiceMove) {
+    public void update(ChooseDiceMessage chooseDiceMessage) {
         try{
-            server.sendToServer(chooseDiceMove);
+            server.sendToServer(chooseDiceMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
             isConnected = false;
@@ -115,12 +106,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     @Override
     public void update(ChooseSchemaMessage chooseSchemaMessage) {
-        try{
-            server.sendToServer(chooseSchemaMessage);
-        } catch (RemoteException e){
-            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
-        }
+        /*should never be called*/
     }
 
     @Override
@@ -167,18 +153,13 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     @Override
     public void update(SendGameboardMessage sendGameboardMessage) {
-        try{
-            server.sendToServer(sendGameboardMessage);
-        } catch (RemoteException e){
-            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
-        }
+        /*should never be called*/
     }
 
     @Override
-    public void update(NoActionMove noActionMove){
+    public void update(NoActionMessage noActionMessage){
         try{
-            server.sendToServer(noActionMove);
+            server.sendToServer(noActionMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
             isConnected = false;
@@ -207,23 +188,12 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     @Override
     public void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) {
-        try{
-            server.sendToServer(showPrivateObjectiveCardsMessage);
-        } catch (RemoteException e){
-            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
-        }
+        /*should never be called*/
     }
 
     @Override
     public void update(SuccessCreatePlayerMessage successCreatePlayerMessage) {
-        try{
-            server.sendToServer(successCreatePlayerMessage);
-        } catch (RemoteException e){
-
-            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
-        }
+        /*should never be called*/
     }
 
     @Override
@@ -248,9 +218,9 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
     }
 
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
+    public void update(ChooseToolCardMessage chooseToolCardMessage) {
         try{
-            server.sendToServer(useToolCardMove);
+            server.sendToServer(chooseToolCardMessage);
         } catch (RemoteException e){
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
             isConnected = false;
@@ -259,12 +229,7 @@ public class RemoteViewRMI extends ProjectObservable implements ClientRMIInterfa
 
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
-        try{
-            server.sendToServer(sendWinnerMessage);
-        } catch (RemoteException e){
-            notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
-            isConnected = false;
-        }
+        /*should never be called*/
     }
 
     @Override

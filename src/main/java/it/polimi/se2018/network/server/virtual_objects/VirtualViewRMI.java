@@ -2,9 +2,9 @@ package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.utils.ProjectObservable;
@@ -64,9 +64,9 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         notifyObservers(selectedSchemaMessage);
     }
 
-    public void updateServer(ChooseDiceMove chooseDiceMove){
+    public void updateServer(ChooseDiceMessage chooseDiceMessage){
         setChanged();
-        notifyObservers(chooseDiceMove);
+        notifyObservers(chooseDiceMessage);
     }
 
     public void updateServer(DiePlacementMessage diePlacementMessage){
@@ -74,9 +74,9 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
         notifyObservers(diePlacementMessage);
     }
 
-    public void updateServer(NoActionMove noActionMove){
+    public void updateServer(NoActionMessage noActionMessage){
         setChanged();
-        notifyObservers(noActionMove);
+        notifyObservers(noActionMessage);
     }
 
     public void updateServer(ToolCardActivationMessage toolCardActivationMessage){
@@ -87,6 +87,11 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     public void updateServer(ToolCardErrorMessage toolCardErrorMessage){
         setChanged();
         notifyObservers(toolCardErrorMessage);
+    }
+
+    public void updateServer(ChooseToolCardMessage chooseToolCardMessage) {
+        setChanged();
+        notifyObservers(chooseToolCardMessage);
     }
 
     @Override
@@ -100,12 +105,12 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(CreatePlayerMessage createPlayerMessage) {
-        virtualClientRMI.notifyClient(createPlayerMessage);
+        /*should never be called*/
     }
 
     @Override
     public void update(DiePlacementMessage diePlacementMessage) {
-        virtualClientRMI.notifyClient(diePlacementMessage);
+        /*should never be called*/
     }
 
     @Override
@@ -121,7 +126,7 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
 
     @Override
     public void update(SelectedSchemaMessage selectedSchemaMessage) {
-        virtualClientRMI.notifyClient(selectedSchemaMessage);
+        /*should never be called*/
     }
 
     @Override
@@ -135,8 +140,8 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(ChooseDiceMove chooseDiceMove){
-        virtualClientRMI.notifyClient(chooseDiceMove);
+    public void update(ChooseDiceMessage chooseDiceMessage){
+        /*should never be called*/
     }
 
     @Override
@@ -150,8 +155,8 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
-        virtualClientRMI.notifyClient(useToolCardMove);
+    public void update(ChooseToolCardMessage chooseToolCardMessage) {
+        virtualClientRMI.notifyClient(chooseToolCardMessage);
     }
 
     @Override
@@ -160,12 +165,13 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     }
 
     @Override
-    public void update(NoActionMove noActionMove){virtualClientRMI.notifyClient(noActionMove);}
+    public void update(NoActionMessage noActionMessage){/*should never be called*/}
 
     @Override
     public void update(RequestMessage requestMessage) {
         virtualClientRMI.notifyClient(requestMessage);
     }
+
 
     @Override
     public String getUsername() {
@@ -175,5 +181,4 @@ public class VirtualViewRMI extends ProjectObservable implements VirtualViewInte
     public VirtualClientRMI getVirtualClientRMI() {
         return virtualClientRMI;
     }
-
 }

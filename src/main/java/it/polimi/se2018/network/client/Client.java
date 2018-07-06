@@ -6,7 +6,7 @@ import it.polimi.se2018.network.client.rmi.RemoteViewRMI;
 import it.polimi.se2018.network.client.socket.RemoteViewSocket;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
+import it.polimi.se2018.exceptions.PlayerNumberExceededException;
 import it.polimi.se2018.view.View;
 
 import java.io.InputStreamReader;
@@ -62,7 +62,6 @@ public class Client {
                 e.printStackTrace();
             }
         }
-        System.out.println("ThreadClientHasTerminated");
         System.exit(0);
     }
 
@@ -126,7 +125,7 @@ public class Client {
             remoteViewSocket = new RemoteViewSocket(serverIP, portSocket);
             view.addObserver(remoteViewSocket);
             remoteViewSocket.addObserver(view);
-            System.out.println("Socket connection established");
+            System.out.println("Socket connection established...");
             connectionEstablished = true;
         } catch (java.net.ConnectException e){
             System.out.println("Impossible connection! Unable to connect to server!");

@@ -1,0 +1,7 @@
+Number: 22
+name: Lux/Astram
+difficulty: 5
+[] [1] [G] [P] [4]
+[6] [P] [2] [5] [G]
+[1] [G] [5] [3] [P]
+[] [] [] [] []

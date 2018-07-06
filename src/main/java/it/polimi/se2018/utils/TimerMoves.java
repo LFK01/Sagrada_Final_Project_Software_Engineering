@@ -3,7 +3,6 @@ package it.polimi.se2018.utils;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ErrorMessage;
-import it.polimi.se2018.model.events.moves.NoActionMove;
 import it.polimi.se2018.model.player.Player;
 
 import java.util.TimerTask;

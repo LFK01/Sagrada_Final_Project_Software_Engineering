@@ -2,7 +2,6 @@ package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.network.server.Server;
-import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,9 +23,7 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     private Message lastSentMessage = new ErrorMessage("defaultMessage",
             "defaultMessage", "defaultMessage");
     private boolean messageIsValid;
-
     private boolean isConnected;
-
     private String username;
 
     public VirtualClientSocket(Server server, Socket clientConnection){
@@ -94,14 +91,6 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-    public void notifyClient(Message message){
-        try{
-            writer.writeObject(message);
-        } catch (IOException e) {
-            server.removeClient(virtualViewSocket);
-        }
-    }
-
     public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
         try{
             writer.writeObject(chooseSchemaMessage);
@@ -111,20 +100,20 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
-    public void notifyClient(RequestMessage requestMessage){
-        try{
-            writer.writeObject(requestMessage);
-        } catch (IOException e) {
-            System.out.println("calling removeClient from virtualClientRmi 2");
-            server.removeClient(virtualViewSocket);
-        }
-    }
-
     public void notifyClient(ErrorMessage errorMessage){
         try{
             writer.writeObject(errorMessage);
         } catch (IOException e) {
             System.out.println("calling removeClient from virtualClientRmi 3");
+            server.removeClient(virtualViewSocket);
+        }
+    }
+
+    public void notifyClient(RequestMessage requestMessage){
+        try{
+            writer.writeObject(requestMessage);
+        } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 2");
             server.removeClient(virtualViewSocket);
         }
     }
@@ -165,6 +154,15 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
         }
     }
 
+    public void notifyClient(ToolCardErrorMessage toolCardErrorMessage) {
+        try{
+            writer.writeObject(toolCardErrorMessage);
+        } catch (IOException e) {
+            System.out.println("calling removeClient from virtualClientRmi 7");
+            server.removeClient(virtualViewSocket);
+        }
+    }
+
     public VirtualViewSocket getVirtualViewSocket() {
         return virtualViewSocket;
     }
@@ -182,9 +180,5 @@ public class VirtualClientSocket extends Thread implements VirtualClientInterfac
     @Override
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public boolean isConnected() {
-        return isConnected;
     }
 }

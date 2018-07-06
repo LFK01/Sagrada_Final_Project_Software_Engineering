@@ -50,7 +50,7 @@ public class Server {
         } catch (RemoteException | MalformedURLException e){
             e.printStackTrace();
         }
-        System.out.println("Server is Up");
+        System.out.println("Server is up...");
     }
 
     public synchronized void addClient(Socket newClient){
@@ -75,8 +75,6 @@ public class Server {
     }
 
     public synchronized void removeClient(VirtualViewInterface oldClient){
-        ReentrantLock lock = new ReentrantLock();
-        lock.lock();
         playersVirtualView.remove(oldClient);
         System.out.println("removed client " + oldClient.getUsername() + " from list");
         controller.removeObserver(oldClient);

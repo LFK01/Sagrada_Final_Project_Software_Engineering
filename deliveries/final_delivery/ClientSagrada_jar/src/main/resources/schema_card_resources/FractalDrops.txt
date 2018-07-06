@@ -1,0 +1,7 @@
+Number: 2
+name: Fractal/Drops
+difficulty: 3
+[] [4] [] [Y] [6]
+[R] [] [2] [] []
+[] [] [R] [P] [1]
+[B] [Y] [] [] []

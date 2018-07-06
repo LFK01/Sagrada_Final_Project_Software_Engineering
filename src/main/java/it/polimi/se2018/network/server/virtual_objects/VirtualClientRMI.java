@@ -2,9 +2,9 @@ package it.polimi.se2018.network.server.virtual_objects;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
@@ -17,7 +17,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
 
     private VirtualViewRMI virtualView;
     private ClientRMIInterface remoteView;
-    private boolean isConnected;
     private Server server;
     private String username;
 
@@ -35,13 +34,8 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException{
-        virtualView.updateServer(chooseDiceMove);
-    }
-
-    @Override
-    public void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException {
-        virtualView.updateServer(chooseSchemaMessage);
+    public void sendToServer(ChooseDiceMessage chooseDiceMessage) throws RemoteException{
+        virtualView.updateServer(chooseDiceMessage);
     }
 
     @Override
@@ -68,27 +62,12 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException{
-        /*should never be called here*/
-    }
-
-    @Override
-    public void sendToServer(NoActionMove noActionMove){
-        virtualView.updateServer(noActionMove);
+    public void sendToServer(NoActionMessage noActionMessage){
+        virtualView.updateServer(noActionMessage);
     }
 
     @Override
     public void sendToServer(RequestMessage requestMessage) throws RemoteException {
-        /*should never be called here*/
-    }
-
-    @Override
-    public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
-        /*should never be called here*/
-    }
-
-    @Override
-    public void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException {
         /*should never be called here*/
     }
 
@@ -108,13 +87,8 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     }
 
     @Override
-    public void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException {
-        virtualView.update(useToolCardMove);
-    }
-
-    @Override
-    public void sendToServer(SendWinnerMessage sendWinnerMessage) throws RemoteException {
-        virtualView.update(sendWinnerMessage);
+    public void sendToServer(ChooseToolCardMessage chooseToolCardMessage) throws RemoteException {
+        virtualView.updateServer(chooseToolCardMessage);
     }
 
     public void notifyClient(ChooseSchemaMessage chooseSchemaMessage){
@@ -122,42 +96,6 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
             remoteView.updateClient(chooseSchemaMessage);
         } catch (RemoteException e) {
             System.out.println("calling removeClient from virtualClientRmi 1");
-            server.removeClient(virtualView);
-        }
-    }
-
-    public void notifyClient(ChooseDiceMove chooseDiceMove){
-        try{
-            remoteView.updateClient(chooseDiceMove);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 11");
-            server.removeClient(virtualView);
-        }
-    }
-
-    public void notifyClient(ComebackMessage comebackMessage){
-        try{
-            remoteView.updateClient(comebackMessage);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 2");
-            server.removeClient(virtualView);
-        }
-    }
-
-    public void notifyClient(CreatePlayerMessage createPlayerMessage){
-        try{
-            remoteView.updateClient(createPlayerMessage);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 3");
-            server.removeClient(virtualView);
-        }
-    }
-
-    public void notifyClient(DiePlacementMessage diePlacementMessage){
-        try{
-            remoteView.updateClient(diePlacementMessage);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 4");
             server.removeClient(virtualView);
         }
     }
@@ -171,29 +109,11 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(NoActionMove noActionMove) {
-        try{
-            remoteView.updateClient(noActionMove);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 15");
-            server.removeClient(virtualView);
-        }
-    }
-
     public void notifyClient(RequestMessage requestMessage){
         try{
             remoteView.updateClient(requestMessage);
         } catch (RemoteException e) {
             System.out.println("calling removeClient from virtualClientRmi 5");
-            server.removeClient(virtualView);
-        }
-    }
-
-    public void notifyClient(SelectedSchemaMessage selectedSchemaMessage){
-        try{
-            remoteView.updateClient(selectedSchemaMessage);
-        } catch (RemoteException e) {
-            System.out.println("calling removeClient from virtualClientRmi 6");
             server.removeClient(virtualView);
         }
     }
@@ -254,9 +174,9 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
         }
     }
 
-    public void notifyClient(UseToolCardMove useToolCardMove) {
+    public void notifyClient(ChooseToolCardMessage chooseToolCardMessage) {
         try{
-            remoteView.updateClient(useToolCardMove);
+            remoteView.updateClient(chooseToolCardMessage);
         } catch (RemoteException e) {
             System.out.println("calling removeClient from virtualClientRmi 14");
             server.removeClient(virtualView);
@@ -276,9 +196,5 @@ public class VirtualClientRMI  implements ServerRMIInterface, VirtualClientInter
     @Override
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public boolean isConnected(){
-        return isConnected;
     }
 }

@@ -92,11 +92,11 @@ public class Player  {
 
     /**
      *method to decrease player's favor Tokens, also check if a player can use that card
-     * @param toolCardHasAlreadyBeenUsed boolean value that determines how many favor tokens
+     * @param isFirstUsage boolean value that determines how many favor tokens
      *                                   has to be detracted
      */
-    public void decreaseFavorTokens(boolean toolCardHasAlreadyBeenUsed){
-        if(toolCardHasAlreadyBeenUsed){
+    public void decreaseFavorTokens(boolean isFirstUsage){
+        if(!isFirstUsage){
             this.favorTokens = this.favorTokens - 2;
         }
         else{

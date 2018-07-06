@@ -1,0 +1,40 @@
+Number: 25
+name: Example/New/Schema/Card
+difficulty: 10
+[R] [R] [R] [R] [R]
+[R] [R] [R] [R] [R]
+[R] [R] [R] [R] [R]
+[R] [R] [R] [R] [R]
+
+/* IMPORTANT: every field value has to be separated by a space
+* from its field tag.
+* The number field has to be a sequential number of 24
+* or sequential to the last schema card you have created.
+* In the name field you can write every name you want, be careful to
+* put / between each word if you want them separated.
+* DON'T PUT SPACES TO SEPARATE NAME'S WORDS.
+* On the difficulty value you can put every positive number you want,
+* this will determine how many favor tokens you'll have if this card
+* gets drafted.
+* You can personalize the schema card by changing values between square
+* brackets, follow below restrictions list to change value or color restrictions.
+* COLOR RESTRICTIONS:
+* [R] ==> Red
+* [G] ==> Green
+* [P] ==> Purple
+* [B] ==> Blue
+* [Y] ==> Yellow
+* VALUE RESTRICTIONS:
+* [1] ==> 1
+* [2] ==> 2
+* [3] ==> 3
+* [4] ==> 4
+* [5] ==> 5
+* [6] ==> 6
+*
+* Once you've finished personalizing place this file in  the src/main/resources/schema_card_resources folder
+* If you want to create multiple schema cards and not just this one,
+* copy and paste this text on a new .txt file, name the file as you 
+*like and the place it in the same folder as the last one. 
+* personalize your new schema card as you want.
+*/

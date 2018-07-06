@@ -1,0 +1,7 @@
+Number: 19
+name: Aurora/Sagradis
+difficulty: 4
+[R] [] [B] [] [Y]
+[4] [P] [3] [G] [2]
+[] [1] [] [5] []
+[] [] [6] [] []

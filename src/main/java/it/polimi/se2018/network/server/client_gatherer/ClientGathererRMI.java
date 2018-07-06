@@ -2,13 +2,13 @@ package it.polimi.se2018.network.server.client_gatherer;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
-import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
+import it.polimi.se2018.exceptions.PlayerNumberExceededException;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewRMI;
 
 import java.rmi.RemoteException;
@@ -34,13 +34,8 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
             server.addClient(newVirtualView);
             return remoteServerRef;
         } else {
-            throw new PlayerNumberExceededException("LimitPlayerNumberReached");
+            throw new PlayerNumberExceededException();
         }
-    }
-
-    @Override
-    public void sendToServer(ChooseSchemaMessage chooseSchemaMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
     }
 
     @Override
@@ -69,16 +64,6 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
-    public void sendToServer(SuccessCreatePlayerMessage successCreatePlayerMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
     public void sendToServer(ToolCardActivationMessage toolCardActivationMessage) throws RemoteException {
         /*should be handled by RemoteViewRMI*/
     }
@@ -89,17 +74,12 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(UseToolCardMove useToolCardMove) throws RemoteException {
+    public void sendToServer(ChooseToolCardMessage chooseToolCardMessage) throws RemoteException {
         /*should be handled by RemoteViewRMI*/
     }
 
     @Override
-    public void sendToServer(SendWinnerMessage sendWinnerMessage) throws RemoteException {
-        /*should be handled by RemoteViewRMI*/
-    }
-
-    @Override
-    public void sendToServer(NoActionMove noActionMove) {
+    public void sendToServer(NoActionMessage noActionMessage) {
         /*method to be called in VirtualClientRMI*/
     }
 
@@ -109,12 +89,7 @@ public class ClientGathererRMI extends UnicastRemoteObject implements ServerRMII
     }
 
     @Override
-    public void sendToServer(SendGameboardMessage sendGameboardMessage) throws RemoteException {
-        /*method to be called in VirtualClientRMI*/
-    }
-
-    @Override
-    public void sendToServer(ChooseDiceMove chooseDiceMove) throws RemoteException {
+    public void sendToServer(ChooseDiceMessage chooseDiceMessage) throws RemoteException {
         /*method to be called in VirtualClientRMI*/
     }
 

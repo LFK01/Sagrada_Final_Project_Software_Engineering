@@ -1,0 +1,7 @@
+Number: 11
+Name: Flux/Remover
+ID: HmJ
+description: After/drafting,/return/the/die/to/the/Dice/Bag/and/pull/1/die/from/the/bag./Choose/a/value/and/place/the/new/die,/obeying/all/placement/restrictions/or/return/it/to/the/Draft/Pool
+effects: ExtractNewDie/ModifyDieValue/PlaceDie
+parameters: null/SetValue/null
+inputManager: INPUT_CHOOSE_DIE/INPUT_CHOOSE_VALUE/INPUT_TOOL_PLACE_DIE

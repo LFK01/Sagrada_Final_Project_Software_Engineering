@@ -8,9 +8,7 @@ import java.util.TimerTask;
 public class TimerLobbyTask extends TimerTask {
 
     private boolean isStarted;
-
     private boolean isEnded;
-
     private Controller controller;
     private Model model;
 

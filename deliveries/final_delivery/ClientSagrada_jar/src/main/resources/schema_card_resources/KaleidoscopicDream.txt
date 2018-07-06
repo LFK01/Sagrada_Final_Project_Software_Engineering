@@ -1,0 +1,7 @@
+Number: 1
+name: Kaleidoscopic/Dream
+difficulty: 4
+[Y] [B] [] [] [1]
+[G] [] [5] [] [4]
+[3] [] [R] [] [G]
+[2] [] [] [B] [Y]

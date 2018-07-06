@@ -7,10 +7,4 @@ package it.polimi.se2018.exceptions;
  */
 public class NoColorException  extends Exception{
 
-    /**
-     * Constructor method
-     */
-    public NoColorException() {
-        super("Cell doesn't have any color restriction.");
-    }
 }

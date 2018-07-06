@@ -1,0 +1,7 @@
+Number: 5
+Name: Lens/Cutter
+ID: shQ
+description: After/drafting,/swap/the/drafted/die/with/a/die/from/the/Round/Track
+effects: SwapDieFromDraftPoolWithDieFromRoundTrack
+parameters: null
+inputManager: INPUT_POSITION_DRAFTPOOL_POSITION_ROUNDTRACK

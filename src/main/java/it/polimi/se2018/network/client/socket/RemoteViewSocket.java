@@ -2,9 +2,9 @@ package it.polimi.se2018.network.client.socket;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.network.server.ServerSocketInterface;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
@@ -95,9 +95,9 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(ChooseDiceMove chooseDiceMove) {
+    public void update(ChooseDiceMessage chooseDiceMessage) {
         try {
-            server.sendToServer(chooseDiceMove);
+            server.sendToServer(chooseDiceMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
         }
@@ -160,9 +160,9 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(NoActionMove noActionMove){
+    public void update(NoActionMessage noActionMessage){
         try {
-            server.sendToServer(noActionMove);
+            server.sendToServer(noActionMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
         }
@@ -223,9 +223,9 @@ public class RemoteViewSocket extends ProjectObservable implements ProjectObserv
     }
 
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
+    public void update(ChooseToolCardMessage chooseToolCardMessage) {
         try {
-            server.sendToServer(useToolCardMove);
+            server.sendToServer(chooseToolCardMessage);
         } catch (IOException e) {
             notifyView(new ErrorMessage("remoteView", username, "ServerIsDown"));
         }

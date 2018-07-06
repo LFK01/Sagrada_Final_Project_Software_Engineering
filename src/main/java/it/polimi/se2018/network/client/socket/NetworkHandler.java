@@ -46,6 +46,8 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
             try{
                 Message message = (Message) inputStream.readObject();
                 if(message == null){
+                    remoteViewSocket.notifyView(new ErrorMessage("remoteView",
+                            remoteViewSocket.getUsername(), "ServerIsDown"));
                     serverIsUp = false;
                 }else {
                     try{
@@ -60,7 +62,9 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                         remoteViewSocket.getUsername(), "ServerIsDown"));
                 serverIsUp = false;
             } catch (ClassNotFoundException e){
-                System.out.println("Someone has sent an object that's not a Message");
+                remoteViewSocket.notifyView(new ErrorMessage("remoteView",
+                        remoteViewSocket.getUsername(), "ServerIsDown"));
+                serverIsUp = false;
             }
         }
         stopConnection();
@@ -70,11 +74,6 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     public void sendToServer(Message message) throws IOException {
         outputStream.writeObject(message);
         outputStream.flush();
-    }
-
-    @Override
-    public String getAddress() {
-        return socket.getLocalSocketAddress().toString();
     }
 
     public void stopConnection(){

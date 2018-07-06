@@ -8,5 +8,4 @@ public interface ServerSocketInterface {
 
     void sendToServer(Message message) throws IOException;
 
-    String getAddress();
 }

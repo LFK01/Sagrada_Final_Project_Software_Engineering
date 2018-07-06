@@ -1,0 +1,7 @@
+Number: 15
+name: Luz/Celestial
+difficulty: 3
+[] [] [R] [5] []
+[P] [4] [] [G] [3]
+[6] [] [] [B] []
+[] [Y] [2] [] []

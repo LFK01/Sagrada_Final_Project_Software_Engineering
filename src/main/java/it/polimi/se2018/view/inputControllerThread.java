@@ -3,9 +3,9 @@ package it.polimi.se2018.view;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.view.comand_line.InputManager;
 
 import java.io.InputStreamReader;
@@ -79,7 +79,6 @@ public class inputControllerThread extends Thread{
 
     @Override
     public final void run(){
-        System.out.println("starting w/" + inputManager.toString());
         inputMessage = new ErrorMessage("doNotSend", "doNotSend", "doNotSend");
         switch (inputManager){
             case INPUT_NEW_CONNECTION:{
@@ -196,21 +195,17 @@ public class inputControllerThread extends Thread{
         threadDisabledInputJoin();
         threadEnabledInputJoin();
         choice = readFromMemory();
-        System.out.println("read memory for connectionChoice, choice: " + choice);
         if (choice == -1) {
-            System.out.println("new connection choice asking new input");
             choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE, "newCoonectionChoice1");
         } else {
             if (choice < 1 || choice > 2) {
                 System.out.println(ERROR_QUOTE);
-                System.out.println("new connection choice asking new input");
                 choice = readChoiceBetweenValuesIncluded(1, 2, STANDARD_CHOICE_QUOTE, "newCoonectionChoice2");
             }
         }
         if(choice==1){
             return new ComebackMessage(username, "server", username);
         } else {
-            System.out.println("player wants to quit");
             return new ErrorMessage(username, "server", "quit");
         }
     }
@@ -261,9 +256,7 @@ public class inputControllerThread extends Thread{
         playerEnableThreadHasEnded = false;
         threadDisabledInputJoin();
         choice = readFromMemory();
-        System.out.println("read memory from schema card, choice: " + choice);
         if (choice == -1) {
-            System.out.println("schema card asking new input");
             choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2,
                     "Schema card number: ", "readSchemaCard2");
             if (playerHasBeenBanned || matchHasStarted) {
@@ -274,7 +267,6 @@ public class inputControllerThread extends Thread{
             }
         } else {
             if (choice < 1 || choice > Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2) {
-                System.out.println("schema card asking new input");
                 System.out.println(ERROR_QUOTE);
                 choice = readChoiceBetweenValuesIncluded(1, Model.SCHEMA_CARDS_EXTRACT_NUMBER * 2,
                         "Schema card number: ", "readSchemaCard1");
@@ -288,7 +280,7 @@ public class inputControllerThread extends Thread{
                 if (playerHasBeenBanned || matchHasStarted) {
                     saveChoiceToMemory(choice);
                 } else {
-                    System.out.println("Chosen schema name: " + schemaNames[choice - 1]);
+                    System.out.println("Chosen schema: " + schemaNames[choice - 1]);
                     saveMessageToSend(new SelectedSchemaMessage(username, "server", schemaNames[choice - 1]));
                 }
             }
@@ -306,16 +298,12 @@ public class inputControllerThread extends Thread{
         playerEnableThreadHasEnded = false;
         threadDisabledInputJoin();
         choice = readFromMemory();
-        System.out.println("read memory from readMove, choice: " + choice);
         if (!playerHasBeenBanned) {
-            System.out.println("Player is not banned");
             if (choice == -1) {
-                System.out.println("choose move asking new input");
                 choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE,
                         "readMove1");
             } else {
                 if (choice < 1 || choice > 3) {
-                    System.out.println("choose move asking new input");
                     System.out.println(ERROR_QUOTE);
                     choice = readChoiceBetweenValuesIncluded(1, 3, STANDARD_CHOICE_QUOTE,
                             "readMove2");
@@ -329,7 +317,7 @@ public class inputControllerThread extends Thread{
                         diceOnRoundDice = readChoiceBetweenValuesIncluded(1,
                                 Model.MAXIMUM_PLAYER_NUMBER * 2 + 1, "Die position: ", "readMove3");
                         if (!playerHasBeenBanned) {
-                            saveMessageToSend(new ChooseDiceMove(username, "server", diceOnRoundDice - 1));
+                            saveMessageToSend(new ChooseDiceMessage(username, "server", diceOnRoundDice - 1));
                         } else {
                             saveChoiceToMemory(diceOnRoundDice);
                         }
@@ -340,7 +328,7 @@ public class inputControllerThread extends Thread{
                         toolCardNumber = readChoiceBetweenValuesIncluded(1, Model.TOOL_CARDS_EXTRACT_NUMBER,
                                 "Tool card number: ", "readMove4");
                         if (!playerHasBeenBanned) {
-                            saveMessageToSend(new UseToolCardMove(username, "server",
+                            saveMessageToSend(new ChooseToolCardMessage(username, "server",
                                     toolCardIDs[toolCardNumber - 1]));
                         } else {
                             saveChoiceToMemory(toolCardNumber);
@@ -349,7 +337,7 @@ public class inputControllerThread extends Thread{
                     }
                     case 3: {
                         System.out.println("You have chose to forfeit this turn.");
-                        saveMessageToSend(new NoActionMove(username, "server"));
+                        saveMessageToSend(new NoActionMessage(username, "server"));
                         break;
                     }
                 }
@@ -367,6 +355,7 @@ public class inputControllerThread extends Thread{
         int choice;
         System.out.println("Choose a die from the draft pool:");
         StringBuilder builder = new StringBuilder();
+        threadDisabledInputJoin();
         playerEnableThreadHasEnded = false;
         choice = readFromMemory();
         if (!playerHasBeenBanned) {
@@ -379,10 +368,10 @@ public class inputControllerThread extends Thread{
                             "Position: ", "readMove6");
                 }
             }
-            if (playerHasBeenBanned) {
+            if (!playerHasBeenBanned) {
                 builder.append("draftPoolDiePosition: ").append(choice - 1).append(" ");
-                new ToolCardActivationMessage(username, "server", toolCardUsageID,
-                        builder.toString());
+                saveMessageToSend(new ToolCardActivationMessage(username, "server", toolCardUsageID,
+                        builder.toString()));
             } else {
                 saveChoiceToMemory(choice);
             }
@@ -496,7 +485,6 @@ public class inputControllerThread extends Thread{
             builder.append("DraftPoolDiePosition: ")
                     .append(draftPoolDiceNumber)
                     .append(" ");
-            System.out.println(builder.toString());
             saveMessageToSend(new DiePlacementMessage(username, "server", builder.toString()));
         } else {
             saveChoiceToMemory(choice);
@@ -547,7 +535,6 @@ public class inputControllerThread extends Thread{
                 builder.append("col: ").append(choice - 1).append(" ");
                 builder.append("DraftPoolDiePosition: ");
                 builder.append(draftPoolDiceNumber);
-                System.out.println(builder.toString());
                 saveMessageToSend(new ToolCardActivationMessage(username, "server",
                         toolCardUsageID, builder.toString()));
             }
@@ -842,7 +829,6 @@ public class inputControllerThread extends Thread{
 
     private synchronized void readPlayerDisabledInput(){
         inputControllerThread.setPlayerDisabledThreadHasEnded(false);
-        System.out.println("player disabled thread started");
         while (!playerIsActive){
             StringBuilder builder = new StringBuilder();
             builder.append(inputMemoryString);
@@ -852,7 +838,6 @@ public class inputControllerThread extends Thread{
             inputControllerThread.setInputMemoryString(builder.toString());
         }
         inputControllerThread.setPlayerDisabledThreadHasEnded(true);
-        System.out.println("input_player_disabled while loop ended");
         saveMessageToSend(new ErrorMessage(username, "doNotSend", "doNotSend"));
     }
 
@@ -864,7 +849,6 @@ public class inputControllerThread extends Thread{
             System.out.print(inputInstructions);
             try {
                 input = scanner.nextLine();
-                System.out.println("read scanner nextLine called by method: " + methodName);
                 choice = Integer.parseInt(input);
                 if(choice<firstValue || choice>secondValue){
                     wrongInput = true;
@@ -887,7 +871,7 @@ public class inputControllerThread extends Thread{
      * @param inputInstructions
      * @return -1 if the player decides to quit
      */
-    private int readChoiceBetweenValuesWithQuit(int firstValue, int secondValue, String inputInstructions){
+    private synchronized int readChoiceBetweenValuesWithQuit(int firstValue, int secondValue, String inputInstructions){
         String input;
         int choice;
         boolean wrongInput = true;
@@ -920,7 +904,7 @@ public class inputControllerThread extends Thread{
      * @param inputInstructions
      * @return "Error" if the player decides to quit
      */
-    private String readYesOrNoWithQuit(String inputInstructions){
+    private synchronized String readYesOrNoWithQuit(String inputInstructions){
         boolean wrongInput = true;
         String input;
         while (wrongInput){
@@ -950,7 +934,7 @@ public class inputControllerThread extends Thread{
         int choice;
         String[] inputLines = inputMemoryString.split("\n");
         if(inputLines[inputLines.length-1].equals("null")){
-            /*player has typed nothing before his turn*/
+            /*player has not typed nothing before his turn*/
             setInputMemoryString("null\n");
             return -1;
         } else {
@@ -1004,7 +988,6 @@ public class inputControllerThread extends Thread{
     }
 
     public static void setPlayerBanned(boolean isPlayerBanned){
-        System.out.println("player banned has beed set to: " + isPlayerBanned);
         playerHasBeenBanned = isPlayerBanned;
     }
 

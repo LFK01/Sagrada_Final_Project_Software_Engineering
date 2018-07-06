@@ -1,6 +1,6 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.model.events.moves.NoActionMove;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
 import org.junit.Test;
 
 public class ControllerTest {
@@ -13,6 +13,6 @@ public class ControllerTest {
     @Test
     public void updateNoActionMoveTest(){
         Controller controller = new Controller();
-        NoActionMove noActionMove = new NoActionMove("p1","server");
+        NoActionMessage noActionMessage = new NoActionMessage("p1","server");
     }
 }

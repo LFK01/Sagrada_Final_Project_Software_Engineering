@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.events.moves;
+package it.polimi.se2018.model.events.messages;
 
 import it.polimi.se2018.model.events.messages.Message;
 
@@ -7,11 +7,11 @@ import it.polimi.se2018.model.events.messages.Message;
  * Message to request activation of a tool Card
  */
 
-public class UseToolCardMove extends Message {
+public class ChooseToolCardMessage extends Message {
 
     private String toolCardID;
 
-    public UseToolCardMove(String sender, String recipient, String toolCardID) {
+    public ChooseToolCardMessage(String sender, String recipient, String toolCardID) {
         super(sender, recipient);
         this.toolCardID = toolCardID;
     }

@@ -123,21 +123,9 @@ public class Model extends ProjectObservable implements Runnable{
             System.out.println("removed Die from draftPool");
             if(isFirstDraftOfDice()) {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
-                if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getToolMove().isBeenUsed()){
-                    updateTurnOfTheRound();
-                    updateGameboard();
-                } else {
-                    updateGameboard();
-                }
             }
             else {
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
-                if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getToolMove().isBeenUsed()){
-                    updateTurnOfTheRound();
-                    updateGameboard();
-                } else {
-                    updateGameboard();
-                }
             }
         }
         catch(FullCellException e){
@@ -238,10 +226,6 @@ public class Model extends ProjectObservable implements Runnable{
      */
     public void extractToolCards() {
        FileParser parser = new FileParser();
-        /*parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, null);
-        parser.writeLathekinPositions(Model.FOLDER_ADDRESS_TOOL_CARDS,
-                -1, -1, -1, -1);
-        parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, false);
         ArrayList<Integer> cardIndex = new ArrayList<>(TOOL_CARDS_NUMBER);
         for(int i = 1; i <= TOOL_CARDS_NUMBER; i++){
             cardIndex.add(i);
@@ -249,12 +233,7 @@ public class Model extends ProjectObservable implements Runnable{
         Collections.shuffle(cardIndex);
         for(int i = 0; i < Model.TOOL_CARDS_EXTRACT_NUMBER; i++) {
             gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, cardIndex.get(i)), i);
-        }*/
-
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 4), 0);
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 8), 1);
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 11), 2);
-
+        }
     }
 
     /**
@@ -400,6 +379,7 @@ public class Model extends ProjectObservable implements Runnable{
                 }
         );
     }
+
     public void updateGameboardToolCard() {
         Thread sendingMessageThread;
         StringBuilder builderGameboard = buildMessage();
@@ -416,6 +396,7 @@ public class Model extends ProjectObservable implements Runnable{
             }
         }
     }
+
     /**
      * Creates a String containing all the information of the gameboard to send to all players
      * @return A String with information

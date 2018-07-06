@@ -1,6 +1,6 @@
 package it.polimi.se2018.model;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
 import it.polimi.se2018.model.player.Player;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -16,16 +16,16 @@ public class TestChooseDiceMove {
      */
     @Test
     public void testChooseDiceMoveInitialization(){
-        ChooseDiceMove chooseDiceMove = null;
+        ChooseDiceMessage chooseDiceMessage = null;
         int row=2,col=1,draftPoolPos=0;
         Player player = null;
         try{
-            chooseDiceMove = new ChooseDiceMove("p1", "server", draftPoolPos);
+            chooseDiceMessage = new ChooseDiceMessage("p1", "server", draftPoolPos);
         }
         catch(NullPointerException e){
             fail();
         }
-        assertNotNull(chooseDiceMove);
+        assertNotNull(chooseDiceMessage);
     }
 
 }

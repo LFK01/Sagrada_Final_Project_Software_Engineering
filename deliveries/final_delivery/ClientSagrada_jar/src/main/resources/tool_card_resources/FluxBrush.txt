@@ -1,0 +1,7 @@
+Number: 6
+Name: Flux/Brush
+ID: TWW
+description: After/drafting,/re-roll/the/drafted/die./If/it/cannot/be/placed,/return/it/to/the/Draft/Pool
+effects: ModifyDieValue/PlaceDie
+parameters: Roll/null
+inputManager: INPUT_MODIFY_DIE_VALUE/INPUT_TOOL_PLACE_DIE

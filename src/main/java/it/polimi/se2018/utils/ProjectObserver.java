@@ -2,13 +2,13 @@ package it.polimi.se2018.utils;
 
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 
 public interface ProjectObserver {
 
-    void update(ChooseDiceMove chooseDiceMove);
+    void update(ChooseDiceMessage chooseDiceMessage);
 
     void update(ChooseSchemaMessage chooseSchemaMessage);
 
@@ -20,13 +20,13 @@ public interface ProjectObserver {
 
     void update(ErrorMessage errorMessage);
 
-    void update(SendGameboardMessage sendGameboardMessage);
-
-    void update(NoActionMove noActionMove);
+    void update(NoActionMessage noActionMessage);
 
     void update(RequestMessage requestMessage);
 
     void update(SelectedSchemaMessage selectedSchemaMessage);
+
+    void update(SendGameboardMessage sendGameboardMessage);
 
     void update(ShowPrivateObjectiveCardsMessage showPrivateObjectiveCardsMessage);
 
@@ -36,7 +36,7 @@ public interface ProjectObserver {
 
     void update(ToolCardErrorMessage toolCardErrorMessage);
 
-    void update(UseToolCardMove useToolCardMove);
+    void update(ChooseToolCardMessage chooseToolCardMessage);
 
     void update(SendWinnerMessage sendWinnerMessage);
 

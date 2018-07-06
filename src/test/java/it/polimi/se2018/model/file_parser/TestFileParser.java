@@ -62,13 +62,13 @@ public class TestFileParser {
     @Test
     public void writeTapWheelFirstColorTest(){
         FileParser parser = new FileParser();
-        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, Color.RED.toString());
+        parser.writeTapWheelFirstColor(Model.FOLDER_ADDRESS_TOOL_CARDS, Color.YELLOW.toString());
     }
 
     @Test
     public void writeTapWheelUsingValueTest(){
         FileParser parser = new FileParser();
-        parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, false);
+        parser.writeTapWheelUsingValue(Model.FOLDER_ADDRESS_TOOL_CARDS, true);
     }
 
     @Test

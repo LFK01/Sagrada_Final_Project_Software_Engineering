@@ -2,13 +2,8 @@ package it.polimi.se2018.exceptions;
 
 /**
  * Exception to handle invalid input concerning the matrix indexes
- * @author Giorgia
+ * @author Giovanni
  */
 
 public class InvalidCellPositionException extends Exception {
-
-    public InvalidCellPositionException() {
-        super("Gli indici di posizione non sono validi.");
-    }
-
 }

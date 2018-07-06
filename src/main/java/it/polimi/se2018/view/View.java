@@ -2,9 +2,9 @@ package it.polimi.se2018.view;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.utils.ProjectObservable;
 import it.polimi.se2018.utils.ProjectObserver;
 import it.polimi.se2018.view.comand_line.InputManager;
@@ -66,7 +66,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
      */
 
     public void showPrivateObjectiveCard(String description){
-        System.out.println("Your private objective is: " + description);
+        System.out.println("Your private objective is: " + description + "\n");
         privateObjectiveCardDescription = description;
     }
 
@@ -113,7 +113,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(ErrorMessage errorMessage) {
         if(errorMessage.toString().equalsIgnoreCase("NotValidUsername")){
             System.out.println("Username not available!");
-            System.out.println("create");
             this.createPlayer();
         }
         if(errorMessage.toString().equalsIgnoreCase("PlayerNumberExceeded")){
@@ -258,7 +257,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 }
             }
             if(words[i].equalsIgnoreCase("SchemaCards:")){
-                System.out.println("reading schema cards");
                 while(!words[i].equalsIgnoreCase("schemaStop:")){
                     System.out.println(words[i]);
                     i++;
@@ -304,7 +302,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     @Override
-    public void update(NoActionMove noActionMove) {
+    public void update(NoActionMessage noActionMessage) {
         /*should never be called*/
     }
 
@@ -317,9 +315,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     public void update(RequestMessage requestMessage) {
         int draftPoolDiceNumber = -1;
         String toolCardUsageName = "";
-        for(String name: toolCardNames){
-            System.out.println(name);
-        }
         ArrayList<String> words = new ArrayList<>(Arrays.asList(requestMessage.getValues().split(" ")));
         for(String word: words){
             if(word.equalsIgnoreCase("RoundTrack:")){
@@ -348,7 +343,6 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
             }
         }
         inputManager = requestMessage.getInputManager();
-        System.out.println(inputManager.toString());
         inputControllerThread.setPlayerIsActive(true);
         inputControllerThread.setPlayerBanned(false);
         inputThread = new inputControllerThread(inputManager, username, toolCardUsageName,
@@ -383,7 +377,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
+    public void update(ChooseToolCardMessage chooseToolCardMessage) {
         /*should never be called*/
     }
 
@@ -415,7 +409,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
     }
 
     @Override
-    public void update(ChooseDiceMove chooseDiceMove) {
+    public void update(ChooseDiceMessage chooseDiceMessage) {
         /*should never be called*/
     }
 
@@ -448,6 +442,7 @@ public class View extends ProjectObservable implements ProjectObserver, ThreadCo
                 message.toString().equalsIgnoreCase("quit")){
             notifyObservers(message);
             playerWantsToContinue = false;
+            playerIsBanned = false;
             gameHasEnded = true;
         } else {
             notifyObservers(message);

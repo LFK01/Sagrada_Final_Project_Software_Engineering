@@ -42,9 +42,6 @@ public class ProjectObservable {
     }
 
     public void notifyObservers(Message message){
-        System.out.println("notifying " + observers.size() + " observers w/: " + message.toString() +
-                            "\n Recipient: " + message.getRecipient() +
-                            "\nSender: " + message.getSender());
         synchronized (observers){
             if(changed){
                 observers.stream().forEach(
@@ -67,9 +64,6 @@ public class ProjectObservable {
     }
 
     public void notifyObservers(){
-        System.out.println("notifying " + observers.size() + " observers w/: " + memorizedMessage.toString() +
-                "\nRecipient: " + memorizedMessage.getRecipient() +
-                "\nSender: " + memorizedMessage.getSender());
         synchronized (observers){
             if(changed){
                 observers.stream().forEach(
@@ -77,7 +71,6 @@ public class ProjectObservable {
                             try{
                                 Method update = observer.getClass().getMethod("update", memorizedMessage.getClass());
                                 update.invoke(observer, memorizedMessage);
-                                System.out.println("notified observer: " + observer.toString());
                             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                                 System.out.println("exception: " + e.getClass().toString() + " on observable 2" +
                                         "\nwith message: " + memorizedMessage +

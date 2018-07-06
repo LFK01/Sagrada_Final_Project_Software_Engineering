@@ -16,10 +16,6 @@ public class Cell {
     private boolean noColor; /*boolean value to know if there's color restriction*/
     private int value; /*integer value for value restriction, 0 means no value restriction*/
     private boolean containsDie; /*boolean value to know if there's a die in the cell*/
-    private boolean avoidValueRestriction;
-    private boolean avoidColorRestriction;
-    private boolean avoidNearnessRestriction;
-    private PaintingTool paintingTool;
 
     /*boolean values to know if some tool cards have been activated and we dont have to consider value restriction
     * on this cell*/
@@ -98,7 +94,7 @@ public class Cell {
                     containsDie = true;
                 }
                 else{
-                    throw new RestrictionsNotRespectedException("Valore dado non corretto!");
+                    throw new RestrictionsNotRespectedException();
                 }
             }
         }
@@ -108,7 +104,7 @@ public class Cell {
                 containsDie = true;
             }
             else{
-                throw new RestrictionsNotRespectedException("Colore dado non corretto!");
+                throw new RestrictionsNotRespectedException();
             }
         }
     }
@@ -133,11 +129,6 @@ public class Cell {
      */
     public Dice getAssignedDice() {
         return assignedDice;
-    }
-
-
-    public PaintingTool getPaintingTool(){
-        return paintingTool;
     }
 
 }

@@ -6,9 +6,9 @@ import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.*;
 import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
-import it.polimi.se2018.model.events.moves.ChooseDiceMove;
-import it.polimi.se2018.model.events.moves.NoActionMove;
-import it.polimi.se2018.model.events.moves.UseToolCardMove;
+import it.polimi.se2018.model.events.messages.ChooseDiceMessage;
+import it.polimi.se2018.model.events.messages.NoActionMessage;
+import it.polimi.se2018.model.events.messages.ChooseToolCardMessage;
 import it.polimi.se2018.model.player.Player;
 import it.polimi.se2018.model.player.ToolCardMove;
 import it.polimi.se2018.utils.ProjectObservable;
@@ -47,7 +47,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
 
     /*placing die controller*/
     @Override
-    public void update(ChooseDiceMove message) {
+    public void update(ChooseDiceMessage message) {
         if(message.getDraftPoolPos() > model.getGameBoard().getRoundTrack()
                 .getRoundDice()[model.getRoundNumber()].getDiceList().size()-1){
             setChanged();
@@ -154,6 +154,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         System.out.println("draftPoolDiePosition: " + draftPoolPosition +
                 "\nRow: " + row + "\nCol: "+ col);
         model.doDiceMove(draftPoolPosition, row, col);
+        checkEndOfTurn();
     }
 
     @Override
@@ -191,7 +192,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     @Override
-    public void update(NoActionMove message){
+    public void update(NoActionMessage message){
         if(!waitMovesTask.hasEnded()){
             timer.cancel();
         }
@@ -211,7 +212,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
         model.updateTurnOfTheRound();
         if(model.getRoundNumber()<Model.MAXIMUM_ROUND_NUMBER-1) {
             if(!model.getParticipants().get(model.getTurnOfTheRound()).isConnected()){
-                update(new NoActionMove(model.getParticipants().get(model.getTurnOfTheRound()).getName(), SERVER_SIGNATURE));
+                update(new NoActionMessage(model.getParticipants().get(model.getTurnOfTheRound()).getName(), SERVER_SIGNATURE));
             } else {
                 model.updateGameboard();
                 waitMoves();
@@ -235,6 +236,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
     }
 
     /*toolcard controller*/
+
     @Override
     public void update(ToolCardActivationMessage toolCardActivationMessage) {
         System.out.println("toolCardActivaton: " + toolCardActivationMessage.getToolCardID()
@@ -257,8 +259,8 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
         }
     }
-
     /*toolcard controller*/
+
     @Override
     public void update(ToolCardErrorMessage toolCardErrorMessage) {
         for (ToolCard toolCard : model.getGameBoard().getToolCards()) {
@@ -293,20 +295,20 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
         }
     }
-
     /*toolcard controller*/
+
     @Override
-    public void update(UseToolCardMove useToolCardMove) {
+    public void update(ChooseToolCardMessage chooseToolCardMessage) {
         StringBuilder valuesBuilder = new StringBuilder();
         ToolCard activeToolCard = null;
         for(ToolCard toolCard: model.getGameBoard().getToolCards()){
-            if(useToolCardMove.getToolCardID().equals(toolCard.getIdentificationName())){
+            if(chooseToolCardMessage.getToolCardID().equals(toolCard.getIdentificationName())){
                 activeToolCard = toolCard;
             }
         }
         Player activePlayer = null;
         for(Player player: model.getParticipants()) {
-            if (player.getName().equals(useToolCardMove.getSender())) {
+            if (player.getName().equals(chooseToolCardMessage.getSender())) {
                 activePlayer = player;
             }
         }
@@ -332,7 +334,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                     }
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
-                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, useToolCardMove.getSender(),
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, chooseToolCardMessage.getSender(),
                             valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
@@ -368,7 +370,7 @@ public class Controller extends ProjectObservable implements ProjectObserver {
                     }
                     setChanged();
                     System.out.println("inputManager: " + activeToolCard.getInputManagerList().get(0));
-                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, useToolCardMove.getSender(),
+                    notifyObservers(new RequestMessage(SERVER_SIGNATURE, chooseToolCardMessage.getSender(),
                             valuesBuilder.toString(),
                             activeToolCard.getInputManagerList().get(0)));
                 } else {
@@ -382,10 +384,36 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             }
         }
     }
-
     @Override
     public void update(SendWinnerMessage sendWinnerMessage) {
         /*should never be called here*/
+    }
+
+    private void checkEndOfTurn(){
+        if(model.isFirstDraftOfDice()) {
+            if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()]
+                    .getTurn1().getToolMove().isBeenUsed() &&
+                    model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()]
+                            .getTurn1().getDieMove().isBeenUsed()){
+
+                update(new NoActionMessage(model.getParticipants().get(model.getTurnOfTheRound()).getName(), SERVER_SIGNATURE));
+
+            } else {
+                model.updateGameboard();
+            }
+        }
+        else {
+            if(model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()]
+                    .getTurn2().getToolMove().isBeenUsed() &&
+                    model.getParticipants().get(model.getTurnOfTheRound()).getPlayerTurns()[model.getRoundNumber()]
+                            .getTurn2().getDieMove().isBeenUsed()){
+
+                update(new NoActionMessage(model.getParticipants().get(model.getTurnOfTheRound()).getName(), SERVER_SIGNATURE));
+
+            } else {
+                model.updateGameboard();
+            }
+        }
     }
 
     public void waitSchemaCards(){
@@ -468,12 +496,12 @@ public class Controller extends ProjectObservable implements ProjectObserver {
             model.getParticipants().stream().filter(
                     p -> p.getName().equals(username) && model.isPlayerTurn(p)
             ).forEach(
-                    player -> update(new NoActionMove("server", SERVER_SIGNATURE))
+                    player -> update(new NoActionMessage("server", SERVER_SIGNATURE))
             );
         }
     }
 
-    public synchronized void unblockPlayer(String username) {
+    private synchronized void unblockPlayer(String username) {
         model.getParticipants().stream().filter(
                 p -> p.getName().equals(username)
         ).forEach(

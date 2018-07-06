@@ -1,7 +1,8 @@
 package it.polimi.se2018.model.events.messages;
 
 /**
- * @author giovanni
+ * @author Giovanni
+ * Message containing the cards to choose from
  */
 
 //messaggio che dal model va a tutte le view

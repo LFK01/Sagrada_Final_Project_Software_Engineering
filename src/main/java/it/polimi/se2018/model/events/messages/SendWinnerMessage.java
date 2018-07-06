@@ -5,7 +5,8 @@ import it.polimi.se2018.model.player.Player;
 import java.util.ArrayList;
 
 /**
- * @author giovanni
+ * @author Giovanni
+ * Message that sends the scores of all the players
  */
 public class SendWinnerMessage extends Message {
     private ArrayList<String> ranking;

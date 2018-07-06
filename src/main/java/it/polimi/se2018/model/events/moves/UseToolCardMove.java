@@ -4,6 +4,7 @@ import it.polimi.se2018.model.events.messages.Message;
 
 /**
  * @author Luciano
+ * Message to request activation of a tool Card
  */
 
 public class UseToolCardMove extends Message {

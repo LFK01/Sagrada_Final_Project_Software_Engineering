@@ -166,7 +166,7 @@ public class Dice {
                 break;
             }
             case "\u2684":{
-                face = "\u2682";
+                face = "\u2681";
                 break;
             }
             case "\u2685":{

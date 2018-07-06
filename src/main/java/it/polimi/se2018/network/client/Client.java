@@ -78,10 +78,12 @@ public class Client {
             switch (choice){
                 case 1:{
                     setupRMIConnection();
+                    view.createPlayer();
                     break;
                 }
                 case 2:{
                     setupSocketConnection();
+                    view.createPlayer();
                     break;
                 }
                 case 3:{
@@ -91,8 +93,6 @@ public class Client {
             }
         }
         view.setServerIsUp(true);
-        System.out.println("createPlayer() called from establish connection");
-        view.createPlayer();
     }
 
     private void readPortsFromFile() {

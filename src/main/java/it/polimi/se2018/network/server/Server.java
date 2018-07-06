@@ -50,6 +50,7 @@ public class Server {
         } catch (RemoteException | MalformedURLException e){
             e.printStackTrace();
         }
+        System.out.println("Server is Up");
     }
 
     public synchronized void addClient(Socket newClient){

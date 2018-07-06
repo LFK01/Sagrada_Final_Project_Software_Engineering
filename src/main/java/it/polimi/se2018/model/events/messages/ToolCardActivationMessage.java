@@ -1,6 +1,9 @@
-package it.polimi.se2018.model.events;
+package it.polimi.se2018.model.events.messages;
 
-import it.polimi.se2018.model.events.messages.Message;
+/**
+ * @author Luciano
+ * Message to activate a Tool card
+ */
 
 public class ToolCardActivationMessage extends Message {
 

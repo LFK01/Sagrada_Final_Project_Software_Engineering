@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.events.messages;
 
+/**
+ * @author Giovanni
+ * Message that sends private Objective cards to each player
+ */
 public class ShowPrivateObjectiveCardsMessage extends Message {
 private String privateObjectiveCardColor;
 private int playerNumber;

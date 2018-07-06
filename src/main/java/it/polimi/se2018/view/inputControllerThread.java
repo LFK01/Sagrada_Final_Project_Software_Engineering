@@ -1,7 +1,7 @@
 package it.polimi.se2018.view;
 
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.model.events.ToolCardActivationMessage;
+import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -12,9 +12,8 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class NotifyingThread extends Thread{
+public class inputControllerThread extends Thread{
 
     private static final String QUIT_QUOTE = "Type \"quit\" to interrupt the move\n";
     private static final String ERROR_QUOTE = "Wrong input!";
@@ -22,6 +21,7 @@ public class NotifyingThread extends Thread{
     private static final String CHANGE_VALUE_QUOTE = "Choose a die from the Draft Pool to change its values:";
     private static volatile String inputMemoryString = "null\n";
     private static volatile boolean playerIsActive = false;
+    private static volatile boolean playerIsConnected = false;
     private static volatile boolean playerDisabledThreadHasEnded = true;
     private static volatile boolean playerEnableThreadHasEnded;
     private static volatile boolean playerHasBeenBanned = false;
@@ -36,7 +36,7 @@ public class NotifyingThread extends Thread{
     private String[] schemaNames;
     private String[] toolCardIDs;
 
-    NotifyingThread(InputManager inputManager, String username) {
+    inputControllerThread(InputManager inputManager, String username) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -46,7 +46,7 @@ public class NotifyingThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    NotifyingThread(InputManager inputManager, String username, String[] names) {
+    inputControllerThread(InputManager inputManager, String username, String[] names) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -56,8 +56,8 @@ public class NotifyingThread extends Thread{
         this.draftPoolDiceNumber = -1;
     }
 
-    NotifyingThread(InputManager inputManager, String username, String toolCardUsageID,
-                    int draftPoolDiceNumber) {
+    inputControllerThread(InputManager inputManager, String username, String toolCardUsageID,
+                          int draftPoolDiceNumber) {
         scanner = new Scanner(new InputStreamReader(System.in));
         this.inputManager = inputManager;
         this.username = username;
@@ -182,7 +182,7 @@ public class NotifyingThread extends Thread{
                 break;
             }
         }
-        if(!inputMessage.getRecipient().equals("doNotSend")) {
+        if(!inputMessage.getRecipient().equals("doNotSend") && playerIsConnected) {
             notifyListeners(inputMessage);
         }
     }
@@ -841,7 +841,7 @@ public class NotifyingThread extends Thread{
     }
 
     private synchronized void readPlayerDisabledInput(){
-        NotifyingThread.setPlayerDisabledThreadHasEnded(false);
+        inputControllerThread.setPlayerDisabledThreadHasEnded(false);
         System.out.println("player disabled thread started");
         while (!playerIsActive){
             StringBuilder builder = new StringBuilder();
@@ -849,9 +849,9 @@ public class NotifyingThread extends Thread{
             String playerDisableInput = scanner.nextLine();
             builder.append(playerDisableInput)
                     .append("\n");
-            NotifyingThread.setInputMemoryString(builder.toString());
+            inputControllerThread.setInputMemoryString(builder.toString());
         }
-        NotifyingThread.setPlayerDisabledThreadHasEnded(true);
+        inputControllerThread.setPlayerDisabledThreadHasEnded(true);
         System.out.println("input_player_disabled while loop ended");
         saveMessageToSend(new ErrorMessage(username, "doNotSend", "doNotSend"));
     }
@@ -1012,6 +1012,9 @@ public class NotifyingThread extends Thread{
         matchHasStarted = isMatchStarted;
     }
 
+    public static void setPlayerIsConnected(Boolean playerIsConnected){
+        inputControllerThread.playerIsConnected = playerIsConnected;
+    }
     private void threadDisabledInputJoin(){
         while (!playerDisabledThreadHasEnded){
             try {

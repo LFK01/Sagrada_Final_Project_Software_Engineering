@@ -1,6 +1,6 @@
 package it.polimi.se2018.utils;
 
-import it.polimi.se2018.model.events.ToolCardActivationMessage;
+import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;

@@ -2,6 +2,8 @@ package it.polimi.se2018.model.events.messages;
 
 /**
  * @author Luciano
+ * Error message, based on the message parameter,
+ * the client can recognize the type of error
  */
 
 public class ErrorMessage extends Message {

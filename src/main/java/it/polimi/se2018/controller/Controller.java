@@ -4,7 +4,7 @@ import it.polimi.se2018.controller.tool_cards.ToolCard;
 import it.polimi.se2018.controller.tool_cards.effects.MoveDieOnWindow;
 import it.polimi.se2018.file_parser.FileParser;
 import it.polimi.se2018.model.*;
-import it.polimi.se2018.model.events.ToolCardActivationMessage;
+import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -20,7 +20,7 @@ import it.polimi.se2018.view.comand_line.InputManager;
 import java.util.*;
 
 /**
- * Controller class
+ * Controller class that receives messages from the view and activates model methods
  * @author Luciano, Giovanni
  */
 

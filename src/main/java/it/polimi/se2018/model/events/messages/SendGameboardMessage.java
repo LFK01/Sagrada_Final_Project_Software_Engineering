@@ -1,7 +1,8 @@
 package it.polimi.se2018.model.events.messages;
 
 /**
- * @author giovanni
+ * @author Giovanni
+ * Message that sends the game board to all the clients
  */
 
 public class SendGameboardMessage extends Message {

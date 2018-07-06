@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.server.client_gatherer;
 
-import it.polimi.se2018.model.events.ToolCardActivationMessage;
+import it.polimi.se2018.model.events.messages.ToolCardActivationMessage;
 import it.polimi.se2018.model.events.messages.*;
 import it.polimi.se2018.model.events.moves.ChooseDiceMove;
 import it.polimi.se2018.model.events.moves.NoActionMove;
@@ -8,9 +8,7 @@ import it.polimi.se2018.model.events.moves.UseToolCardMove;
 import it.polimi.se2018.network.client.rmi.ClientRMIInterface;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerRMIInterface;
-import it.polimi.se2018.network.server.excpetions.PlayerNotFoundException;
 import it.polimi.se2018.network.server.excpetions.PlayerNumberExceededException;
-import it.polimi.se2018.network.server.virtual_objects.VirtualViewInterface;
 import it.polimi.se2018.network.server.virtual_objects.VirtualViewRMI;
 
 import java.rmi.RemoteException;

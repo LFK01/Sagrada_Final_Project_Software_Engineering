@@ -53,8 +53,6 @@ public class Model extends ProjectObservable implements Runnable{
     private boolean firstDraftOfDice;
     /*local variable to memorize if every player has been given the option to choose
         his/her first die*/
-
-
     /**
      * Constructor method initializing turnOfTheRound and the participant list
      */
@@ -127,6 +125,7 @@ public class Model extends ProjectObservable implements Runnable{
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getDieMove().setBeenUsed(true);
                 if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn1().getToolMove().isBeenUsed()){
                     updateTurnOfTheRound();
+                    updateGameboard();
                 } else {
                     updateGameboard();
                 }
@@ -135,6 +134,7 @@ public class Model extends ProjectObservable implements Runnable{
                 participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getDieMove().setBeenUsed(true);
                 if(participants.get(turnOfTheRound).getPlayerTurns()[roundNumber].getTurn2().getToolMove().isBeenUsed()){
                     updateTurnOfTheRound();
+                    updateGameboard();
                 } else {
                     updateGameboard();
                 }
@@ -251,9 +251,9 @@ public class Model extends ProjectObservable implements Runnable{
             gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, cardIndex.get(i)), i);
         }*/
 
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 1), 0);
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 2), 1);
-        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 3), 2);
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 4), 0);
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 8), 1);
+        gameBoard.setToolCards(parser.createToolCard(Model.FOLDER_ADDRESS_TOOL_CARDS, 11), 2);
 
     }
 
@@ -322,7 +322,6 @@ public class Model extends ProjectObservable implements Runnable{
                 }
         );
     }
-
 
     /**give each player the chosen card
      * @param playerPos  Position of the player in the ArrayList
@@ -401,7 +400,6 @@ public class Model extends ProjectObservable implements Runnable{
                 }
         );
     }
-
     public void updateGameboardToolCard() {
         Thread sendingMessageThread;
         StringBuilder builderGameboard = buildMessage();
@@ -418,26 +416,6 @@ public class Model extends ProjectObservable implements Runnable{
             }
         }
     }
-
-    public void updatePlayerDisconnected(Player disconnectedPlayer){
-        Thread sendingMessageThread;
-        StringBuilder builderGameboard = buildMessage();
-        for(Player player: participants){
-            if(player.getName()!=disconnectedPlayer.getName()){
-                sendingMessageThread = new Thread(this);
-                try{
-                    memorizeMessage(new SendGameboardMessage("model", player.getName(),
-                            builderGameboard.toString()));
-                    sendingMessageThread.start();
-                    sendingMessageThread.join();
-                } catch (InterruptedException e){
-                    sendingMessageThread.interrupt();
-                    Logger.getAnonymousLogger().log(Level.SEVERE, "{0}", e);
-                }
-            }
-        }
-    }
-
     /**
      * Creates a String containing all the information of the gameboard to send to all players
      * @return A String with information
@@ -483,8 +461,6 @@ public class Model extends ProjectObservable implements Runnable{
         builderGameboard.append("DiceStop/");
         return builderGameboard;
     }
-
-
 
     /**
      * update the Round
@@ -587,13 +563,13 @@ public class Model extends ProjectObservable implements Runnable{
 
     /**
      * search for players with the same score as the current winner
-     * @param arrayDimension dimension of the ArrayList
+     * @param arrayListDimension dimension of the ArrayList
      * @param precDeadHeat ArrayList used in the method
      * @return Changed arrayList
      */
-    public ArrayList<Player> searchIfEqualsValuePublic(int arrayDimension,ArrayList<Player> precDeadHeat){
+    public ArrayList<Player> searchIfEqualsValuePublic(int arrayListDimension,ArrayList<Player> precDeadHeat){
         ArrayList<Player> deadHeat = new ArrayList<Player>();
-        for(int i=0;i<arrayDimension;i++){
+        for(int i=0;i<arrayListDimension;i++){
             if (precDeadHeat.get(i).getPoints()==precDeadHeat.get(precDeadHeat.size()-1).getPoints()){
                 deadHeat.add(precDeadHeat.get(i));
             }
@@ -621,6 +597,12 @@ public class Model extends ProjectObservable implements Runnable{
 
     }
 
+    /**
+     *gives victory to the last player left
+     * in case of disconnection of all the other players
+     * @param player player who won
+     * @param matchStarted parameter to understand if the game had started or not
+     */
     public void singlePlayerWinning(Player player, boolean matchStarted){
         if(matchStarted) {
             Arrays.asList(gameBoard.getPublicObjectiveCards()).forEach(

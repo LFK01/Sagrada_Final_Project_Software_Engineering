@@ -2,6 +2,11 @@ package it.polimi.se2018.model.events.messages;
 
 import it.polimi.se2018.view.comand_line.InputManager;
 
+/**
+ * @author Luciano
+ * Message to request the row and the column
+ * in which to place the die in the parameter
+ */
 public class RequestMessage extends Message {
 
     private String values;

@@ -2,6 +2,11 @@ package it.polimi.se2018.model.events.messages;
 
 import it.polimi.se2018.view.comand_line.InputManager;
 
+/**
+ * @author Luciano
+ * Message that warns the client that
+ * he can not use the Tool card
+ */
 public class ToolCardErrorMessage extends Message {
 
     private String errorInformation;

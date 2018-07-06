@@ -2,6 +2,11 @@ package it.polimi.se2018.view.comand_line;
 
 import java.io.Serializable;
 
+/**
+ * @author Luciano
+ * Enumeration class contains all the possible inputs
+ * that can be activated by messages sent to the players
+ */
 public enum InputManager implements Serializable{
 
     INPUT_NEW_CONNECTION,
